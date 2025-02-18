@@ -1,0 +1,59 @@
+{
+  "RoutesNames": ["Route_1", "Route_2", "Route_3"],
+  "Route_1": {
+    "id": 1,
+    "name": "Moscow",
+    "coordinates": {
+      "x": 4.6,
+      "y": 3.0
+    },
+    "creationDate": "2025-02-18T19:45:02.185Z",
+    "from": {
+      "x": 324,
+      "y": 4.6,
+      "z": 3.2,
+      "name": "Metro"
+    },
+    "to": {
+      "x": 300,
+      "y": 4.2,
+      "z": 30.0,
+      "name": "Home"
+    },
+    "distance": 3.6
+  },
+  "Route_2": {
+    "id": 1,
+    "name": "Moscow",
+    "coordinates": {
+      "x": 11.2,
+      "y": 5.7
+    },
+    "creationDate": "2025-02-18T19:58:07.277Z",
+    "from": null,
+    "to": null,
+    "distance": 733.3
+  },
+  "Route_3": {
+    "id": 1,
+    "name": "Moscow",
+    "coordinates": {
+      "x": 0.0,
+      "y": 0.0
+    },
+    "creationDate": "2025-02-18T19:58:24.733Z",
+    "from": {
+      "x": 1,
+      "y": 72.5,
+      "z": 22.1,
+      "name": "Hello"
+    },
+    "to": {
+      "x": 0,
+      "y": 53.2,
+      "z": 22.7,
+      "name": "Buy"
+    },
+    "distance": 231.3
+  }
+}
