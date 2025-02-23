@@ -1,18 +1,17 @@
 package org.AstrosLab.files;
-import org.AstrosLab.model.Route;
+import org.AstrosLab.collectrion.customCollection;
 
-import java.io.FileNotFoundException;
 
 public class Reader {
-    private ReadHandler readhandler;
+    private final ReadHandler readhandler;
 
     public Reader(ReadHandler readhandler){
         this.readhandler = readhandler;
     }
 
-    public Route readFromEnv() {
+    public customCollection readFromEnv() {
         String Path = System.getenv("JAVATESTFILE");
-        
+
         if (Path == null){
             System.err.println("Путь к файлу в переменной окружения JAVATESTFILE не найден!");
             return null;

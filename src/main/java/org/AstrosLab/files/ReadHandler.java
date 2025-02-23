@@ -1,10 +1,9 @@
 package org.AstrosLab.files;
-import org.AstrosLab.model.Route;
 
-import java.io.FileNotFoundException;
+import org.AstrosLab.collectrion.customCollection;
 
 public abstract class ReadHandler {
 
-    abstract public Route readFile(String Path);
+    abstract public customCollection readFile(String Path);
 
 }
