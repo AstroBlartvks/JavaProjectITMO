@@ -17,7 +17,7 @@ public class Main {
                 11.2);
 
         collect.addElement(r1);
-        collect.printALl();
+        collect.printAll();
 
     }
 }

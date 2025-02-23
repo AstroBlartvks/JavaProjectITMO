@@ -34,7 +34,7 @@ public class customCollection {
         this.collection.clear();
     }
 
-    public void printALl(){
+    public void printAll(){
         for (Route r : this.collection) {
             System.out.println(r);
         }
