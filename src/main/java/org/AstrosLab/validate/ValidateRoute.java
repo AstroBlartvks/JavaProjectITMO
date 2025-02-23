@@ -60,6 +60,7 @@ public class ValidateRoute{
             this.lastError = new IndexMustBeUnique("The index must be unique and greater than 1");
             return false;
         }
+        this.ids.add(id);
         return true;
     }
 
