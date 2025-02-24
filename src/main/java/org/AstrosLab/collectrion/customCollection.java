@@ -5,7 +5,7 @@ import org.AstrosLab.model.Route;
 import java.util.TreeSet;
 
 public class customCollection {
-    TreeSet<Route> collection;
+    private TreeSet<Route> collection;
 
     public customCollection(){
         this.collection = new TreeSet<Route>();
@@ -13,6 +13,10 @@ public class customCollection {
 
     public void addElement(Route r) {
         this.collection.add(r);
+    }
+
+    public int size(){
+        return collection.size();
     }
 
     public void updateElement(Route route) {

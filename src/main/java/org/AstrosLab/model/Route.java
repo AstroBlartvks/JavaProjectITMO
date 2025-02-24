@@ -1,6 +1,5 @@
 package org.AstrosLab.model;
 
-import java.nio.IntBuffer;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,25 +18,25 @@ public class Route implements Comparable<Route>  {
     private Location to; //Поле может быть null
     private double distance; //Значение поля должно быть больше 1
 
-    public Route(String name, Coordinates coordinates, Location from, Location to, double distance) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
-        }
-        if (coordinates == null) {
-            throw new IllegalArgumentException("Coordinates cannot be null");
-        }
-        if (distance <= 1) {
-            throw new IllegalArgumentException("Distance must be greater than 1");
-        }
-
-        this.id = idGenerator.getAndIncrement();
-        this.name = name;
-        this.coordinates = coordinates;
-        this.creationDate = new Date();
-        this.from = from;
-        this.to = to;
-        this.distance = distance;
-    }
+//    public Route(String name, Coordinates coordinates, Location from, Location to, double distance) {
+//        if (name == null || name.trim().isEmpty()) {
+//            throw new IllegalArgumentException("Name cannot be null or empty");
+//        }
+//        if (coordinates == null) {
+//            throw new IllegalArgumentException("Coordinates cannot be null");
+//        }
+//        if (distance <= 1) {
+//            throw new IllegalArgumentException("Distance must be greater than 1");
+//        }
+//
+//        this.id = idGenerator.getAndIncrement();
+//        this.name = name;
+//        this.coordinates = coordinates;
+//        this.creationDate = new Date();
+//        this.from = from;
+//        this.to = to;
+//        this.distance = distance;
+//    }
 
     @Override
     public int compareTo(Route other) {

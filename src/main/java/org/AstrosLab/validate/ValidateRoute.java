@@ -17,36 +17,6 @@ public class ValidateRoute{
         return true;
     }
 
-    public boolean isValidCoordinates(double x, double y){
-
-        try {
-            Double newX = x;
-            Double newY = y;
-        } catch (Exception exp){
-            this.lastError = exp;
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean isValidLocation(long x, float y, float z, String name){
-        if (isEmptyString(name)){
-            this.lastError = new StringMustBeNotEmpty("The string must not be empty.");
-            return false;
-        }
-
-        try {
-            Float newY = y;
-            Float newZ = z;
-        } catch (Exception exp){
-            this.lastError = exp;
-            return false;
-        }
-
-        return true;
-    }
-
     public boolean isValidDistance(double distance){
         if (distance <= 1){
             this.lastError = new DistanceMustBeHigherThanOne("The distance must be greater than 1");
