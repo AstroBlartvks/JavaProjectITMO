@@ -19,5 +19,9 @@ public class Main {
         collect.addElement(r1);
         collect.printAll();
 
+        Reader read = new Reader(new JSonReader());
+        read.readFromEnv();
+
+
     }
 }

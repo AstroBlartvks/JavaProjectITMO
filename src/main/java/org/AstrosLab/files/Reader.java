@@ -9,6 +9,10 @@ public class Reader {
         this.readhandler = readhandler;
     }
 
+    public Exception getException(){
+        return this.readhandler.getException();
+    }
+
     public customCollection readFromEnv() {
         String Path = System.getenv("JAVATESTFILE");
 
