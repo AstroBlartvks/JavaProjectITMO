@@ -17,7 +17,7 @@ public class Location {
                 "x=" + this.x +
                 ", y=" + this.y +
                 ", z=" + this.z +
-                ", name=" + this.name +
-                '}';
+                ", name='" + this.name +
+                "'}";
     }
 }

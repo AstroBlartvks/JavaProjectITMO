@@ -61,7 +61,42 @@ public class ValidateRouteJSON extends ValidateRoute{
     }
 
     public Coordinates getCoordinates(JSONObject routeJsonObject){
-        return null;
+        Object obj = routeJsonObject.get("coordinates");
+        if (obj == null){
+            return null;
+        }
+
+        if (!(obj instanceof JSONObject coorObject)) {
+            this.error = new ObjectIsNotAJSONObjectException("The object is not a JSONObject. Fix it");
+            return null;
+        }
+
+        Coordinates coord = new Coordinates();
+
+        if (!(coorObject.containsKey("x") && coorObject.containsKey("y"))){
+            this.error = new LocationHaveNoFieldsException("Coordinates doesn't have field: x or y");
+            return null;
+        }
+
+        Object objX = coorObject.get("x");
+        Object objY = coorObject.get("y");
+
+        if (!isType(objX, Double.class)){
+            return null;
+        } else if (!isType(objY, Double.class)){
+            return null;
+        }
+
+        if (objX == null){
+            this.error = new TheFieldIsNullException("The field 'x' in 'coordinates' is NULL. Must be Double");
+        } else if (objY == null){
+            this.error = new TheFieldIsNullException("The field 'y' in 'coordinates' is NULL. Must be Double");
+        }
+
+        coord.setX((Double)objX);
+        coord.setY((Double)objY);
+
+        return coord;
     }
 
     public Location getfromLocation(JSONObject routeJsonObject){
@@ -106,6 +141,11 @@ public class ValidateRouteJSON extends ValidateRoute{
                 return null;
             }
 
+            if (obj == null){
+                this.error = new TheFieldIsNullException("The field "+requiredFields[i]+" is NULL");
+                return null;
+            }
+
             //Ужасный момент, я себя перехитрил
             if (i == 0){
                 location.setX((long)obj);
@@ -122,7 +162,15 @@ public class ValidateRouteJSON extends ValidateRoute{
     }
 
     private <T> boolean isType(Object obj, Class<T> clazz) {
-        return clazz.isInstance(obj);
+        boolean isType = clazz.isInstance(obj);
+
+        if (!isType && obj != null){
+            this.error = new IsNotSameObjectException("Objects have different types: "+obj.getClass()+ " and have to be "+clazz);;
+        } else if (!isType){
+            this.error = new IsNotSameObjectException("Object 1 is null, but have to be "+clazz);;
+        }
+
+        return isType;
     }
 
 }

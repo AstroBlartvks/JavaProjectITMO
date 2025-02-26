@@ -107,12 +107,12 @@ public class JSonReader extends ReadHandler {
         java.util.Date creationDate = this.valdRoute.getCreationDate(jsonObjectRoute);
 
         Coordinates coords = this.valdRoute.getCoordinates(jsonObjectRoute);
-        // coords сделать
 
         Location from = this.valdRoute.getfromLocation(jsonObjectRoute);
         Location to = this.valdRoute.gettoLocation(jsonObjectRoute);
 
         if (this.sendError()){
+            this.error = new Exception("Error {"+nameRoute+"}:\n"+this.error.toString());
             return null;
         }
 
