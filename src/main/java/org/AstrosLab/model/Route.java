@@ -29,6 +29,9 @@ public class Route implements Comparable<Route>  {
                 "id=" + this.id +
                 ", name='" + this.name + '\'' +
                 ", distance=" + this.distance +
+                ", from=" + this.from +
+                ", to=" + this.to +
+                ", coordinates=" + this.coordinates +
                 '}';
     }
 }

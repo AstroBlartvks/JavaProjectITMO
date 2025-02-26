@@ -11,12 +11,13 @@ import java.util.Date;
 public class ValidateRouteJSON extends ValidateRoute{
     public int getId(JSONObject routeJsonObject){
         Object obj = routeJsonObject.get("id");
-        if (!isType(obj, Integer.class)){
+
+        if (!isType(obj, Number.class)){
             return 0;
         }
 
-        if (this.isValidId((int)obj)){
-            return (int)obj;
+        if (this.isValidId(((Number)obj).intValue())){
+            return ((Number)obj).intValue();
         }
         return 0;
     }
@@ -36,7 +37,7 @@ public class ValidateRouteJSON extends ValidateRoute{
 
     public double getDistance(JSONObject routeJsonObject){
         Object obj = routeJsonObject.get("distance");
-        if (!isType(obj, double.class)){
+        if (!isType(obj, Number.class)){
             return 0.0;
         }
 
@@ -65,7 +66,9 @@ public class ValidateRouteJSON extends ValidateRoute{
 
     public Location getfromLocation(JSONObject routeJsonObject){
         Object obj = routeJsonObject.get("from");
-
+        if (obj == null){
+            return null;
+        }
         if (!(obj instanceof JSONObject)) {
             this.error = new ObjectIsNotAJSONObjectException("The object 'from' is not a JSONObject");
             return null;
@@ -75,7 +78,9 @@ public class ValidateRouteJSON extends ValidateRoute{
 
     public Location gettoLocation(JSONObject routeJsonObject){
         Object obj = routeJsonObject.get("to");
-
+        if (obj == null){
+            return null;
+        }
         if (!(obj instanceof JSONObject)) {
             this.error = new ObjectIsNotAJSONObjectException("The object 'to' is not a JSONObject");
             return null;
@@ -86,26 +91,28 @@ public class ValidateRouteJSON extends ValidateRoute{
     private Location getLocation(JSONObject jsonObject){
         Location location = new Location();
         String[] requiredFields = {"x", "y", "z", "name"};
-        Class<?>[] allowedTypes = {Long.class, Float.class, Float.class, String.class};
+        Class<?>[] allowedTypes = {Long.class, Number.class, Number.class, String.class};
 
-        for (int i = 0; i < requiredFields.length; i++){
+        for (int i = 0; i < 4; i++){
+
             if (!jsonObject.containsKey(requiredFields[i])){
                 this.error = new LocationHaveNoFieldsException("Location doesn't have field: "+requiredFields[i]);
                 return null;
             }
 
             Object obj = jsonObject.get(requiredFields[i]);
+
             if (!isType(obj, allowedTypes[i])){
                 return null;
             }
 
-            //Ужасный момент, я себе перехитрил
+            //Ужасный момент, я себя перехитрил
             if (i == 0){
                 location.setX((long)obj);
             } else if (i == 1){
-                location.setY((Float)obj);
+                location.setY(((Number)obj).floatValue());
             } else if (i == 2){
-                location.setZ((Float)obj);
+                location.setZ(((Number)obj).floatValue());
             } else if (i == 3){
                 location.setName((String)obj);
             }
@@ -115,8 +122,7 @@ public class ValidateRouteJSON extends ValidateRoute{
     }
 
     private <T> boolean isType(Object obj, Class<T> clazz) {
-        boolean isType = false;
-        return isType;
+        return clazz.isInstance(obj);
     }
 
 }

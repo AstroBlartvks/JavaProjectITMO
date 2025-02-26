@@ -9,11 +9,12 @@ public class Main {
         customCollection collect = new customCollection();
 
         Reader read = new Reader(new JSonReader());
-        read.readFromEnv();
+        collect = read.readFromEnv();
         if (read.getException() != null){
             System.err.println("Errors were found in the file, fix them: \n" + read.getException());
             return;
         }
+        collect.printAll();
 
     }
 }

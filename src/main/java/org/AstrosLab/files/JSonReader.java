@@ -100,17 +100,19 @@ public class JSonReader extends ReadHandler {
                 return null;
             }
         }
-        
+
         int id = this.valdRoute.getId(jsonObjectRoute);
         String name = this.valdRoute.getName(jsonObjectRoute);
         double distance = this.valdRoute.getDistance(jsonObjectRoute);
         java.util.Date creationDate = this.valdRoute.getCreationDate(jsonObjectRoute);
+
         Coordinates coords = this.valdRoute.getCoordinates(jsonObjectRoute);
+        // coords сделать
+
         Location from = this.valdRoute.getfromLocation(jsonObjectRoute);
         Location to = this.valdRoute.gettoLocation(jsonObjectRoute);
 
-        if (this.valdRoute.getException() != null){
-            this.error = this.valdRoute.getException();
+        if (this.sendError()){
             return null;
         }
 
@@ -126,4 +128,11 @@ public class JSonReader extends ReadHandler {
         return newRoute;
     }
 
+    private boolean sendError(){
+        if (this.valdRoute.getException() != null){
+            this.error = this.valdRoute.getException();
+            return true;
+        }
+        return false;
+    }
 }

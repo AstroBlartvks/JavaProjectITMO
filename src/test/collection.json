@@ -23,7 +23,7 @@
     "distance": 3.6
   },
   "Route_2": {
-    "id": 1,
+    "id": 2,
     "name": "Moscow",
     "coordinates": {
       "x": 11.2,
@@ -35,7 +35,7 @@
     "distance": 733.3
   },
   "Route_3": {
-    "id": 1,
+    "id": 3,
     "name": "Moscow",
     "coordinates": {
       "x": 0.0,

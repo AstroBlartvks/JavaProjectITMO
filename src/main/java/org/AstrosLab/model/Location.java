@@ -11,4 +11,13 @@ public class Location {
     private Float z; //Поле не может быть null
     private String name; //Поле не может быть null
 
+    @Override
+    public String toString() {
+        return "Location{" +
+                "x=" + this.x +
+                ", y=" + this.y +
+                ", z=" + this.z +
+                ", name=" + this.name +
+                '}';
+    }
 }
