@@ -4,6 +4,8 @@ import org.AstrosLab.collectrion.customCollection;
 import org.AstrosLab.model.Coordinates;
 import org.AstrosLab.model.Location;
 import org.AstrosLab.model.Route;
+import org.AstrosLab.validate.ValidateRoute;
+import org.AstrosLab.validate.ValidateRouteJSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -15,6 +17,8 @@ import java.util.ArrayList;
 
 
 public class JSonReader extends ReadHandler {
+    private final ValidateRouteJSON valdRoute = new ValidateRouteJSON();
+
     @Override
     public customCollection readFile(String Path){
         customCollection newCollection = new customCollection();
@@ -83,42 +87,43 @@ public class JSonReader extends ReadHandler {
 
     public Route readRoutefromJSON(JSONObject rootJsonObject, String nameRoute){
         Object obj = rootJsonObject.get(nameRoute);
+        String[] requiredFields = {"id", "name", "distance", "coordinates", "from", "to", "creationDate"};
 
-        if (!(obj instanceof JSONObject)) {
+        if (!(obj instanceof JSONObject jsonObjectRoute)) {
             this.error = new ObjectIsNotAJSONObjectException("The object is not a JSONObject (trying to parse route: "+nameRoute+"). Fix it");
             return null;
         }
 
-        JSONObject jsonObjectRoute = (JSONObject) obj;
+        for (String field : requiredFields){
+            if (!jsonObjectRoute.containsKey(field)){
+                this.error = new ObjectNotContainAllFieldsException("The object \""+nameRoute+"\" does not contain minimum the necessary field: \'"+field+"\'\nFix it and try again.");
+                return null;
+            }
+        }
+        
+        int id = this.valdRoute.getId(jsonObjectRoute);
+        String name = this.valdRoute.getName(jsonObjectRoute);
+        double distance = this.valdRoute.getDistance(jsonObjectRoute);
+        java.util.Date creationDate = this.valdRoute.getCreationDate(jsonObjectRoute);
+        Coordinates coords = this.valdRoute.getCoordinates(jsonObjectRoute);
+        Location from = this.valdRoute.getfromLocation(jsonObjectRoute);
+        Location to = this.valdRoute.gettoLocation(jsonObjectRoute);
 
-        if (!(jsonObjectRoute.containsKey("id") && jsonObjectRoute.containsKey("name") &&
-                jsonObjectRoute.containsKey("distance") && jsonObjectRoute.containsKey("coordinates") &&
-                jsonObjectRoute.containsKey("from") && jsonObjectRoute.containsKey("to") &&
-                jsonObjectRoute.containsKey("creationDate"))) {
-
-            this.error = new ObjectNotContainAllFieldsException("The object \""+nameRoute+"\" does not contain all the necessary fields");
+        if (this.valdRoute.getException() != null){
+            this.error = this.valdRoute.getException();
             return null;
         }
 
-        //Сделать наследующий клас от validateRoute -> ValidateRouteJson, чтобы там првоерять все JSON обхъекты
-
-        Route newRoute = null;
+        Route newRoute = new Route();
+        newRoute.setId(id);
+        newRoute.setName(name);
+        newRoute.setDistance(distance);
+        newRoute.setCreationDate(creationDate);
+        newRoute.setCoordinates(coords);
+        newRoute.setFrom(from);
+        newRoute.setTo(to);
 
         return newRoute;
     }
 
-    private static Location parseLocation(JSONObject jsonObject) {
-        Location location = new Location();
-        location.setX((long)jsonObject.get("x"));
-        location.setY((Float)jsonObject.get("y"));
-        location.setZ((Float)jsonObject.get("z"));
-        location.setName((String)jsonObject.get("name"));
-        return location;
-    }
-    private static Coordinates parseCoordinates(JSONObject jsonObject) {
-        Coordinates coord = new Coordinates();
-        coord.setX((Double)jsonObject.get("x"));
-        coord.setY((Double)jsonObject.get("y"));
-        return coord;
-    }
 }

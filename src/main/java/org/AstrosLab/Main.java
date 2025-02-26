@@ -4,10 +4,6 @@ import org.AstrosLab.collectrion.customCollection;
 import org.AstrosLab.files.JSonReader;
 import org.AstrosLab.files.Reader;
 
-import org.AstrosLab.model.Coordinates;
-import org.AstrosLab.model.Location;
-import org.AstrosLab.model.Route;
-
 public class Main {
     public static void main(String[] args) {
         customCollection collect = new customCollection();

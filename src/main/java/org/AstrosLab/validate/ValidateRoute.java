@@ -6,12 +6,12 @@ import java.time.Instant;
 import java.util.Date;
 
 public class ValidateRoute{
-    Exception lastError;
-    ArrayList<Integer> ids = new ArrayList<Integer>();
+    protected Exception error;
+    protected ArrayList<Integer> ids = new ArrayList<Integer>();
 
     public boolean isValidName(String name){
         if (isEmptyString(name)){
-            this.lastError = new StringMustBeNotEmpty("The string must not be empty.");
+            this.error = new StringMustBeNotEmpty("The string must not be empty.");
             return false;
         }
         return true;
@@ -19,7 +19,7 @@ public class ValidateRoute{
 
     public boolean isValidDistance(double distance){
         if (distance <= 1){
-            this.lastError = new DistanceMustBeHigherThanOne("The distance must be greater than 1");
+            this.error = new DistanceMustBeHigherThanOne("The distance must be greater than 1");
             return false;
         }
         return true;
@@ -27,7 +27,7 @@ public class ValidateRoute{
 
     public boolean isValidId(int id){
         if (this.ids.contains(id) || id < 1){
-            this.lastError = new IndexMustBeUnique("The index must be unique and greater than 1");
+            this.error = new IndexMustBeUnique("The index must be unique and greater than 1");
             return false;
         }
         this.ids.add(id);
@@ -36,7 +36,7 @@ public class ValidateRoute{
 
     public boolean isValidDate(String data) {
         if (isEmptyString(data)) {
-            this.lastError = new StringMustBeNotEmpty("The string must not be empty.");
+            this.error = new StringMustBeNotEmpty("The string must not be empty.");
             return false;
         }
 
@@ -45,14 +45,14 @@ public class ValidateRoute{
         try {
             newInstant = Instant.parse(data);
         } catch (DateTimeParseException e) {
-            this.lastError = e;
+            this.error = e;
             return false;
         }
 
         try {
             Date newDate = Date.from(newInstant);
         } catch (IllegalArgumentException e){
-            this.lastError = e;
+            this.error = e;
             return false;
         }
         return true;
@@ -64,6 +64,10 @@ public class ValidateRoute{
         }
 
         return false;
+    }
+
+    public Exception getException(){
+        return this.error;
     }
 
 }
