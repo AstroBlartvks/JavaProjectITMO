@@ -10,6 +10,7 @@ public class Main {
 
         Reader read = new Reader(new JSonReader());
         collect = read.readFromEnv();
+
         if (read.getException() != null){
             System.err.println("Errors were found in the file, fix them: \n" + read.getException());
             return;

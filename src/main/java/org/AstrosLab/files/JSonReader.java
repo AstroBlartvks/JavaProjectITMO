@@ -4,7 +4,6 @@ import org.AstrosLab.collectrion.customCollection;
 import org.AstrosLab.model.Coordinates;
 import org.AstrosLab.model.Location;
 import org.AstrosLab.model.Route;
-import org.AstrosLab.validate.ValidateRoute;
 import org.AstrosLab.validate.ValidateRouteJSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

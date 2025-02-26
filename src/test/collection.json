@@ -15,12 +15,12 @@
       "name": "Metro"
     },
     "to": {
-      "x": 300,
+      "x": 100,
       "y": 4.2,
       "z": 30.0,
       "name": "Home"
     },
-    "distance": 3.6
+    "distance": 2.0
   },
   "Route_2": {
     "id": 2,

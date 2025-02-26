@@ -12,7 +12,7 @@ public class ValidateRouteJSON extends ValidateRoute{
     public int getId(JSONObject routeJsonObject){
         Object obj = routeJsonObject.get("id");
 
-        if (!isType(obj, Number.class)){
+        if (!isType(obj, Long.class)){
             return 0;
         }
 
@@ -37,12 +37,12 @@ public class ValidateRouteJSON extends ValidateRoute{
 
     public double getDistance(JSONObject routeJsonObject){
         Object obj = routeJsonObject.get("distance");
-        if (!isType(obj, Number.class)){
+        if (!isType(obj, Double.class)){
             return 0.0;
         }
 
-        if (this.isValidDistance((double)obj)){
-            return (double)obj;
+        if (this.isValidDistance(((Number)obj).doubleValue())){
+            return ((Number)obj).doubleValue();
         }
         return 0;
     }
