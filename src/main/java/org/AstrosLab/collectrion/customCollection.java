@@ -38,6 +38,14 @@ public class customCollection {
         this.collection.clear();
     }
 
+    public String getRoutesDescriptions(){
+        StringBuilder text = new StringBuilder();
+        for (Route r : this.collection) {
+            text.append(r.toString()).append("\n");
+        }
+        return text.toString();
+    }
+
     public void printAll(){
         for (Route r : this.collection) {
             System.out.println(r);
