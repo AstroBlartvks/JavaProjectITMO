@@ -9,10 +9,7 @@ public class CNAInfo extends Command{
 
     @Override
     public String execute(String commandText) {
-        String text = "";
-        text = text + this.collection.size() + "\n";
-        text = text + this.collection.getRoutesDescriptions() + "\n";
-        return text;
+        return this.collection.toString();
     }
 
     @Override

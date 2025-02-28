@@ -6,6 +6,7 @@ import java.util.TreeSet;
 
 public class customCollection {
     private TreeSet<Route> collection;
+//    private java.util.Date creationDate = null; Future
 
     public customCollection(){
         this.collection = new TreeSet<Route>();
@@ -46,6 +47,14 @@ public class customCollection {
         return text.toString();
     }
 
+    public String getRoutesSmallDescriptions(){
+        StringBuilder text = new StringBuilder();
+        for (Route r : this.collection) {
+            text.append(r.smallInfo()).append("\n");
+        }
+        return text.toString();
+    }
+
     public void printAll(){
         for (Route r : this.collection) {
             System.out.println(r);
@@ -61,4 +70,10 @@ public class customCollection {
         return null;
     }
 
+    @Override
+    public String toString(){
+        return "Collection (TreeSet<Route>):\n" +
+                "Have " + this.collection.size() + " items <Route>:\n" +
+                this.getRoutesSmallDescriptions();
+    }
 }

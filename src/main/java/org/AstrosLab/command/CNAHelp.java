@@ -2,15 +2,17 @@ package org.AstrosLab.command;
 
 import org.AstrosLab.collectrion.customCollection;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class CNAHelp extends Command{
     ArrayList<Command> commands = new ArrayList<Command>();
-    public CNAHelp(customCollection externCollection){
+    public CNAHelp(customCollection externCollection, HashMap<String, Command>  commandListing){
         this.collection = externCollection;
+        this.setCommands(commandListing);
     }
 
-    public void setCommands(Command cmd){
-        this.commands.add(cmd);
+    private void setCommands(HashMap<String, Command>  commandListing){
+        this.commands.addAll(commandListing.values());
     }
 
     @Override

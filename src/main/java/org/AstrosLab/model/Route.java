@@ -35,4 +35,12 @@ public class Route implements Comparable<Route>  {
                 ", coordinates=" + this.coordinates +
                 '}';
     }
+
+    public String smallInfo(){
+        return "Route{" +
+                "id=" + this.id +
+                ", name='" + this.name + '\'' +
+                ", creationDate='" + this.creationDate + '\'' +
+                '}';
+    }
 }
