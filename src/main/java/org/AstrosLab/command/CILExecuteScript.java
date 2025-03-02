@@ -4,9 +4,8 @@ import org.AstrosLab.collectrion.customCollection;
 
 import java.util.ArrayList;
 
-public class CILRemoveByID extends Command{
-
-    public CILRemoveByID(customCollection externCollection){
+public class CILExecuteScript extends Command{
+    public CILExecuteScript(customCollection externCollection){
         this.collection = externCollection;
         this.type = CMDTypes.CommandInLine;
         this.rowCount = 1;
@@ -19,7 +18,7 @@ public class CILRemoveByID extends Command{
 
     @Override
     public String description() {
-        return "remove_by_id id: delete an item from the collection by its id.\n";
+        return "execute_script filename: read and execute the script from the specified file. The script contains commands in the same form in which they are entered by the user interactively.\n";
     }
 
     @Override

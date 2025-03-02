@@ -4,9 +4,8 @@ import org.AstrosLab.collectrion.customCollection;
 
 import java.util.ArrayList;
 
-public class CILRemoveByID extends Command{
-
-    public CILRemoveByID(customCollection externCollection){
+public class CILCountGreaterThanDistance extends Command{
+    public CILCountGreaterThanDistance(customCollection externCollection){
         this.collection = externCollection;
         this.type = CMDTypes.CommandInLine;
         this.rowCount = 1;
@@ -19,7 +18,7 @@ public class CILRemoveByID extends Command{
 
     @Override
     public String description() {
-        return "remove_by_id id: delete an item from the collection by its id.\n";
+        return "count_greater_than_distance distance: print the number of elements whose value in the distance field is greater than the specified value.\n";
     }
 
     @Override
@@ -29,4 +28,6 @@ public class CILRemoveByID extends Command{
         return response;
     }
 }
+
+
 

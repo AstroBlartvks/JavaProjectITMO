@@ -25,7 +25,10 @@
   "Route_2": {
     "id": 2,
     "name": "Moscow",
-    "coordinates": null,
+    "coordinates": {
+      "x": 0.0,
+      "y": 0.0
+    },
     "creationDate": "2025-02-18T19:58:07.277Z",
     "from": null,
     "to": null,

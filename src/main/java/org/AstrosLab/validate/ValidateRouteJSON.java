@@ -63,6 +63,7 @@ public class ValidateRouteJSON extends ValidateRoute{
     public Coordinates getCoordinates(JSONObject routeJsonObject){
         Object obj = routeJsonObject.get("coordinates");
         if (obj == null){
+            this.error = new ObjectIsNotAJSONObjectException("The object 'coordinates' can't be null!");
             return null;
         }
 

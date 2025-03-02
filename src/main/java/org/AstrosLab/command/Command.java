@@ -1,18 +1,28 @@
 package org.AstrosLab.command;
 
+import lombok.Getter;
 import org.AstrosLab.collectrion.customCollection;
 
+import java.util.ArrayList;
+
 //CNA - command no arguments
-//CIL - command in line
+//CIL/CLI - command in line / command line in
 //CMA - Command more arguments
 
+//Потом сделаю наследование для serverCommand и clientCommand, чтобы в одной делать .execute(), а в другой .input()
 public abstract class Command {
-    customCollection collection;
-    Exception error;
+    protected customCollection collection;
+    protected Exception error;
+    @Getter
+    protected CMDTypes type;
+    protected int rowCount;
 
-    public abstract String execute(String commandText);
+    public abstract String execute(ArrayList<String> strCommandInLine);
+    public abstract ArrayList<String> input(String strCommandInLine) throws Exception;
     public abstract String description();
+
     public Exception getException(){
         return this.error;
     }
+
 }

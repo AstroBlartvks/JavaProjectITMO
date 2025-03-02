@@ -9,6 +9,8 @@ public class CNAHelp extends Command{
     public CNAHelp(customCollection externCollection, HashMap<String, Command>  commandListing){
         this.collection = externCollection;
         this.setCommands(commandListing);
+        this.type = CMDTypes.CommandNoArguments;
+        this.rowCount = 1;
     }
 
     private void setCommands(HashMap<String, Command>  commandListing){
@@ -16,7 +18,7 @@ public class CNAHelp extends Command{
     }
 
     @Override
-    public String execute(String commandText) {
+    public String execute(ArrayList<String> strCommandInLine) {
         StringBuilder text = new StringBuilder();
         for (Command cmd : this.commands){
             text.append(cmd.description());
@@ -27,6 +29,13 @@ public class CNAHelp extends Command{
     @Override
     public String description() {
         return "help: displays help for available commands.\n";
+    }
+
+    @Override
+    public ArrayList<String> input(String strCommandInLine){
+        ArrayList<String> response = new ArrayList<String>();
+        response.add(strCommandInLine);
+        return response;
     }
 }
 

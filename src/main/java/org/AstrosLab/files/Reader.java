@@ -13,8 +13,8 @@ public class Reader {
         return this.readhandler.getException();
     }
 
-    public customCollection readFromEnv() {
-        String Path = System.getenv("JAVATESTFILE");
+    public customCollection readFromEnv(String envName) {
+        String Path = System.getenv(envName);
 
         if (Path == null){
             System.err.println("Путь к файлу в переменной окружения JAVATESTFILE не найден!");
