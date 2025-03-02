@@ -18,7 +18,7 @@ public class CNAExit extends Command{
 
     @Override
     public String description() {
-        return "exit: terminate the program (without saving to a file).\n";
+        return "exit: \n\tterminate the program (without saving to a file).\n";
     }
 
     @Override

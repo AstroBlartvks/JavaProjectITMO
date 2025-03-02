@@ -18,7 +18,7 @@ public class CMAUpdate extends Command{
 
     @Override
     public String description() {
-        return "update id {element}: update the value of a collection item whose id is equal to the specified one.\n";
+        return "update id {element}: \n\tupdate the value of a collection item whose id is equal to the specified one.\n";
     }
 
     @Override

@@ -18,7 +18,7 @@ public class CNAInfo extends Command{
 
     @Override
     public String description() {
-        return "info: outputs information about the collection (type, initialization date, number of items, etc.) to the standard output stream.\n";
+        return "info: \n\toutputs information about the collection (type, initialization date, number of items, etc.) to the standard output stream.\n";
     }
 
     @Override

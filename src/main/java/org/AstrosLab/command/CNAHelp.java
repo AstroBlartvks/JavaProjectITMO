@@ -21,14 +21,14 @@ public class CNAHelp extends Command{
     public String execute(ArrayList<String> strCommandInLine) {
         StringBuilder text = new StringBuilder();
         for (Command cmd : this.commands){
-            text.append(cmd.description());
+            text.append("\n"+cmd.description());
         }
         return (String)(this.description() + text);
     }
 
     @Override
     public String description() {
-        return "help: displays help for available commands.\n";
+        return "help: \n\tdisplays help for available commands.\n";
     }
 
     @Override

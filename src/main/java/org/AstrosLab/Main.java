@@ -10,6 +10,7 @@ import org.AstrosLab.inputManager.InputManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Main {
     public static void main(String[] args) {
@@ -47,21 +48,25 @@ public class Main {
         CommandManager cmdManager = new CommandManager(commandListing);
         InputManager inputManager = new InputManager(commandListing);
 
-        ArrayList<String> cmdString = inputManager.input();
-        if (inputManager.getException() != null){
-            System.out.println(inputManager.getException());
-            return;
+
+        while (true) {
+            ArrayList<String> cmdString = inputManager.input();
+            if (inputManager.getException() != null || cmdString == null) {
+                System.out.println("You got Exception: " + inputManager.getException());
+                continue;
+            }
+
+            String result = cmdManager.exec(cmdString);
+
+            if (cmdManager.getException() != null) {
+                System.out.println("Something went wrong in executing: " + cmdManager.getException());
+                continue;
+            } else if (Objects.equals(result, "!#CMD:Exit")){
+                break;
+            }
+
+            System.out.println(result);
         }
-
-        String result = cmdManager.exec(cmdString);
-
-        if (cmdManager.getException() != null){
-            System.out.println(cmdManager.getException());
-            return;
-        }
-
-        System.out.println(cmdString);
-        System.out.println(result);
-
+        System.out.println("Programm closed!");
     }
 }

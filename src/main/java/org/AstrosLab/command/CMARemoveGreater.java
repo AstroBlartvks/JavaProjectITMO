@@ -18,7 +18,7 @@ public class CMARemoveGreater extends Command{
 
     @Override
     public String description() {
-        return "remove_greater {element}: delete all items from the collection that exceed the specified size.\n";
+        return "remove_greater {element}: \n\tdelete all items from the collection that exceed the specified size.\n";
     }
 
     @Override

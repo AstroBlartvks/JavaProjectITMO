@@ -18,7 +18,7 @@ public class CNASave extends Command{
 
     @Override
     public String description() {
-        return "save: save the collection to a file.\n";
+        return "save: \n\tsave the collection to a file.\n";
     }
 
     @Override

@@ -19,7 +19,7 @@ public class CNAShow extends Command{
 
     @Override
     public String description() {
-        return "show: outputs all the elements of the collection in a string representation to the standard output stream.\n";
+        return "show: \n\toutputs all the elements of the collection in a string representation to the standard output stream.\n";
     }
 
     @Override

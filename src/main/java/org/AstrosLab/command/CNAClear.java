@@ -19,7 +19,7 @@ public class CNAClear extends Command{
 
     @Override
     public String description() {
-        return "clear: clear the collection.\n";
+        return "clear: \n\tclear the collection.\n";
     }
 
     @Override

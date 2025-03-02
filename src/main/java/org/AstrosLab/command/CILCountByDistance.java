@@ -18,7 +18,7 @@ public class CILCountByDistance extends Command{
 
     @Override
     public String description() {
-        return "count_by_distance distance: print the number of elements with the value of the distance field equal to the specified one.\n";
+        return "count_by_distance distance: \n\tprint the number of elements with the value of the distance field equal to the specified one.\n";
     }
 
     @Override

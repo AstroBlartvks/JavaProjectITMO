@@ -2,6 +2,7 @@ package org.AstrosLab.collectrion;
 
 import org.AstrosLab.model.Route;
 
+import java.util.ArrayList;
 import java.util.TreeSet;
 
 public class customCollection {
@@ -55,19 +56,23 @@ public class customCollection {
         return text.toString();
     }
 
-    public void printAll(){
-        for (Route r : this.collection) {
-            System.out.println(r);
-        }
-    }
-
-    private Route getRouteInsideByID(int id) {
+    public Route getRouteInsideByID(int id) {
         for (Route r : this.collection) {
             if (r.getId() == id) {
                 return r;
             }
         }
         return null;
+    }
+
+    public int getNewID(){
+        int newID = 0;
+        for (Route r : this.collection) {
+            if (r.getId() > newID){
+                newID = r.getId();
+            }
+        }
+        return newID + 1;
     }
 
     @Override

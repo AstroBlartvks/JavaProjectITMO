@@ -18,7 +18,7 @@ public class CNAPrintFieldDescendingDistance extends Command{
 
     @Override
     public String description() {
-        return "print_field_descending_distance: print the values of the distance field of all elements in descending order.\n";
+        return "print_field_descending_distance: \n\tprint the values of the distance field of all elements in descending order.\n";
     }
 
     @Override

@@ -2,7 +2,6 @@ package org.AstrosLab.inputManager;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.AstrosLab.validate.IsNotSameObjectException;
 
 import java.util.Scanner;
 
@@ -92,46 +91,74 @@ public class Asker {
     }
 
     public String askCoordinates(String textForX, String textForY){
-        String X;
-        String Y;
+        String X = "";
+        String Y = "";
+        boolean xPassed = false;
+        boolean yPassed = false;
 
         while (true){
-            X = askDouble(textForX);
-            if (X == "null"){
-                System.out.println("'X' can't be null, must be Double");
-                continue;
+            if (!xPassed){
+                X = askDouble(textForX);
+                if (X == "null"){
+                    System.out.println("'X' can't be null, must be Double");
+                    continue;
+                }
+                xPassed = true;
             }
-            Y = askDouble(textForY);
-            if (Y == "null"){
-                System.out.println("'Y' can't be null, must be Double");
-                continue;
+
+            if (!yPassed) {
+                Y = askDouble(textForY);
+                if (Y == "null") {
+                    System.out.println("'Y' can't be null, must be Double");
+                    continue;
+                }
+                yPassed = true;
             }
             return X + "\n" + Y;
         }
     }
 
     public String askFromTo(String s, String s1, String s2, String s3) {
-        String X;
-        String Y;
-        String Z;
-        String Name;
+        String X = "";
+        String Y = "";
+        String Z = "";
+        String Name = "";
+        boolean xPassed = false;
+        boolean yPassed = false;
+        boolean zPassed = false;
+        boolean NamePassed = false;
 
         while (true){
-            X = askLong(s);
-            if (X == "null"){
-                return "null";
+            if (!xPassed) {
+                X = askLong(s);
+                if (X == "null") {
+                    return "null";
+                }
+                xPassed = true;
             }
-            Y = askFloat(s1);
-            if (Y == "null"){
-                System.out.println("'Y' can't be null, must be Float");
-                continue;
+
+            if (!yPassed) {
+                Y = askFloat(s1);
+                if (Y == "null") {
+                    System.out.println("'Y' can't be null, must be Float");
+                    continue;
+                }
+                yPassed = true;
             }
-            Z = askFloat(s2);
-            if (Z == "null"){
-                System.out.println("'Z' can't be null, must be Float");
-                continue;
+
+            if (!zPassed) {
+                Z = askFloat(s2);
+                if (Z == "null") {
+                    System.out.println("'Z' can't be null, must be Float");
+                    continue;
+                }
+                zPassed = true;
             }
-            Name = askString(s3);
+
+            if (!NamePassed) {
+                Name = askString(s3);
+                NamePassed = true;
+            }
             return X + "\n" + Y + "\n" + Z + "\n" + Name;
         }
     }

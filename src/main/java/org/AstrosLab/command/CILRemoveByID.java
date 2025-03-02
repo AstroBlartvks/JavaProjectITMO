@@ -19,7 +19,7 @@ public class CILRemoveByID extends Command{
 
     @Override
     public String description() {
-        return "remove_by_id id: delete an item from the collection by its id.\n";
+        return "remove_by_id id: \n\tdelete an item from the collection by its id.\n";
     }
 
     @Override

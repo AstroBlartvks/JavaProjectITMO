@@ -18,7 +18,7 @@ public class CILExecuteScript extends Command{
 
     @Override
     public String description() {
-        return "execute_script filename: read and execute the script from the specified file. The script contains commands in the same form in which they are entered by the user interactively.\n";
+        return "execute_script filename: \n\tread and execute the script from the specified file. The script contains commands in the same form in which they are entered by the user interactively.\n";
     }
 
     @Override

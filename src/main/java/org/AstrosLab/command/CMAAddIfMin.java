@@ -18,7 +18,7 @@ public class CMAAddIfMin extends Command{
 
     @Override
     public String description() {
-        return "add_if_min {element}: add a new item to the collection if its value is less than that of the smallest item in this collection.\n";
+        return "add_if_min {element}: \n\tadd a new item to the collection if its value is less than that of the smallest item in this collection.\n";
     }
 
     @Override

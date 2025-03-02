@@ -18,7 +18,7 @@ public class CILCountGreaterThanDistance extends Command{
 
     @Override
     public String description() {
-        return "count_greater_than_distance distance: print the number of elements whose value in the distance field is greater than the specified value.\n";
+        return "count_greater_than_distance distance: \n\tprint the number of elements whose value in the distance field is greater than the specified value.\n";
     }
 
     @Override

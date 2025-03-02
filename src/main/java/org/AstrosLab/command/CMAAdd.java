@@ -1,6 +1,7 @@
 package org.AstrosLab.command;
 
 import org.AstrosLab.collectrion.customCollection;
+import org.AstrosLab.model.Route;
 
 import java.util.ArrayList;
 
@@ -13,12 +14,21 @@ public class CMAAdd extends Command{
 
     @Override
     public String execute(ArrayList<String> strCommandInLine) {
-        return "";
+        int id = this.collection.getNewID();
+
+        try{
+            Route route = CreateRoute.create(id, strCommandInLine);
+            this.collection.addElement(route);
+        } catch (Exception e){
+            return e.toString();
+        }
+
+        return "Route created!\n";
     }
 
     @Override
     public String description() {
-        return "add {element}: add a new item to the collection.\n";
+        return "add {element}: \n\tadd a new item to the collection.\n";
     }
 
     @Override
