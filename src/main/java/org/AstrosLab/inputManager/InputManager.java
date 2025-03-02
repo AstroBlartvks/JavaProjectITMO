@@ -45,6 +45,7 @@ public class InputManager {
         Command cmd = this.commandListing.get(StrCommand);
         try {
             ArrayList<String> allCommand = cmd.input(strCommandInLine);
+            this.error = cmd.getException();
             return allCommand;
         } catch (Exception e){
             this.error = e;

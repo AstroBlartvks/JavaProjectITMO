@@ -81,6 +81,8 @@ public class Asker {
                 if (input.isEmpty()){
                     return "null";
                 }
+
+                Float.parseFloat(input);
                 return input;
             } catch (Exception e) {
                 System.out.println("Your values is not a Long Exception{"+e.toString()+"}, try again!");

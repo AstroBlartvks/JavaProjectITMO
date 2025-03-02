@@ -14,6 +14,7 @@ public class CMAAdd extends Command{
 
     @Override
     public String execute(ArrayList<String> strCommandInLine) {
+        clearException();
         int id = this.collection.getNewID();
 
         try{
@@ -33,6 +34,7 @@ public class CMAAdd extends Command{
 
     @Override
     public ArrayList<String> input(String strCommandInLine) throws Exception {
+        clearException();
         ArrayList<String> inputResult;
         try {
             inputResult = inputRoute.input(strCommandInLine);

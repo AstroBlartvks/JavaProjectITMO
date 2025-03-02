@@ -13,7 +13,9 @@ public class CILCountGreaterThanDistance extends Command{
 
     @Override
     public String execute(ArrayList<String> strCommandInLine) {
-        return "";
+        clearException();
+        double distance = Integer.parseInt(strCommandInLine.get(0).split(" ")[1]);
+        return  "The routes with 'distance' > "+distance+": " + this.collection.greaterThanDistance(distance) + " in collection";
     }
 
     @Override
@@ -23,6 +25,13 @@ public class CILCountGreaterThanDistance extends Command{
 
     @Override
     public ArrayList<String> input(String strCommandInLine){
+        clearException();
+
+        if (strCommandInLine.split(" ").length != 2){
+            this.error = new UnexpectedCommandException("Сommand 'count_greater_than_distance' must have inline argument 'distance' ex: 'count_greater_than_distance 2'");
+            return null;
+        }
+
         ArrayList<String> response = new ArrayList<String>();
         response.add(strCommandInLine);
         return response;

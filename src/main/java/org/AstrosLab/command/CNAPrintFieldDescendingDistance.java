@@ -13,7 +13,8 @@ public class CNAPrintFieldDescendingDistance extends Command{
 
     @Override
     public String execute(ArrayList<String> strCommandInLine) {
-        return "";
+        clearException();
+        return "Reversed distances:\n"+this.collection.printFieldDescendingDistance();
     }
 
     @Override
@@ -23,6 +24,7 @@ public class CNAPrintFieldDescendingDistance extends Command{
 
     @Override
     public ArrayList<String> input(String strCommandInLine){
+        clearException();
         ArrayList<String> response = new ArrayList<String>();
         response.add(strCommandInLine);
         return response;

@@ -19,6 +19,7 @@ public class CNAHelp extends Command{
 
     @Override
     public String execute(ArrayList<String> strCommandInLine) {
+        clearException();
         StringBuilder text = new StringBuilder();
         for (Command cmd : this.commands){
             text.append("\n"+cmd.description());
@@ -33,6 +34,7 @@ public class CNAHelp extends Command{
 
     @Override
     public ArrayList<String> input(String strCommandInLine){
+        clearException();
         ArrayList<String> response = new ArrayList<String>();
         response.add(strCommandInLine);
         return response;

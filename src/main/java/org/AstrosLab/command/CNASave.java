@@ -13,7 +13,8 @@ public class CNASave extends Command{
 
     @Override
     public String execute(ArrayList<String> strCommandInLine) {
-        return "";
+        clearException();
+        return "Json file saved by: 'path'";
     }
 
     @Override
@@ -23,6 +24,7 @@ public class CNASave extends Command{
 
     @Override
     public ArrayList<String> input(String strCommandInLine){
+        clearException();
         ArrayList<String> response = new ArrayList<String>();
         response.add(strCommandInLine);
         return response;

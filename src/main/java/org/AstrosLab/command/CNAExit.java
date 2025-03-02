@@ -13,6 +13,7 @@ public class CNAExit extends Command{
 
     @Override
     public String execute(ArrayList<String> strCommandInLine) {
+        clearException();
         return "!#CMD:Exit";
     }
 
@@ -23,6 +24,7 @@ public class CNAExit extends Command{
 
     @Override
     public ArrayList<String> input(String strCommandInLine){
+        clearException();
         ArrayList<String> response = new ArrayList<String>();
         response.add(strCommandInLine);
         return response;

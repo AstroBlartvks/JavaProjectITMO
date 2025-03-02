@@ -3,6 +3,7 @@ package org.AstrosLab.collectrion;
 import org.AstrosLab.model.Route;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.TreeSet;
 
 public class customCollection {
@@ -73,6 +74,44 @@ public class customCollection {
             }
         }
         return newID + 1;
+    }
+
+    public boolean containsID(int id){
+        for (Route r : this.collection) {
+            if (r.getId() == id){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int countByDistance(double distance){
+        int count = 0;
+        for (Route r : this.collection) {
+            if (r.getDistance() == distance){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public int greaterThanDistance(double distance){
+        int count = 0;
+        for (Route r : this.collection) {
+            if (r.getDistance() > distance){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public ArrayList<Double> printFieldDescendingDistance(){
+        ArrayList<Double> distances = new ArrayList<Double>();
+        for (Route r : this.collection) {
+            distances.add(r.getDistance());
+        }
+        Collections.sort(distances, Collections.reverseOrder());
+        return distances;
     }
 
     @Override

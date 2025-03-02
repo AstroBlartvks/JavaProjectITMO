@@ -25,4 +25,8 @@ public abstract class Command {
         return this.error;
     }
 
+    protected void clearException(){
+        this.error = null;
+    }
+
 }

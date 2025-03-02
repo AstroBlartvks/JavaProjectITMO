@@ -1,6 +1,7 @@
 package org.AstrosLab.command;
 
 import org.AstrosLab.collectrion.customCollection;
+import org.AstrosLab.model.Route;
 
 import java.util.ArrayList;
 
@@ -13,7 +14,21 @@ public class CMAUpdate extends Command{
 
     @Override
     public String execute(ArrayList<String> strCommandInLine) {
-        return "";
+        clearException();
+        int id = Integer.parseInt(strCommandInLine.get(0).split(" ")[1]);
+
+        if (!this.collection.containsID(id)){
+            return "Collection have no <Route> with 'id'=" + id;
+        }
+
+        try{
+            Route route = CreateRoute.create(id, strCommandInLine);
+            this.collection.removeByID(id);
+            this.collection.addElement(route);
+        } catch (Exception e){
+            return e.toString();
+        }
+        return "Route with 'id'=" + id + " has changed successfully!";
     }
 
     @Override
@@ -23,9 +38,21 @@ public class CMAUpdate extends Command{
 
     @Override
     public ArrayList<String> input(String strCommandInLine){
-        ArrayList<String> response = new ArrayList<String>();
-        response.add(strCommandInLine);
-        return response;
+        clearException();
+        ArrayList<String> inputResult;
+
+        if (strCommandInLine.split(" ").length != 2){
+            this.error = new UnexpectedCommandException("Command 'update' must have inline argument 'id' ex: 'update 2'");
+            return null;
+        }
+
+        try {
+            inputResult = inputRoute.input(strCommandInLine);
+            return inputResult;
+        } catch (Exception e){
+            this.error = e;
+            return null;
+        }
     }
 }
 

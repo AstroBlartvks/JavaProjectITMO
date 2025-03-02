@@ -13,8 +13,9 @@ public class CNAClear extends Command{
 
     @Override
     public String execute(ArrayList<String> strCommandInLine) {
+        clearException();
         this.collection.clear();
-        return "";
+        return "Collection has been cleared!";
     }
 
     @Override
@@ -24,6 +25,7 @@ public class CNAClear extends Command{
 
     @Override
     public ArrayList<String> input(String strCommandInLine){
+        clearException();
         ArrayList<String> response = new ArrayList<String>();
         response.add(strCommandInLine);
         return response;
