@@ -5,7 +5,7 @@ import org.AstrosLab.inputManager.ValidateRouteInput;
 
 import java.util.ArrayList;
 
-public class inputRoute {
+public class InputRoute {
     public static ArrayList<String> input(String strCommandInLine) throws Exception {
         ValidateRouteInput validRouteInput = new ValidateRouteInput();
         ArrayList<String> response = new ArrayList<String>();

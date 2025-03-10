@@ -1,4 +1,4 @@
-package org.AstrosLab.collectrion;
+package org.AstrosLab.collection;
 
 import org.AstrosLab.model.Route;
 
@@ -6,11 +6,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.TreeSet;
 
-public class customCollection {
+public class CustomCollection {
     private TreeSet<Route> collection;
-//    private java.util.Date creationDate = null; Future
 
-    public customCollection(){
+    public CustomCollection(){
         this.collection = new TreeSet<Route>();
     }
 

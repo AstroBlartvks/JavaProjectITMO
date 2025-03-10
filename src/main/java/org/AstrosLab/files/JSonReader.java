@@ -1,137 +1,104 @@
 package org.AstrosLab.files;
 
-import org.AstrosLab.collectrion.customCollection;
-import org.AstrosLab.model.Coordinates;
-import org.AstrosLab.model.Location;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.AstrosLab.collection.CustomCollection;
 import org.AstrosLab.model.Route;
-import org.AstrosLab.validate.ValidateRouteJSON;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.File;
+import java.util.Iterator;
+import java.util.Map;
 
 
 public class JSonReader extends ReadHandler {
-    private final ValidateRouteJSON valdRoute = new ValidateRouteJSON();
 
     @Override
-    public customCollection readFile(String Path){
-        customCollection newCollection = new customCollection();
-        JSONParser parser = new JSONParser();
+    public CustomCollection readFile(String Path) throws Exception{
+        File jsonFile = new File(Path);
+        CustomCollection customCollection = new CustomCollection();
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        try (FileReader filereader = new FileReader(Path)) {
-            JSONObject rootJsonObject;
+        try {
+            JsonNode rootNode = objectMapper.readTree(jsonFile);
+            Iterator<Map.Entry<String, JsonNode>> fields = rootNode.fields();
 
-            try {
-                rootJsonObject = (JSONObject) parser.parse(filereader);
-            } catch (IOException | ParseException e) {
-                this.error = e;
-                return null;
-            }
+            while (fields.hasNext()) {
+                Map.Entry<String, JsonNode> entry = fields.next();
+                String routeKey = entry.getKey();
+                JsonNode routeNode = entry.getValue();
 
-            Object obj = rootJsonObject.get("RoutesNames");
-            ArrayList<String> RoutesNames = getRouteTitles(obj);
-            if (RoutesNames == null) {
-                return null;
-            }
-
-            for (String name : RoutesNames){
-
-                Route tempRoute = readRoutefromJSON(rootJsonObject, name);
-
-                if (tempRoute == null){
-                    return null;
+                if (!routeNode.has("name") || routeNode.get("name").asText().trim().isEmpty()) {
+                    throw new IllegalArgumentException(routeKey + ": 'name' can't be null or empty");
                 }
 
-                newCollection.addElement(tempRoute);
-            }
+                if (!routeNode.has("coordinates") || !routeNode.get("coordinates").has("x") || !routeNode.get("coordinates").has("y") || routeNode.get("coordinates").isNull()) {
+                    throw new IllegalArgumentException(routeKey + ": 'coordinates' can't be null");
+                }
 
-        } catch (IOException e){
-            this.error = e;
-            return null;
-        }
+                validateCoordination(routeNode.get("coordinates"), routeKey);
 
-        return newCollection;
-    }
+                validateNumericType(routeNode, "distance", Double.class, routeKey);
+                if (routeNode.get("distance").asDouble() <= 1) {
+                    throw new IllegalArgumentException(routeKey + ": 'distance' must be greater than 1");
+                }
 
-    @Override
-    public Exception getException(){
-        return this.error;
-    }
-
-    public ArrayList<String> getRouteTitles(Object obj){
-        ArrayList<String> RoutesNames = new ArrayList<>();
-
-        if (obj instanceof JSONArray jsonArray) {
-
-            for (Object item : jsonArray) {
-                if (item instanceof String) {
-                    RoutesNames.add((String) item);
+                if (routeNode.has("from")) {
+                    if (!routeNode.get("from").isNull()) {
+                        validateLocation(routeNode.get("from"), routeKey, "from");
+                    }
                 } else {
-                    this.error = new TitleElementIsNotStringException("The array element is not a string");
-                    return null;
+                    throw new IllegalArgumentException(routeKey + ": missing required 'from' argument");
+                }
+
+                if (routeNode.has("to")) {
+                    if (!routeNode.get("to").isNull()) {
+                        validateLocation(routeNode.get("to"), routeKey, "to");
+                    }
+                } else {
+                    throw new IllegalArgumentException(routeKey + ": missing required 'to' argument");
                 }
             }
-        } else {
-            this.error = new RouteNamesIncorrectFormatException("RoutesNames match or contain an incorrect format");
-            return null;
-        }
 
-        return RoutesNames;
-    }
-
-    public Route readRoutefromJSON(JSONObject rootJsonObject, String nameRoute){
-        Object obj = rootJsonObject.get(nameRoute);
-        String[] requiredFields = {"id", "name", "distance", "coordinates", "from", "to", "creationDate"};
-
-        if (!(obj instanceof JSONObject jsonObjectRoute)) {
-            this.error = new ObjectIsNotAJSONObjectException("The object is not a JSONObject (trying to parse route: "+nameRoute+"). Fix it");
-            return null;
-        }
-
-        for (String field : requiredFields){
-            if (!jsonObjectRoute.containsKey(field)){
-                this.error = new ObjectNotContainAllFieldsException("The object \""+nameRoute+"\" does not contain minimum the necessary field: \'"+field+"\'\nFix it and try again.");
-                return null;
+            Map<String, Route> routes = objectMapper.readValue(jsonFile, objectMapper.getTypeFactory().constructMapType(Map.class, String.class, Route.class));
+            for (String routeName: routes.keySet()) {
+                customCollection.addElement(routes.get(routeName));
             }
+
+        } catch (Exception e){
+            throw e;
         }
 
-        int id = this.valdRoute.getId(jsonObjectRoute);
-        String name = this.valdRoute.getName(jsonObjectRoute);
-        double distance = this.valdRoute.getDistance(jsonObjectRoute);
-        java.util.Date creationDate = this.valdRoute.getCreationDate(jsonObjectRoute);
-
-        Coordinates coords = this.valdRoute.getCoordinates(jsonObjectRoute);
-
-        Location from = this.valdRoute.getfromLocation(jsonObjectRoute);
-        Location to = this.valdRoute.gettoLocation(jsonObjectRoute);
-
-        if (this.sendError()){
-            this.error = new Exception("Error {"+nameRoute+"}:\n"+this.error.toString());
-            return null;
-        }
-
-        Route newRoute = new Route();
-        newRoute.setId(id);
-        newRoute.setName(name);
-        newRoute.setDistance(distance);
-        newRoute.setCreationDate(creationDate);
-        newRoute.setCoordinates(coords);
-        newRoute.setFrom(from);
-        newRoute.setTo(to);
-
-        return newRoute;
+        return customCollection;
     }
 
-    private boolean sendError(){
-        if (this.valdRoute.getException() != null){
-            this.error = this.valdRoute.getException();
-            return true;
+    private static void validateCoordination(JsonNode node, String routeKey) {
+        validateNumericType(node, "x", Double.class, routeKey);
+        validateNumericType(node, "y", Double.class, routeKey);
+    }
+
+    private static void validateNumericType(JsonNode node, String field, Class<?> expectedType, String routeKey) {
+        if (!node.has(field)) {
+            throw new IllegalArgumentException(routeKey + ": missing required '" + field + "' argument");
         }
-        return false;
+        JsonNode valueNode = node.get(field);
+        if (expectedType == Double.class && !valueNode.isNumber()) {
+            throw new IllegalArgumentException(routeKey + ": '" + field + "' must be a double (found: " + valueNode + ")");
+        }
+        if (expectedType == Long.class && !valueNode.isIntegralNumber()) {
+            throw new IllegalArgumentException(routeKey + ": '" + field + "' must be a long (found: " + valueNode + ")");
+        }
+        if (expectedType == Float.class && !valueNode.isFloatingPointNumber() && !valueNode.isNumber()) {
+            throw new IllegalArgumentException(routeKey + ": '" + field + "' must be a float (found: " + valueNode + ")");
+        }
+    }
+
+    private static void validateLocation(JsonNode node, String routeKey, String fieldName) {
+        validateNumericType(node, "x", Long.class, routeKey);
+        validateNumericType(node, "y", Float.class, routeKey);
+        validateNumericType(node, "z", Float.class, routeKey);
+
+        if (!node.has("name") || !node.get("name").isTextual() || node.get("name").asText().trim().isEmpty()) {
+            throw new IllegalArgumentException(routeKey + ": '" + fieldName + ".name' must be a non-empty string");
+        }
     }
 }

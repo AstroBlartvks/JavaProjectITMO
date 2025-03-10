@@ -1,11 +1,11 @@
 package org.AstrosLab.command;
 
-import org.AstrosLab.collectrion.customCollection;
+import org.AstrosLab.collection.CustomCollection;
 
 import java.util.ArrayList;
 
 public class CILCountGreaterThanDistance extends Command{
-    public CILCountGreaterThanDistance(customCollection externCollection){
+    public CILCountGreaterThanDistance(CustomCollection externCollection){
         this.collection = externCollection;
         this.type = CMDTypes.CommandInLine;
         this.rowCount = 1;

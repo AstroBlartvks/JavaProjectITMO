@@ -1,5 +1,5 @@
 package org.AstrosLab.files;
-import org.AstrosLab.collectrion.customCollection;
+import org.AstrosLab.collection.CustomCollection;
 
 
 public class Reader {
@@ -9,16 +9,11 @@ public class Reader {
         this.readhandler = readhandler;
     }
 
-    public Exception getException(){
-        return this.readhandler.getException();
-    }
-
-    public customCollection readFromEnv(String envName) {
+    public CustomCollection readFromEnv(String envName) throws Exception {
         String Path = System.getenv(envName);
 
         if (Path == null){
-            System.err.println("Путь к файлу в переменной окружения JAVATESTFILE не найден!");
-            return null;
+            throw new Exception("The path to the file in the environment variable '"+envName+"' was not found!");
         }
 
         return readhandler.readFile(Path);

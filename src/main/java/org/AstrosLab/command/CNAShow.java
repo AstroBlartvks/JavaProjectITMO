@@ -1,11 +1,11 @@
 package org.AstrosLab.command;
 
-import org.AstrosLab.collectrion.customCollection;
+import org.AstrosLab.collection.CustomCollection;
 
 import java.util.ArrayList;
 
 public class CNAShow extends Command{
-    public CNAShow(customCollection externCollection){
+    public CNAShow(CustomCollection externCollection){
         this.collection = externCollection;
         this.type = CMDTypes.CommandNoArguments;
         this.rowCount = 1;

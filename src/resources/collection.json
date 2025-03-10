@@ -1,5 +1,4 @@
 {
-  "RoutesNames": ["Route_1", "Route_2", "Route_3"],
   "Route_1": {
     "id": 1,
     "name": "Moscow",
@@ -9,14 +8,14 @@
     },
     "creationDate": "2025-02-18T19:45:02.185Z",
     "from": {
-      "x": 324,
+      "x": 33,
       "y": 4.6,
       "z": 3.2,
       "name": "Metro"
     },
     "to": {
       "x": 100,
-      "y": 4.2,
+      "y": 4.0,
       "z": 30.0,
       "name": "Home"
     },

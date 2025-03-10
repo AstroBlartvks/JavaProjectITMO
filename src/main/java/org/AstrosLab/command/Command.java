@@ -1,7 +1,7 @@
 package org.AstrosLab.command;
 
 import lombok.Getter;
-import org.AstrosLab.collectrion.customCollection;
+import org.AstrosLab.collection.CustomCollection;
 
 import java.util.ArrayList;
 
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 //Потом сделаю наследование для serverCommand и clientCommand, чтобы в одной делать .execute(), а в другой .input()
 public abstract class Command {
-    protected customCollection collection;
+    protected CustomCollection collection;
     protected Exception error;
     @Getter
     protected CMDTypes type;

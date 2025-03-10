@@ -1,10 +1,8 @@
 package org.AstrosLab.files;
 
-import org.AstrosLab.collectrion.customCollection;
+import org.AstrosLab.collection.CustomCollection;
 
 public abstract class ReadHandler {
-    protected Exception error = null;
-
-    abstract public customCollection readFile(String Path);
-    abstract public Exception getException();
+    protected String[] arguments = {"id"};;
+    abstract public CustomCollection readFile(String Path) throws Exception;
 }

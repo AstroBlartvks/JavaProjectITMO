@@ -1,11 +1,11 @@
 package org.AstrosLab.command;
 
-import org.AstrosLab.collectrion.customCollection;
+import org.AstrosLab.collection.CustomCollection;
 
 import java.util.ArrayList;
 
 public class CMAAddIfMin extends Command{
-    public CMAAddIfMin(customCollection externCollection){
+    public CMAAddIfMin(CustomCollection externCollection){
         this.collection = externCollection;
         this.type = CMDTypes.CommandMoreArgument;
         this.rowCount = 5;

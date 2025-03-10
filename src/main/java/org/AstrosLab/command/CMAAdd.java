@@ -1,12 +1,12 @@
 package org.AstrosLab.command;
 
-import org.AstrosLab.collectrion.customCollection;
+import org.AstrosLab.collection.CustomCollection;
 import org.AstrosLab.model.Route;
 
 import java.util.ArrayList;
 
 public class CMAAdd extends Command{
-    public CMAAdd(customCollection externCollection){
+    public CMAAdd(CustomCollection externCollection){
         this.collection = externCollection;
         this.type = CMDTypes.CommandMoreArgument;
         this.rowCount = 5;
@@ -37,7 +37,7 @@ public class CMAAdd extends Command{
         clearException();
         ArrayList<String> inputResult;
         try {
-            inputResult = inputRoute.input(strCommandInLine);
+            inputResult = InputRoute.input(strCommandInLine);
             return inputResult;
         } catch (Exception e){
             System.out.println(e);

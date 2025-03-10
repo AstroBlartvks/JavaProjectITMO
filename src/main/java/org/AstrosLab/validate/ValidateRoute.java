@@ -66,8 +66,4 @@ public class ValidateRoute{
         return false;
     }
 
-    public Exception getException(){
-        return this.error;
-    }
-
 }

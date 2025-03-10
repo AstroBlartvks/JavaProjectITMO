@@ -1,12 +1,12 @@
 package org.AstrosLab.command;
 
-import org.AstrosLab.collectrion.customCollection;
+import org.AstrosLab.collection.CustomCollection;
 
 import java.util.ArrayList;
 
 public class CILRemoveByID extends Command{
 
-    public CILRemoveByID(customCollection externCollection){
+    public CILRemoveByID(CustomCollection externCollection){
         this.collection = externCollection;
         this.type = CMDTypes.CommandInLine;
         this.rowCount = 1;
