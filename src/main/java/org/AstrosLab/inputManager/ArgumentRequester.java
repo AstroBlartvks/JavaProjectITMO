@@ -1,0 +1,134 @@
+package org.AstrosLab.inputManager;
+
+import org.AstrosLab.model.Coordinates;
+import org.AstrosLab.model.Location;
+
+import java.util.Objects;
+import java.util.Scanner;
+import java.util.function.Predicate;
+
+public class ArgumentRequester {
+    private static final Scanner scanner = ScannerManager.getScanner();
+
+    public static Double requestDouble(String requested, String exceptionString, Predicate<Double> validator) {
+        while (true) {
+            System.out.print(requested + ":\n>>> ");
+            String input = scanner.nextLine().trim();
+
+            if (input.isEmpty() && validator == null) {
+                return null;
+            }
+
+            try {
+                Double number = Double.parseDouble(input);
+                if (validator == null || validator.test(number)) {
+                    return number;
+                } else {
+                    System.out.println("Validate exception: "+exceptionString);
+                }
+            } catch (NumberFormatException e) {
+                if (input.isEmpty()) {
+                    System.out.println("Incorrect input format. Must be 'Double', can't be 'null'");
+                    continue;
+                }
+                System.out.println("Incorrect input format (must be 'Double'):" + e);
+            }
+        }
+    }
+
+    public static Float requestFloat(String requested, String exceptionString, Predicate<Float> validator) {
+        while (true) {
+            System.out.print(requested + ":\n>>> ");
+            String input = scanner.nextLine().trim();
+
+            if (input.isEmpty() && validator == null) {
+                return null;
+            }
+
+            try {
+                Float number = Float.parseFloat(input);
+                if (validator == null || validator.test(number)) {
+                    return number;
+                } else {
+                    System.out.println("Validate exception: "+exceptionString);
+                }
+            } catch (NumberFormatException e) {
+                if (input.isEmpty()) {
+                    System.out.println("Incorrect input format. Must be 'Float', can't be 'null'");
+                    continue;
+                }
+                System.out.println("Incorrect input format (must be 'Float'): "+e);
+            }
+        }
+    }
+
+    public static String requestString(String requested, String exceptionString, Predicate<String> validator){
+        while (true) {
+            System.out.print(requested + ":\n>>> ");
+            String input = scanner.nextLine().trim();
+
+            if (input.isEmpty() && validator == null) {
+                return null;
+            }
+
+            if (validator == null || validator.test(input)) {
+                return input;
+            } else {
+                System.out.println("Validate exception: " + exceptionString);
+            }
+        }
+    }
+
+    public static Long requestLong(String requested, String exceptionString, Predicate<Long> validator){
+        while (true) {
+            System.out.print(requested + ":\n>>> ");
+            String input = scanner.nextLine().trim();
+
+            if (input.isEmpty() && validator == null) {
+                return null;
+            }
+
+            try {
+                Long number = Long.parseLong(input);
+                if (validator == null || validator.test(number)) {
+                    return number;
+                } else {
+                    System.out.println("Validate exception: "+exceptionString);
+                }
+            } catch (NumberFormatException e) {
+                if (input.isEmpty()) {
+                    System.out.println("Incorrect input format. Must be 'Long', can't be 'null'");
+                    continue;
+                }
+                System.out.println("Incorrect input format (must be 'Long'): " + e);
+            }
+        }
+    }
+
+    public static Coordinates requestCoordinates(String requested, String exceptionString){
+        Coordinates coords = new Coordinates();
+        Double x = requestDouble("Write 'x' -> Coordinates.x", "'x' must be Double", Objects::nonNull);
+        Double y = requestDouble("Write 'y' -> Coordinates.y", "'y' must be Double", Objects::nonNull);
+        coords.setX(x);
+        coords.setY(y);
+        return coords;
+    }
+
+    public static Location requestLocation(String requested, String exceptionString){
+        Long x = requestLong("Write 'x' -> Location.x || Press Enter: null -> Location", "'x' must be long", null);
+        if (x == null){
+            return null;
+        }
+
+        Float y = requestFloat("Write 'y' -> Location.y", "'y' must be Float", Objects::nonNull);
+        Float z = requestFloat("Write 'z' -> Location.z", "'z' must be Float", Objects::nonNull);
+        String name = requestString("Write 'name' -> Location.name", "'name' must be String", Objects::nonNull);
+
+        Location loc = new Location();
+        loc.setX(x);
+        loc.setY(y);
+        loc.setZ(z);
+        loc.setName(name);
+        return loc;
+    }
+}
