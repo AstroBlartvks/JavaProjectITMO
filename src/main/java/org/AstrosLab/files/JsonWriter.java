@@ -1,4 +1,4 @@
 package org.AstrosLab.files;
 
-public class JSonWriter {
+public class JsonWriter {
 }

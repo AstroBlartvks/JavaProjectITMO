@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 
-public class JSonReader extends ReadHandler {
+public class JsonReader extends ReadHandler {
 
     @Override
     public CustomCollection readFile(String Path) throws Exception{
