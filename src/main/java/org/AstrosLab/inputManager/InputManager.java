@@ -7,11 +7,12 @@ public class InputManager {
 
 
     public boolean hasNextInput() {
-        return this.scanner.hasNextLine();
+        System.out.print(">>> ");
+        return this.scanner.hasNext();
     }
 
-    public String[] input(){
-        String[] userCommand = scanner.nextLine().trim().split(" ");
+    public String input(){
+        String userCommand = scanner.nextLine().trim().split(" ")[0];
         return userCommand;
     }
 

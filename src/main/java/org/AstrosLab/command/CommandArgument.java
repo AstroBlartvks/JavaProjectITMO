@@ -1,4 +1,4 @@
-package org.AstrosLab.inputManager;
+package org.AstrosLab.command;
 
 import lombok.Getter;
 import lombok.Setter;

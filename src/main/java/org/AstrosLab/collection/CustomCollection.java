@@ -2,9 +2,8 @@ package org.AstrosLab.collection;
 
 import org.AstrosLab.model.Route;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class CustomCollection {
     private TreeSet<Route> collection;
@@ -13,7 +12,10 @@ public class CustomCollection {
         this.collection = new TreeSet<Route>();
     }
 
-    public void addElement(Route r) {
+    public void addElement(Route r) throws Exception{
+        if (this.containsID(r.getId())){
+            throw new Exception("'id' must be unique, it can't be: " + r.getId() + ".\nNew Route: " + r.toString() + "\nOld Route: " + this.getRouteInsideByID(r.getId()).toString());
+        }
         this.collection.add(r);
     }
 
@@ -22,95 +24,65 @@ public class CustomCollection {
     }
 
     public void updateElement(Route route) {
-        Route r = getRouteInsideByID(route.getId());
-        if (r != null){
-            this.collection.remove(r);
-            this.collection.add(route);
-        }
+        this.collection.removeIf(r -> r.getId() == route.getId());
+        this.collection.add(route);
     }
 
-    public void removeByID(int id){
-        Route r = getRouteInsideByID(id);
-        if (r != null){
-            this.collection.remove(r);
-        }
+    public void removeByID(int id) {
+        this.collection.removeIf(r -> r.getId() == id);
     }
 
     public void clear(){
         this.collection.clear();
     }
 
-    public String getRoutesDescriptions(){
-        StringBuilder text = new StringBuilder();
-        for (Route r : this.collection) {
-            text.append(r.toString()).append("\n");
-        }
-        return text.toString();
+    public String getRoutesDescriptions() {
+        return this.collection.stream()
+                .map(Route::toString)
+                .collect(Collectors.joining("\n"));
     }
 
-    public String getRoutesSmallDescriptions(){
-        StringBuilder text = new StringBuilder();
-        for (Route r : this.collection) {
-            text.append(r.smallInfo()).append("\n");
-        }
-        return text.toString();
+    public String getRoutesSmallDescriptions() {
+        return this.collection.stream()
+                .map(Route::smallInfo)
+                .collect(Collectors.joining("\n"));
     }
 
     public Route getRouteInsideByID(int id) {
-        for (Route r : this.collection) {
-            if (r.getId() == id) {
-                return r;
-            }
-        }
-        return null;
+        return this.collection.stream()
+                .filter(r -> r.getId() == id).
+                findFirst().
+                orElse(null);
     }
 
-    public int getNewID(){
-        int newID = 0;
-        for (Route r : this.collection) {
-            if (r.getId() > newID){
-                newID = r.getId();
-            }
-        }
-        return newID + 1;
+    public int getNewID() {
+        return this.collection.stream()
+                .mapToInt(Route::getId)
+                .max()
+                .orElse(0) + 1;
     }
 
-    public boolean containsID(int id){
-        for (Route r : this.collection) {
-            if (r.getId() == id){
-                return true;
-            }
-        }
-        return false;
+    public boolean containsID(int id) {
+        return this.collection.stream()
+                .anyMatch(r -> r.getId() == id);
     }
 
-    public int countByDistance(double distance){
-        int count = 0;
-        for (Route r : this.collection) {
-            if (r.getDistance() == distance){
-                count++;
-            }
-        }
-        return count;
+    public int countByDistance(double distance) {
+        return (int) this.collection.stream()
+                .filter(r -> r.getDistance() == distance)
+                .count();
+    }
+    public int greaterThanDistance(double distance) {
+        return (int) this.collection.stream()
+                .filter(r -> r.getDistance() > distance)
+                .count();
     }
 
-    public int greaterThanDistance(double distance){
-        int count = 0;
-        for (Route r : this.collection) {
-            if (r.getDistance() > distance){
-                count++;
-            }
-        }
-        return count;
-    }
-
-    public ArrayList<Double> printFieldDescendingDistance(){
-        ArrayList<Double> distances = new ArrayList<Double>();
-        for (Route r : this.collection) {
-            distances.add(r.getDistance());
-        }
-        Collections.sort(distances, Collections.reverseOrder());
-        return distances;
+    public List<Double> printFieldDescendingDistance() {
+        return this.collection.stream()
+                .map(Route::getDistance)
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toList());
     }
 
     @Override
