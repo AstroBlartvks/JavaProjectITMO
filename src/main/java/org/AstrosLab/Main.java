@@ -6,11 +6,11 @@ import org.AstrosLab.command.ClientCommand.ClientCommand;
 import org.AstrosLab.command.ClientCommand.CommandIdentifier;
 import org.AstrosLab.command.CommandArgumentList;
 import org.AstrosLab.command.ServerCommand.CommandManager;
+import org.AstrosLab.command.ServerCommand.ResponseStatus;
+import org.AstrosLab.command.ServerCommand.ServerResponse;
 import org.AstrosLab.files.JsonReader;
 import org.AstrosLab.files.Reader;
 import org.AstrosLab.inputManager.InputManager;
-
-import java.util.HashMap;
 
 
 //Pray to god that this works
@@ -26,10 +26,10 @@ public class Main {
             return;
         }
 
-        //User
+        //Handle
         CommandManager commandManager = new CommandManager(collection);
 
-        //Handle
+        //User
         InputManager inputManager = new InputManager();
         CommandIdentifier commandIndent = new CommandIdentifier();
 
@@ -61,10 +61,11 @@ public class Main {
 
             //Handle
             try {
-                String response = commandManager.executeComand(commandArgList);
-                System.out.println("Results:\n" + response);
+                ServerResponse response = commandManager.executeComand(commandArgList);
+                System.out.println(response);
             } catch (Exception e) {
-                System.out.println("Exception in command:\n" + e + "\n");
+                ServerResponse response = new ServerResponse(ResponseStatus.EXCEPTION, e);
+                System.out.println(response);
             }
         }
     }

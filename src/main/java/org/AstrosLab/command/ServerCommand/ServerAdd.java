@@ -16,7 +16,7 @@ public class ServerAdd extends ServerCommand{
     }
 
     @Override
-    public String execute(CommandArgumentList args) throws Exception {
+    public ServerResponse execute(CommandArgumentList args) throws Exception {
         CommandArgumentList routeElements = args.getElementArguments();
         Route newRoute = new Route();
 
@@ -33,6 +33,6 @@ public class ServerAdd extends ServerCommand{
         newRoute.setDistance((Double)routeElements.getArgumentByIndex(4).getValue());
         this.collection.addElement(newRoute);
 
-        return "Route{id="+newRoute.getId()+",name="+newRoute.getName()+"} successfully added ";
+        return new ServerResponse(ResponseStatus.TEXT, "Route{id="+newRoute.getId()+",name="+newRoute.getName()+"} successfully added ");
     }
 }

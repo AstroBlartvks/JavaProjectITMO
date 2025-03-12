@@ -4,5 +4,5 @@ import org.AstrosLab.command.CommandArgumentList;
 
 
 public abstract class ServerCommand {
-    public abstract String execute(CommandArgumentList args) throws Exception;
+    public abstract ServerResponse execute(CommandArgumentList args) throws Exception;
 }

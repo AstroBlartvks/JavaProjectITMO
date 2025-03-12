@@ -11,7 +11,7 @@ public class ServerShow extends ServerCommand {
     }
 
     @Override
-    public String execute(CommandArgumentList args) throws Exception {
-        return this.collection.getRoutesDescriptions();
+    public ServerResponse execute(CommandArgumentList args) throws Exception {
+        return new ServerResponse(ResponseStatus.TEXT, this.collection.getRoutesDescriptions());
     }
 }

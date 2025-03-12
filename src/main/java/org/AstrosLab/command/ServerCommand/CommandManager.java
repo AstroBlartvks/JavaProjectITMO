@@ -16,11 +16,14 @@ public class CommandManager {
     public CommandManager(CustomCollection collection){
         commandList.put("info", new ServerInfo(collection));
         commandList.put("show", new ServerShow(collection));
+        commandList.put("clear", new ServerClear(collection));
+
         commandList.put("count_by_distance", new ServerCountByDistance(collection));
+
         commandList.put("add", new ServerAdd(collection));
     }
 
-    public String executeComand(CommandArgumentList commandArgList) throws Exception {
+    public ServerResponse executeComand(CommandArgumentList commandArgList) throws Exception {
         ServerCommand serverCommand = commandList.get(commandArgList.getCommand().toString());
 
         if (serverCommand == null){

@@ -3,15 +3,15 @@ package org.AstrosLab.command.ServerCommand;
 import org.AstrosLab.collection.CustomCollection;
 import org.AstrosLab.command.CommandArgumentList;
 
-public class ServerInfo extends ServerCommand{
+public class ServerClear extends ServerCommand{
     private final CustomCollection collection;
 
-    public ServerInfo(CustomCollection collection){
+    public ServerClear(CustomCollection collection) {
         this.collection = collection;
     }
-
     @Override
     public ServerResponse execute(CommandArgumentList args) throws Exception {
-        return new ServerResponse(ResponseStatus.TEXT, this.collection.toString());
+        this.collection.clear();
+        return new ServerResponse(ResponseStatus.OK, null);
     }
 }

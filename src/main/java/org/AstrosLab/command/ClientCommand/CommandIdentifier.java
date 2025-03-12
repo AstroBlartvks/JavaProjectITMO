@@ -18,7 +18,11 @@ public class CommandIdentifier {
     public CommandIdentifier(){
         commandList.put("info", new ClientInfo());
         commandList.put("show", new ClientShow());
+        commandList.put("clear", new ClientClear());
+        commandList.put("exit", new ClientExit());
+
         commandList.put("count_by_distance", new ClientCountByDistance());
+
         commandList.put("add", new ClientAdd());
     }
 
