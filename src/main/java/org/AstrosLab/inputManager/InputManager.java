@@ -12,8 +12,7 @@ public class InputManager {
     }
 
     public String input(){
-        String userCommand = scanner.nextLine().trim().split(" ")[0];
-        return userCommand;
+        return scanner.nextLine().trim();
     }
 
 }

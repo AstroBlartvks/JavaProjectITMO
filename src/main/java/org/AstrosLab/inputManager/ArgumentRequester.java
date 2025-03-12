@@ -105,24 +105,24 @@ public class ArgumentRequester {
         }
     }
 
-    public static Coordinates requestCoordinates(String requested, String exceptionString){
+    public static Coordinates requestCoordinates(){
         Coordinates coords = new Coordinates();
-        Double x = requestDouble("Write 'x' -> Coordinates.x", "'x' must be Double", Objects::nonNull);
+        Double x = requestDouble("Write 'x' -> Coordinates.x", "'x' must be Double And Coordinates can't bee null", Objects::nonNull);
         Double y = requestDouble("Write 'y' -> Coordinates.y", "'y' must be Double", Objects::nonNull);
         coords.setX(x);
         coords.setY(y);
         return coords;
     }
 
-    public static Location requestLocation(String requested, String exceptionString){
-        Long x = requestLong("Write 'x' -> Location.x || Press Enter: null -> Location", "'x' must be long", null);
+    public static Location requestLocation(String requested){
+        Long x = requestLong("Write 'x' -> Location.x ("+requested+") || Press Enter: null -> Location("+requested+")", "'x' must be long", null);
         if (x == null){
             return null;
         }
 
-        Float y = requestFloat("Write 'y' -> Location.y", "'y' must be Float", Objects::nonNull);
-        Float z = requestFloat("Write 'z' -> Location.z", "'z' must be Float", Objects::nonNull);
-        String name = requestString("Write 'name' -> Location.name", "'name' must be String", Objects::nonNull);
+        Float y = requestFloat("Write 'y' -> Location.y ("+requested+")", "'y' must be Float", Objects::nonNull);
+        Float z = requestFloat("Write 'z' -> Location.z ("+requested+")", "'z' must be Float", Objects::nonNull);
+        String name = requestString("Write 'name' -> Location.name ("+requested+")", "'name' must be String", Objects::nonNull);
 
         Location loc = new Location();
         loc.setX(x);

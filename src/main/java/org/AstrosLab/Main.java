@@ -29,28 +29,42 @@ public class Main {
         //User
         CommandManager commandManager = new CommandManager(collection);
 
-        //Program
+        //Handle
         InputManager inputManager = new InputManager();
-        CommandIdentifier comandIndent = new CommandIdentifier();
+        CommandIdentifier commandIndent = new CommandIdentifier();
 
 
-        while (inputManager.hasNextInput()){
+        while (inputManager.hasNextInput()) {
             //User
-            String inputCommand = inputManager.input();
-            ClientCommand clientCommand = comandIndent.getCommand(inputCommand);
+            String input = inputManager.input(); //Only string input
+            ClientCommand clientCommand;
+            CommandArgumentList commandArgList;
 
-            if (clientCommand == null) {
-                System.out.println("Unexpected commnad: '"+inputCommand+"'. Try write 'help'");
+            try {
+                clientCommand = commandIndent.getCommand(input);
+            } catch (Exception e) {
+                System.out.println("Command: '" + input + "' doesn't exist, check 'help'");
                 continue;
             }
-            CommandArgumentList commandArgList = clientCommand.input();
 
-            //Program
+            if (clientCommand == null) {
+                System.out.println("Unexpected command: '" + input + "'. Try write 'help'");
+                continue;
+            }
+
+            try {
+                commandArgList = clientCommand.input(input);
+            } catch (Exception e) {
+                System.out.println("Exception: " + e);
+                continue;
+            }
+
+            //Handle
             try {
                 String response = commandManager.executeComand(commandArgList);
                 System.out.println("Results:\n" + response);
-            } catch (Exception e){
-                System.out.println("Exception in command:\n"+e+"\n");
+            } catch (Exception e) {
+                System.out.println("Exception in command:\n" + e + "\n");
             }
         }
     }

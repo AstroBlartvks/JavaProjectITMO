@@ -6,24 +6,27 @@ import org.AstrosLab.collection.CustomCollection;
 import org.AstrosLab.command.CommandArgumentList;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
 public class CommandManager {
-    private HashMap<String, ServerCommand> commandList = new HashMap<String, ServerCommand>();
+    private Map<String, ServerCommand> commandList = new HashMap<String, ServerCommand>();
 
     public CommandManager(CustomCollection collection){
         commandList.put("info", new ServerInfo(collection));
+        commandList.put("show", new ServerShow(collection));
+        commandList.put("count_by_distance", new ServerCountByDistance(collection));
+        commandList.put("add", new ServerAdd(collection));
     }
 
     public String executeComand(CommandArgumentList commandArgList) throws Exception {
-        String commandName = commandArgList.getCommandName();
-        ServerCommand servCommand = commandList.get(commandName);
+        ServerCommand serverCommand = commandList.get(commandArgList.getCommand().toString());
 
-        if (servCommand == null){
-            throw new Exception("Unexpected command: '"+commandName+"'!");
+        if (serverCommand == null){
+            throw new Exception("Unexpected command: '"+commandArgList.getCommand().toString()+"'!");
         }
 
-        return servCommand.execute(commandArgList);
+        return serverCommand.execute(commandArgList);
     }
 }
