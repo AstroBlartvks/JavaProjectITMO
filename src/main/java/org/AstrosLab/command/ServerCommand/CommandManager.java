@@ -28,6 +28,8 @@ public class CommandManager {
         commandList.put("add", new ServerAdd(collection));
         commandList.put("update", new ServerUpdate(collection));
         commandList.put("add_if_max", new ServerAddIfMax(collection));
+        commandList.put("add_if_min", new ServerAddIfMin(collection));
+        commandList.put("remove_greater", new ServerRemoveGreater(collection));
         commandList.put("count_greater_than_distance", new ServerCountGreaterThanDistance(collection));
     }
 

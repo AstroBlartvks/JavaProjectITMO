@@ -28,7 +28,7 @@ public class Main {
             System.out.println("Ops... Program got some exception(s) while reading!\n" + e);
             System.exit(-1);
         }
-        
+
         ScriptExecuter.collection = collection;
 
         CommandManager commandManager = new CommandManager(collection);

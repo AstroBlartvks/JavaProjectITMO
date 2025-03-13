@@ -6,7 +6,7 @@ import org.AstrosLab.inputManager.ArgumentRequester;
 import org.AstrosLab.model.Coordinates;
 import org.AstrosLab.model.Location;
 
-public class ClientAddIfMax extends ClientCommand{
+public class ClientRemoveGreater extends ClientCommand{
     @Override
     public CommandArgumentList input(String inputCommand) throws Exception {
         CommandArgumentList args = CommandIdentifier.parseCommand(inputCommand);

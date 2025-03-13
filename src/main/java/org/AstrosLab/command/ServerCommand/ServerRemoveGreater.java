@@ -7,12 +7,13 @@ import org.AstrosLab.model.Location;
 import org.AstrosLab.model.Route;
 
 import java.util.Date;
-import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public class ServerAddIfMax extends ServerCommand{
+public class ServerRemoveGreater extends ServerCommand{
     private final CustomCollection collection;
 
-    public ServerAddIfMax(CustomCollection collection){
+    public ServerRemoveGreater(CustomCollection collection){
         this.collection = collection;
     }
 
@@ -33,11 +34,18 @@ public class ServerAddIfMax extends ServerCommand{
         newRoute.setTo((Location)routeElements.getArgumentByIndex(3).getValue());
         newRoute.setDistance((Double)routeElements.getArgumentByIndex(4).getValue());
 
-        Optional<Route> maxRoute = this.collection.getCollection().stream().max(Route::compareTo);
-        if (maxRoute.isEmpty() || newRoute.compareTo(maxRoute.get()) > 0){
-            this.collection.addElement(newRoute);
-            return new ServerResponse(ResponseStatus.OK, "Route was added with id="+newRoute.getId());
+        Set<Integer> greaterIds = this.collection.getCollection().stream()
+                .filter(route -> route.compareTo(newRoute) > 0)
+                .map(Route::getId)
+                .collect(Collectors.toSet());
+
+        StringBuilder response = new StringBuilder();
+
+        for (int index : greaterIds){
+            collection.removeByID(index);
+            response.append("Route with id=").append(index).append(" was deleted!\n");
         }
-        return new ServerResponse(ResponseStatus.OK, "Route was not added");
+
+        return new ServerResponse(ResponseStatus.OK, response);
     }
 }

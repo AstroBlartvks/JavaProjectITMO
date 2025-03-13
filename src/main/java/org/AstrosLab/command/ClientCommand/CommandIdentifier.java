@@ -31,18 +31,15 @@ public class CommandIdentifier {
         commandList.put("add", new ClientAdd());
         commandList.put("update", new ClientUpdate());
         commandList.put("add_if_max", new ClientAddIfMax());
+        commandList.put("add_if_min", new ClientAddIfMin());
+        commandList.put("remove_greater", new ClientRemoveGreater());
         commandList.put("count_greater_than_distance", new ClientCountGreaterThanDistance());
 
     }
 
     public ClientCommand getCommand(String commandLine) throws Exception{
         CommandArgumentList args = parseCommand(commandLine);
-        if (args != null) {
-            return commandList.get(args.getCommand().getValue());
-        }
-        else{
-            return null;
-        }
+        return commandList.get(args.getCommand().getValue());
     }
 
     public static CommandArgumentList parseCommand(String commandLine) throws Exception {
