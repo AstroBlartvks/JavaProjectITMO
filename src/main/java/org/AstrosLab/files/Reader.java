@@ -9,11 +9,11 @@ public class Reader {
         this.readhandler = readhandler;
     }
 
-    public CustomCollection readFromEnv(String envName) throws Exception {
-        String Path = System.getenv(envName);
+    public CustomCollection readFromEnv() throws Exception {
+        String Path = System.getenv(JavaFileStrings.JAVAEND);
 
         if (Path == null){
-            throw new Exception("The path to the file in the environment variable '"+envName+"' was not found!");
+            throw new Exception("The path to the file in the environment variable '"+JavaFileStrings.JAVAEND+"' was not found!");
         }
 
         return readhandler.readFile(Path);

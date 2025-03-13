@@ -22,6 +22,7 @@ public class CommandIdentifier {
         commandList.put("exit", new ClientExit());
         commandList.put("help", new ClientHelp());
         commandList.put("print_field_descending_distance", new ClientPrintFieldDescendingDistance());
+        commandList.put("save", new ClientSave());
 
         commandList.put("count_by_distance", new ClientCountByDistance());
         commandList.put("remove_by_id", new ClientRemoveById());

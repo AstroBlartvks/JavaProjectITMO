@@ -20,6 +20,7 @@ public class CommandManager {
         commandList.put("exit", new ServerExit());
         commandList.put("help", new ServerHelp());
         commandList.put("print_field_descending_distance", new ServerPrintFieldDescendingDistance(collection));
+        commandList.put("save", new ServerSave(collection));
 
         commandList.put("count_by_distance", new ServerCountByDistance(collection));
         commandList.put("remove_by_id", new ServerRemoveById(collection));

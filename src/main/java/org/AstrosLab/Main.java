@@ -18,13 +18,14 @@ public class Main {
     public static void main(String[] args) {
         CustomCollection collection = new CustomCollection();
 
-        Reader read = new Reader(new JsonReader());
+        Reader reader = new Reader(new JsonReader());
         try {
-            collection = read.readFromEnv("JAVATESTFILE");
+            collection = reader.readFromEnv();
         } catch (Exception e) {
-            System.out.println("Ops... Programm got some exception(s)!\n" + e);
-            return;
+            System.out.println("Ops... Program got some exception(s) while reading!\n" + e);
+            System.exit(-1);
         }
+
 
         //Handle
         CommandManager commandManager = new CommandManager(collection);

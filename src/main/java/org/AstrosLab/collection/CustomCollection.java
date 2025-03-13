@@ -1,12 +1,14 @@
 package org.AstrosLab.collection;
 
+import lombok.Getter;
 import org.AstrosLab.model.Route;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Getter
 public class CustomCollection {
-    private TreeSet<Route> collection;
+    private final TreeSet<Route> collection;
 
     public CustomCollection(){
         this.collection = new TreeSet<Route>();
@@ -17,10 +19,6 @@ public class CustomCollection {
             throw new Exception("'id' must be unique, it can't be: " + r.getId() + ".\nNew Route: " + r.toString() + "\nOld Route: " + this.getRouteInsideByID(r.getId()).toString());
         }
         this.collection.add(r);
-    }
-
-    public int size(){
-        return collection.size();
     }
 
     public void updateElement(Route route) {
