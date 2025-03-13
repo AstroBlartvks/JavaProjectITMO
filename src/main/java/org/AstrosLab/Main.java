@@ -12,6 +12,10 @@ import org.AstrosLab.files.JsonReader;
 import org.AstrosLab.files.Reader;
 import org.AstrosLab.inputManager.InputManager;
 
+//Уберу после разделения на сервер и клиент
+import org.AstrosLab.command.ClientCommand.ScriptHandler.ScriptExecuter;
+//execute_script src/resources/scripts/script1.sc
+//execute_script src/resources/scripts/script2.sc
 
 //Pray to god that this works
 public class Main {
@@ -26,6 +30,8 @@ public class Main {
             System.exit(-1);
         }
 
+        //Уберу после разделения на сервер и клиент
+        ScriptExecuter.collection = collection;
 
         //Handle
         CommandManager commandManager = new CommandManager(collection);
@@ -37,7 +43,7 @@ public class Main {
 
         while (inputManager.hasNextInput()) {
             //User
-            String input = inputManager.input(); //Only string input
+            String input = inputManager.input();
             ClientCommand clientCommand;
             CommandArgumentList commandArgList;
 
@@ -57,6 +63,10 @@ public class Main {
                 commandArgList = clientCommand.input(input);
             } catch (Exception e) {
                 System.out.println("Exception: " + e);
+                continue;
+            }
+
+            if (commandArgList == null){
                 continue;
             }
 

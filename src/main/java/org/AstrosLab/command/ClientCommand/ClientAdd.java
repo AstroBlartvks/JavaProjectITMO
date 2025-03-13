@@ -11,10 +11,6 @@ public class ClientAdd extends ClientCommand{
     public CommandArgumentList input(String inputCommand) throws Exception {
         CommandArgumentList args = CommandIdentifier.parseCommand(inputCommand);
 
-        if (args == null){
-            throw new Exception("Command can't be null: '"+inputCommand+"'");
-        }
-
         String name = ArgumentRequester.requestString("Write 'name' -> Route", "'name' can't be empty or null", x -> x != null && !x.isEmpty());
         Coordinates coordinates = ArgumentRequester.requestCoordinates();
         Location from = ArgumentRequester.requestLocation("from");

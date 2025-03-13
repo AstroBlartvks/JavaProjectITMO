@@ -26,6 +26,7 @@ public class CommandIdentifier {
 
         commandList.put("count_by_distance", new ClientCountByDistance());
         commandList.put("remove_by_id", new ClientRemoveById());
+        commandList.put("execute_script", new ClientExecuteScript());
 
         commandList.put("add", new ClientAdd());
         commandList.put("update", new ClientUpdate());

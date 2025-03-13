@@ -3,6 +3,8 @@ package org.AstrosLab.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Comparator;
+
 @Setter
 @Getter
 public class Route implements Comparable<Route>  {
@@ -16,7 +18,9 @@ public class Route implements Comparable<Route>  {
 
     @Override
     public int compareTo(Route other) {
-        return Integer.compare(this.getId(), other.getId());
+        return Comparator.comparingDouble(Route::getDistance)
+                .thenComparingInt(Route::getId)
+                .compare(this, other);
     }
 
     @Override

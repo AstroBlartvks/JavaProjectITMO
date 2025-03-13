@@ -4,16 +4,14 @@ import org.AstrosLab.model.Coordinates;
 import org.AstrosLab.model.Location;
 
 import java.util.Objects;
-import java.util.Scanner;
 import java.util.function.Predicate;
 
 public class ArgumentRequester {
-    private static final Scanner scanner = ScannerManager.getScanner();
 
     public static Double requestDouble(String requested, String exceptionString, Predicate<Double> validator) {
         while (true) {
             System.out.print(requested + ":\n>>> ");
-            String input = scanner.nextLine().trim();
+            String input = ScannerManager.readline();
 
             if (input.isEmpty() && validator == null) {
                 return null;
@@ -22,6 +20,7 @@ public class ArgumentRequester {
             try {
                 Double number = Double.parseDouble(input);
                 if (validator == null || validator.test(number)) {
+                    ScannerManager.setMainFileScanner();
                     return number;
                 } else {
                     System.out.println("Validate exception: "+exceptionString);
@@ -29,17 +28,20 @@ public class ArgumentRequester {
             } catch (NumberFormatException e) {
                 if (input.isEmpty()) {
                     System.out.println("Incorrect input format. Must be 'Double', can't be 'null'");
-                    continue;
+                } else {
+                    System.out.println("Incorrect input format (must be 'Double'):" + e);
                 }
-                System.out.println("Incorrect input format (must be 'Double'):" + e);
+            } catch (Exception e){
+                System.out.println("Unexpected error" + e);
             }
+            ScannerManager.setConsoleScanner();
         }
     }
 
     public static Float requestFloat(String requested, String exceptionString, Predicate<Float> validator) {
         while (true) {
             System.out.print(requested + ":\n>>> ");
-            String input = scanner.nextLine().trim();
+            String input = ScannerManager.readline();
 
             if (input.isEmpty() && validator == null) {
                 return null;
@@ -48,24 +50,28 @@ public class ArgumentRequester {
             try {
                 Float number = Float.parseFloat(input);
                 if (validator == null || validator.test(number)) {
+                    ScannerManager.setMainFileScanner();
                     return number;
                 } else {
-                    System.out.println("Validate exception: "+exceptionString);
+                    System.out.println("Validate exception: " + exceptionString);
                 }
             } catch (NumberFormatException e) {
                 if (input.isEmpty()) {
                     System.out.println("Incorrect input format. Must be 'Float', can't be 'null'");
-                    continue;
+                } else{
+                    System.out.println("Incorrect input format (must be 'Float'): "+e);
                 }
-                System.out.println("Incorrect input format (must be 'Float'): "+e);
+            } catch (Exception e){
+                System.out.println("Unexpected error" + e);
             }
+            ScannerManager.setConsoleScanner();
         }
     }
 
     public static Integer requestInteger(String requested, String exceptionString, Predicate<Integer> validator) {
         while (true) {
             System.out.print(requested + ":\n>>> ");
-            String input = scanner.nextLine().trim();
+            String input = ScannerManager.readline();
 
             if (input.isEmpty() && validator == null) {
                 return null;
@@ -74,6 +80,7 @@ public class ArgumentRequester {
             try {
                 Integer number = Integer.parseInt(input);
                 if (validator == null || validator.test(number)) {
+                    ScannerManager.setMainFileScanner();
                     return number;
                 } else {
                     System.out.println("Validate exception: "+exceptionString);
@@ -81,34 +88,39 @@ public class ArgumentRequester {
             } catch (NumberFormatException e) {
                 if (input.isEmpty()) {
                     System.out.println("Incorrect input format. Must be 'Integer', can't be 'null'");
-                    continue;
+                }else{
+                    System.out.println("Incorrect input format (must be 'Integer'): "+e);
                 }
-                System.out.println("Incorrect input format (must be 'Integer'): "+e);
+            } catch (Exception e){
+                System.out.println("Unexpected error" + e);
             }
+            ScannerManager.setConsoleScanner();
         }
     }
 
     public static String requestString(String requested, String exceptionString, Predicate<String> validator){
         while (true) {
             System.out.print(requested + ":\n>>> ");
-            String input = scanner.nextLine().trim();
+            String input = ScannerManager.readline();
 
             if (input.isEmpty() && validator == null) {
                 return null;
             }
 
             if (validator == null || validator.test(input)) {
+                ScannerManager.setMainFileScanner();
                 return input;
             } else {
                 System.out.println("Validate exception: " + exceptionString);
             }
+            ScannerManager.setConsoleScanner();
         }
     }
 
     public static Long requestLong(String requested, String exceptionString, Predicate<Long> validator){
         while (true) {
             System.out.print(requested + ":\n>>> ");
-            String input = scanner.nextLine().trim();
+            String input = ScannerManager.readline();
 
             if (input.isEmpty() && validator == null) {
                 return null;
@@ -117,6 +129,7 @@ public class ArgumentRequester {
             try {
                 Long number = Long.parseLong(input);
                 if (validator == null || validator.test(number)) {
+                    ScannerManager.setMainFileScanner();
                     return number;
                 } else {
                     System.out.println("Validate exception: "+exceptionString);
@@ -124,10 +137,13 @@ public class ArgumentRequester {
             } catch (NumberFormatException e) {
                 if (input.isEmpty()) {
                     System.out.println("Incorrect input format. Must be 'Long', can't be 'null'");
-                    continue;
+                } else{
+                    System.out.println("Incorrect input format (must be 'Long'): " + e);
                 }
-                System.out.println("Incorrect input format (must be 'Long'): " + e);
+            } catch (Exception e){
+                System.out.println("Unexpected error" + e);
             }
+            ScannerManager.setConsoleScanner();
         }
     }
 
