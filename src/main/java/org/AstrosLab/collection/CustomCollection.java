@@ -72,17 +72,17 @@ public class CustomCollection {
                 .filter(r -> r.getDistance() == distance)
                 .count();
     }
-    public int greaterThanDistance(double distance) {
+    public int countGreaterThanDistance(double distance) {
         return (int) this.collection.stream()
                 .filter(r -> r.getDistance() > distance)
                 .count();
     }
 
-    public List<Double> printFieldDescendingDistance() {
-        return this.collection.stream()
+    public String printFieldDescendingDistance() {
+        return (this.collection.stream()
                 .map(Route::getDistance)
                 .sorted(Comparator.reverseOrder())
-                .collect(Collectors.toList());
+                .toList()).toString();
     }
 
     @Override

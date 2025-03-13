@@ -62,6 +62,32 @@ public class ArgumentRequester {
         }
     }
 
+    public static Integer requestInteger(String requested, String exceptionString, Predicate<Integer> validator) {
+        while (true) {
+            System.out.print(requested + ":\n>>> ");
+            String input = scanner.nextLine().trim();
+
+            if (input.isEmpty() && validator == null) {
+                return null;
+            }
+
+            try {
+                Integer number = Integer.parseInt(input);
+                if (validator == null || validator.test(number)) {
+                    return number;
+                } else {
+                    System.out.println("Validate exception: "+exceptionString);
+                }
+            } catch (NumberFormatException e) {
+                if (input.isEmpty()) {
+                    System.out.println("Incorrect input format. Must be 'Integer', can't be 'null'");
+                    continue;
+                }
+                System.out.println("Incorrect input format (must be 'Integer'): "+e);
+            }
+        }
+    }
+
     public static String requestString(String requested, String exceptionString, Predicate<String> validator){
         while (true) {
             System.out.print(requested + ":\n>>> ");
@@ -122,7 +148,7 @@ public class ArgumentRequester {
 
         Float y = requestFloat("Write 'y' -> Location.y ("+requested+")", "'y' must be Float", Objects::nonNull);
         Float z = requestFloat("Write 'z' -> Location.z ("+requested+")", "'z' must be Float", Objects::nonNull);
-        String name = requestString("Write 'name' -> Location.name ("+requested+")", "'name' must be String", Objects::nonNull);
+        String name = requestString("Write 'name' -> Location.name ("+requested+")", "'name' must be String and not null or empty", s -> s != null && !s.isEmpty());
 
         Location loc = new Location();
         loc.setX(x);

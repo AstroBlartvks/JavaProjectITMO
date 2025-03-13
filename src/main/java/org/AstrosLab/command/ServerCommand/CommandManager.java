@@ -17,10 +17,17 @@ public class CommandManager {
         commandList.put("info", new ServerInfo(collection));
         commandList.put("show", new ServerShow(collection));
         commandList.put("clear", new ServerClear(collection));
+        commandList.put("exit", new ServerExit());
+        commandList.put("help", new ServerHelp());
+        commandList.put("print_field_descending_distance", new ServerPrintFieldDescendingDistance(collection));
 
         commandList.put("count_by_distance", new ServerCountByDistance(collection));
+        commandList.put("remove_by_id", new ServerRemoveById(collection));
 
         commandList.put("add", new ServerAdd(collection));
+        commandList.put("update", new ServerUpdate(collection));
+        commandList.put("add_if_max", new ServerAddIfMax(collection));
+        commandList.put("count_greater_than_distance", new ServerCountGreaterThanDistance(collection));
     }
 
     public ServerResponse executeComand(CommandArgumentList commandArgList) throws Exception {

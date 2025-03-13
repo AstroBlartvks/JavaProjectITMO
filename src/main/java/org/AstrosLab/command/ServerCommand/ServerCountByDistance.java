@@ -15,16 +15,7 @@ public class ServerCountByDistance extends ServerCommand{
             throw new Exception("count_by_distance must have 2 arguments, not '"+args.length()+"'");
         }
 
-        String argument = args.getFirstArgument().getValue().toString();
-        double distance;
-
-        try {
-            distance = Double.parseDouble(args.getFirstArgument().getValue().toString());
-        } catch (NumberFormatException e){
-            throw new Exception("argument must be capable of being converted to 'Double', but '" + argument + "' cannot be transformed");
-        }
-
-        int counter = collection.countByDistance(distance);
+        int counter = collection.countByDistance((double)args.getFirstArgument().getValue());
         return new ServerResponse(ResponseStatus.DATA, String.valueOf(counter));
     }
 }

@@ -20,10 +20,17 @@ public class CommandIdentifier {
         commandList.put("show", new ClientShow());
         commandList.put("clear", new ClientClear());
         commandList.put("exit", new ClientExit());
+        commandList.put("help", new ClientHelp());
+        commandList.put("print_field_descending_distance", new ClientPrintFieldDescendingDistance());
 
         commandList.put("count_by_distance", new ClientCountByDistance());
+        commandList.put("remove_by_id", new ClientRemoveById());
 
         commandList.put("add", new ClientAdd());
+        commandList.put("update", new ClientUpdate());
+        commandList.put("add_if_max", new ClientAddIfMax());
+        commandList.put("count_greater_than_distance", new ClientCountGreaterThanDistance());
+
     }
 
     public ClientCommand getCommand(String commandLine) throws Exception{
@@ -36,7 +43,7 @@ public class CommandIdentifier {
         }
     }
 
-    public static CommandArgumentList parseCommand(String commandLine) {
+    public static CommandArgumentList parseCommand(String commandLine) throws Exception {
         CommandArgumentList argList = new CommandArgumentList();
         Pattern pattern = Pattern.compile("^(\\w+)(?:\\s+(\\S+))?$");
         Matcher matcher = pattern.matcher(commandLine.trim());
@@ -53,8 +60,10 @@ public class CommandIdentifier {
                 argList.addArgument(new CommandArgument(null));
             }
         } else {
-            System.out.println("Error: the command '" + commandLine + "' does not match the format: 'command' 'argumentInLine' | 'command' #noArguments | 'command' {aLotOfArguments]");
-            return null;
+            throw new Exception("Error: the command '" + commandLine + "' does not match the format: 'command' 'argumentInLine' | 'command' #noArguments | 'command' {aLotOfArguments]");
+        }
+        if (argList.length() < 1 || argList.length() > 2){
+            throw new Exception("Error: the command '" + commandLine + "' does not match the format: 'command' 'argumentInLine' | 'command' #noArguments | 'command' {aLotOfArguments]");
         }
 
         return argList;

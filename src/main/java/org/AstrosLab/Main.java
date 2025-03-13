@@ -62,6 +62,9 @@ public class Main {
             //Handle
             try {
                 ServerResponse response = commandManager.executeComand(commandArgList);
+                if (response.getStatus() == ResponseStatus.EXIT){
+                    System.exit(0);
+                }
                 System.out.println(response);
             } catch (Exception e) {
                 ServerResponse response = new ServerResponse(ResponseStatus.EXCEPTION, e);

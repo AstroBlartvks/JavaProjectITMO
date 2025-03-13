@@ -4,7 +4,7 @@ import org.AstrosLab.command.CommandArgumentList;
 
 public class ClientShow extends ClientCommand{
     @Override
-    public CommandArgumentList input(String inputCommand) {
+    public CommandArgumentList input(String inputCommand) throws Exception{
         return CommandIdentifier.parseCommand(inputCommand);
     }
 }
