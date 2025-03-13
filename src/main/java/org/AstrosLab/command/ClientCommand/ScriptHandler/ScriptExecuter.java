@@ -38,8 +38,11 @@ public class ScriptExecuter {
 
         if (scriptStack.contains(scriptName)){
             String fileSeq = scriptStack.toString();
+
             scriptStack.clear();
-            throw new Exception("Recursion in files detected: " + fileSeq + "!");
+            ScannerManager.closeFileScanner();
+            ScannerManager.setConsoleScanner();
+            throw new RecursionDetectedException("Recursion in files detected: " + fileSeq + "!");
         }
 
         try (Scanner scriptScanner = new Scanner(new File(scriptName))) {
@@ -57,6 +60,7 @@ public class ScriptExecuter {
                 ClientCommand clientCommand;
                 CommandArgumentList commandArgList;
 
+                System.out.println(">>> "+input);
                 try {
                     clientCommand = commandIndent.getCommand(input);
                 } catch (Exception e) {
@@ -71,6 +75,8 @@ public class ScriptExecuter {
 
                 try {
                     commandArgList = clientCommand.input(input);
+                } catch (RecursionDetectedException e){
+                    throw e;
                 } catch (Exception e) {
                     System.out.println("Exception: " + e);
                     continue;
@@ -92,7 +98,7 @@ public class ScriptExecuter {
                     System.out.println(response);
                 }
             }
-
+            scriptStack.pop();
             ScannerManager.setConsoleScanner();
         } catch (FileNotFoundException exception) {
             throw new Exception("Script-file '"+scriptName+"' doesn't exist!");
@@ -100,8 +106,6 @@ public class ScriptExecuter {
             throw new Exception("Script-file '"+scriptName+"' is empty!");
         } catch (IllegalStateException exception) {
             throw new Exception("Unexpected error!");
-        } finally {
-            scriptStack.pop();
         }
     }
 }

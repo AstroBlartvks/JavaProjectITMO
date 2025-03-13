@@ -15,7 +15,6 @@ import org.AstrosLab.inputManager.InputManager;
 //Уберу после разделения на сервер и клиент
 import org.AstrosLab.command.ClientCommand.ScriptHandler.ScriptExecuter;
 //execute_script src/resources/scripts/script1.sc
-//execute_script src/resources/scripts/script2.sc
 
 //Pray to god that this works
 public class Main {
@@ -29,20 +28,16 @@ public class Main {
             System.out.println("Ops... Program got some exception(s) while reading!\n" + e);
             System.exit(-1);
         }
-
-        //Уберу после разделения на сервер и клиент
+        
         ScriptExecuter.collection = collection;
 
-        //Handle
         CommandManager commandManager = new CommandManager(collection);
 
-        //User
         InputManager inputManager = new InputManager();
         CommandIdentifier commandIndent = new CommandIdentifier();
 
 
         while (inputManager.hasNextInput()) {
-            //User
             String input = inputManager.input();
             ClientCommand clientCommand;
             CommandArgumentList commandArgList;
@@ -70,7 +65,6 @@ public class Main {
                 continue;
             }
 
-            //Handle
             try {
                 ServerResponse response = commandManager.executeComand(commandArgList);
                 if (response.getStatus() == ResponseStatus.EXIT){

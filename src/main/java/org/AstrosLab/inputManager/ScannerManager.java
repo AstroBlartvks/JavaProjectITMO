@@ -10,19 +10,34 @@ public class ScannerManager {
     @Getter
     @Setter
     private static Scanner fileScanner;
-    private static final Scanner consoleScaner = new Scanner(System.in);
-    private static Scanner scanner = consoleScaner;
+    private static final Scanner consoleScanner = new Scanner(System.in);
+    private static Scanner scanner = consoleScanner;
+    private static Scanner tempScanner = consoleScanner;
 
     public static void setFileScanner(Scanner fileScannerOut) throws FileNotFoundException {
         fileScanner = fileScannerOut;
     }
 
     public static void setConsoleScanner() {
-        scanner = consoleScaner;
+        scanner = consoleScanner;
     }
 
     public static void setMainFileScanner(){
         scanner = fileScanner;
+    }
+
+    public static void saveScanner(){
+        tempScanner = scanner;
+    }
+
+    public static void loadScanner(){
+        scanner = tempScanner;
+    }
+
+    public static void closeFileScanner(){
+        if (fileScanner != null){
+            fileScanner.close();
+        }
     }
 
     public static String readline() {

@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 public class ArgumentRequester {
 
     public static Double requestDouble(String requested, String exceptionString, Predicate<Double> validator) {
+        ScannerManager.saveScanner();
         while (true) {
             System.out.print(requested + ":\n>>> ");
             String input = ScannerManager.readline();
@@ -20,7 +21,7 @@ public class ArgumentRequester {
             try {
                 Double number = Double.parseDouble(input);
                 if (validator == null || validator.test(number)) {
-                    ScannerManager.setMainFileScanner();
+                    ScannerManager.loadScanner();
                     return number;
                 } else {
                     System.out.println("Validate exception: "+exceptionString);
@@ -39,6 +40,7 @@ public class ArgumentRequester {
     }
 
     public static Float requestFloat(String requested, String exceptionString, Predicate<Float> validator) {
+        ScannerManager.saveScanner();
         while (true) {
             System.out.print(requested + ":\n>>> ");
             String input = ScannerManager.readline();
@@ -50,7 +52,7 @@ public class ArgumentRequester {
             try {
                 Float number = Float.parseFloat(input);
                 if (validator == null || validator.test(number)) {
-                    ScannerManager.setMainFileScanner();
+                    ScannerManager.loadScanner();
                     return number;
                 } else {
                     System.out.println("Validate exception: " + exceptionString);
@@ -69,6 +71,7 @@ public class ArgumentRequester {
     }
 
     public static Integer requestInteger(String requested, String exceptionString, Predicate<Integer> validator) {
+        ScannerManager.saveScanner();
         while (true) {
             System.out.print(requested + ":\n>>> ");
             String input = ScannerManager.readline();
@@ -80,7 +83,7 @@ public class ArgumentRequester {
             try {
                 Integer number = Integer.parseInt(input);
                 if (validator == null || validator.test(number)) {
-                    ScannerManager.setMainFileScanner();
+                    ScannerManager.loadScanner();
                     return number;
                 } else {
                     System.out.println("Validate exception: "+exceptionString);
@@ -99,6 +102,7 @@ public class ArgumentRequester {
     }
 
     public static String requestString(String requested, String exceptionString, Predicate<String> validator){
+        ScannerManager.saveScanner();
         while (true) {
             System.out.print(requested + ":\n>>> ");
             String input = ScannerManager.readline();
@@ -108,7 +112,7 @@ public class ArgumentRequester {
             }
 
             if (validator == null || validator.test(input)) {
-                ScannerManager.setMainFileScanner();
+                ScannerManager.loadScanner();
                 return input;
             } else {
                 System.out.println("Validate exception: " + exceptionString);
@@ -118,6 +122,7 @@ public class ArgumentRequester {
     }
 
     public static Long requestLong(String requested, String exceptionString, Predicate<Long> validator){
+        ScannerManager.saveScanner();
         while (true) {
             System.out.print(requested + ":\n>>> ");
             String input = ScannerManager.readline();
@@ -129,7 +134,7 @@ public class ArgumentRequester {
             try {
                 Long number = Long.parseLong(input);
                 if (validator == null || validator.test(number)) {
-                    ScannerManager.setMainFileScanner();
+                    ScannerManager.loadScanner();
                     return number;
                 } else {
                     System.out.println("Validate exception: "+exceptionString);

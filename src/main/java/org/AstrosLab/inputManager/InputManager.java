@@ -1,6 +1,5 @@
 package org.AstrosLab.inputManager;
 
-import java.util.Scanner;
 
 public class InputManager {
     public boolean hasNextInput() {

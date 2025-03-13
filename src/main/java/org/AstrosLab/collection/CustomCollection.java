@@ -5,14 +5,11 @@ import org.AstrosLab.model.Route;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Getter
 public class CustomCollection {
-    private final TreeSet<Route> collection;
-
-    public CustomCollection(){
-        this.collection = new TreeSet<Route>();
-    }
+    private final Set<Route> collection = new TreeSet<Route>();
 
     public void addElement(Route r) throws Exception{
         if (this.containsID(r.getId())){
@@ -54,10 +51,14 @@ public class CustomCollection {
     }
 
     public int getNewID() {
-        return this.collection.stream()
-                .mapToInt(Route::getId)
-                .max()
-                .orElse(0) + 1;
+        Set<Integer> ids = this.collection.stream()
+                .map(Route::getId)
+                .collect(Collectors.toCollection(TreeSet::new));
+
+        return IntStream.range(1, ids.size() + 2)
+                .filter(i -> !ids.contains(i))
+                .findFirst()
+                .orElse(ids.size() + 1);
     }
 
     public boolean containsID(int id) {
