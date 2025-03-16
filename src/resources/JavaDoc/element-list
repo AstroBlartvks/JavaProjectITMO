@@ -1,0 +1,9 @@
+org.javaLab5
+org.javaLab5.collection
+org.javaLab5.command
+org.javaLab5.command.clientCommand
+org.javaLab5.command.clientCommand.scriptHandler
+org.javaLab5.command.serverCommand
+org.javaLab5.files
+org.javaLab5.inputManager
+org.javaLab5.model
