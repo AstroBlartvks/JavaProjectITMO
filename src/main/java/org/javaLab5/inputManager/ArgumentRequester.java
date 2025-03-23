@@ -6,6 +6,7 @@ import org.javaLab5.model.Location;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -26,18 +27,19 @@ import java.util.function.Predicate;
 public class ArgumentRequester {
 
     /**
-     * Requests a {@code Double} value from the user, applying a specified validator.
-     * If the input is invalid, the user will be prompted again until a valid value is provided.
      *
-     * @param requested the prompt message to display to the user.
-     * @param exceptionString the error message to display if the input fails validation.
-     * @param validator a {@link Predicate} that defines the validation logic for the input.
-     * @return the valid {@code Double} value entered by the user, or {@code null} if the input is empty and no validation is applied.
+     * @param <T> data type (String, Double, Float, Long)
+     * @param requested message for user
+     * @param exceptionString exception message
+     * @param parser lambda function to parse
+     * @param validator validator for data
+     * @return Optional
      */
-    public static Optional<Double> requestDouble(String requested, String exceptionString, Predicate<Double> validator) {
+    private static <T> Optional<T> requestValue(String requested, String exceptionString,
+                                                Function<String, T> parser, Predicate<T> validator) {
         ScannerManager.saveScanner();
         boolean validInput = false;
-        Double number = null;
+        T value = null;
 
         while (!validInput) {
             System.out.print(requested + ":\n>>> ");
@@ -48,21 +50,34 @@ public class ArgumentRequester {
             }
 
             try {
-                number = Double.parseDouble(input);
-                if (validator == null || validator.test(number)) {
+                value = parser.apply(input);
+                if (validator == null || validator.test(value)) {
                     validInput = true;
                 } else {
                     System.out.println("Validation failed: " + exceptionString);
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("Incorrect input format (must be 'Double').");
+            } catch (Exception e) {
+                System.out.println("Incorrect input format: " + e.getMessage());
             }
 
             ScannerManager.setConsoleScanner();
         }
 
         ScannerManager.loadScanner();
-        return Optional.of(number);
+        return Optional.of(value);
+    }
+
+    /**
+     * Requests a {@code Double} value from the user, applying a specified validator.
+     * If the input is invalid, the user will be prompted again until a valid value is provided.
+     *
+     * @param requested the prompt message to display to the user.
+     * @param exceptionString the error message to display if the input fails validation.
+     * @param validator a {@link Predicate} that defines the validation logic for the input.
+     * @return the valid {@code Double} value entered by the user, or {@code null} if the input is empty and no validation is applied.
+     */
+    public static Optional<Double> requestDouble(String requested, String exceptionString, Predicate<Double> validator) {
+        return requestValue(requested, exceptionString, Double::parseDouble, validator);
     }
 
     /**
@@ -75,35 +90,7 @@ public class ArgumentRequester {
      * @return the valid {@code Float} value entered by the user, or {@code null} if the input is empty and no validation is applied.
      */
     public static Optional<Float> requestFloat(String requested, String exceptionString, Predicate<Float> validator) {
-        ScannerManager.saveScanner();
-        boolean validInput = false;
-        Float number = null;
-
-        while (!validInput) {
-            System.out.print(requested + ":\n>>> ");
-            String input = ScannerManager.readLine();
-
-            if (validator == null && input.isEmpty()) {
-                return Optional.empty();
-            }
-
-            try {
-                number = Float.parseFloat(input);
-                if (validator == null || validator.test(number)) {
-                    validInput = true;
-                } else {
-                    System.out.println("Validation failed: " + exceptionString);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Incorrect input format (must be 'Float'):");
-            } catch (Exception e) {
-                System.out.println("Unexpected error: " + e);
-            }
-            ScannerManager.setConsoleScanner();
-        }
-
-        ScannerManager.loadScanner();
-        return Optional.of(number);
+        return requestValue(requested, exceptionString, Float::parseFloat, validator);
     }
 
     /**
@@ -116,28 +103,7 @@ public class ArgumentRequester {
      * @return the valid {@code String} entered by the user, or {@code null} if the input is empty and no validation is applied.
      */
     public static Optional<String> requestString(String requested, String exceptionString, Predicate<String> validator) {
-        ScannerManager.saveScanner();
-        boolean validInput = false;
-        String input = null;
-        
-        while (!validInput) {
-            System.out.print(requested + ":\n>>> ");
-            input = ScannerManager.readLine();
-
-            if (validator == null && input.isEmpty()) {
-                return Optional.empty();
-            }
-
-            if (validator == null || validator.test(input)) {
-                validInput = true;
-            } else {
-                System.out.println("Validation failed: " + exceptionString);
-            }
-            ScannerManager.setConsoleScanner();
-        }
-
-        ScannerManager.loadScanner();
-        return Optional.of(input);
+        return requestValue(requested, exceptionString, input -> input, validator);
     }
 
     /**
@@ -150,34 +116,7 @@ public class ArgumentRequester {
      * @return the valid {@code Long} value entered by the user, or {@code null} if the input is empty and no validation is applied.
      */
     public static Optional<Long> requestLong(String requested, String exceptionString, Predicate<Long> validator) {
-        ScannerManager.saveScanner();
-        boolean validInput = false;
-        Long number = null;
-
-        while (!validInput) {
-            System.out.print(requested + ":\n>>> ");
-            String input = ScannerManager.readLine();
-
-            if (validator == null && input.isEmpty()) {
-                return Optional.empty();
-            }
-
-            try {
-                number = Long.parseLong(input);
-                if (validator == null || validator.test(number)) {
-                    validInput = true;
-                } else {
-                    System.out.println("Validation failed: " + exceptionString);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Incorrect input format (must be 'Long'):");
-            } catch (Exception e) {
-                System.out.println("Unexpected error: " + e);
-            }
-            ScannerManager.setConsoleScanner();
-        }
-        ScannerManager.loadScanner();
-        return Optional.of(number);
+        return requestValue(requested, exceptionString, Long::parseLong, validator);
     }
 
     /**
@@ -205,7 +144,6 @@ public class ArgumentRequester {
 
         return coordinates;
     }
-
 
     /**
      * Requests a {@link Location} object by prompting the user for the 'x', 'y', 'z' coordinates and 'name'.

@@ -1,8 +1,9 @@
-package org.javaLab5.command.clientCommand;
+package org.javaLab5.inputManager;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.javaLab5.command.CommandArgumentList;
+import org.javaLab5.command.clientCommand.*;
 
 import java.util.HashMap;
 import java.util.Map;

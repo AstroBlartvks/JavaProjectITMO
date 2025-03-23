@@ -3,7 +3,7 @@ package org.javaLab5;
 import org.javaLab5.collection.CustomCollection;
 
 import org.javaLab5.command.clientCommand.ClientCommand;
-import org.javaLab5.command.clientCommand.CommandIdentifier;
+import org.javaLab5.inputManager.CommandIdentifier;
 import org.javaLab5.command.CommandArgumentList;
 import org.javaLab5.command.clientCommand.UndefindCommandException;
 import org.javaLab5.command.serverCommand.CommandManager;
