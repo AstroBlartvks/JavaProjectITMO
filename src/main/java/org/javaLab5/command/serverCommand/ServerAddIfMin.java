@@ -22,7 +22,6 @@ public class ServerAddIfMin extends ServerCommand {
         newRoute.setId(collection.getNewID());
         newRoute.setCreationDate(new Date());
         newRoute.setFromRouteDataTransferObject(routeDTO);
-        collection.addElement(newRoute);
 
         Optional<Route> minRoute = this.collection.getCollection().stream().min(Route::compareTo);
         if (minRoute.isEmpty() || newRoute.compareTo(minRoute.get()) < 0){
