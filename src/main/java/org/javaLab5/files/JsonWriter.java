@@ -8,6 +8,9 @@ import org.javaLab5.model.Route;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
+
 
 /**
  * The {@code JsonWriter} class extends the {@code WriteHandler} class
@@ -39,19 +42,14 @@ public class JsonWriter extends WriteHandler {
      */
     @Override
     public void writeFile(String Path, CustomCollection collection) throws Exception {
-        HashMap<String, Route> NameObjectRoutes = new HashMap<>();
-
-        for (Route r : collection.getCollection()) {
-            String nameObject = "Route_" + r.getId();
-            NameObjectRoutes.put(nameObject, r);
-        }
+        Set<Route> objectRoutes = new TreeSet<>(collection.getCollection());
 
         try {
             ObjectMapper mapper = new ObjectMapper();
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            mapper.writeValue(new File(Path), NameObjectRoutes);
+            mapper.writeValue(new File(Path), objectRoutes);
         } catch (IOException e) {
-            throw new Exception("Check the file: '" + Path + "'. It may be corrupted or may not exist", e);
+            throw new IOException("Check the file: '" + Path + "'. It may be corrupted or may not exist", e);
         }
     }
 }

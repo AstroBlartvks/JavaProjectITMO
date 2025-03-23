@@ -54,7 +54,7 @@ public class ArgumentRequester {
                 if (input.isEmpty()) {
                     System.out.println("Incorrect input format. Must be 'Double', can't be 'null'");
                 } else {
-                    System.out.println("Incorrect input format (must be 'Double'):" + e);
+                    System.out.println("Incorrect input format (must be 'Double'):");
                 }
             } catch (Exception e){
                 System.out.println("Unexpected error" + e);

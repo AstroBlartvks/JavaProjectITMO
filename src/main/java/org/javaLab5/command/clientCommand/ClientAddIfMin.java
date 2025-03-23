@@ -5,11 +5,11 @@ import org.javaLab5.command.CommandArgumentList;
 import org.javaLab5.inputManager.ArgumentRequester;
 import org.javaLab5.model.Coordinates;
 import org.javaLab5.model.Location;
+import org.javaLab5.model.RouteDataTransferObject;
 
 public class ClientAddIfMin extends ClientCommand {
     @Override
-    public CommandArgumentList input(String inputCommand) throws Exception {
-        CommandArgumentList args = CommandIdentifier.parseCommand(inputCommand);
+    public CommandArgumentList input() {
 
         String name = ArgumentRequester.requestString("Write 'name' -> Route", "'name' can't be empty or null", x -> x != null && !x.isEmpty());
         Coordinates coordinates = ArgumentRequester.requestCoordinates();
@@ -17,11 +17,14 @@ public class ClientAddIfMin extends ClientCommand {
         Location to = ArgumentRequester.requestLocation("to");
         Double distance = ArgumentRequester.requestDouble("Write 'distance' -> Route", "Distance must be 'Double' and > 1", x -> x > 1);
 
-        args.addArgument(new CommandArgument(name));
-        args.addArgument(new CommandArgument(coordinates));
-        args.addArgument(new CommandArgument(from));
-        args.addArgument(new CommandArgument(to));
-        args.addArgument(new CommandArgument(distance));
-        return args;
+        RouteDataTransferObject routeDTO = new RouteDataTransferObject();
+        routeDTO.setName(name);
+        routeDTO.setCoordinates(coordinates);
+        routeDTO.setFrom(from);
+        routeDTO.setTo(to);
+        routeDTO.setDistance(distance);
+        argumentList.addArgument(new CommandArgument(routeDTO));
+
+        return argumentList;
     }
 }

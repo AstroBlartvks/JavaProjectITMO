@@ -2,13 +2,10 @@ package org.javaLab5.command.clientCommand;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.javaLab5.command.CommandArgument;
 import org.javaLab5.command.CommandArgumentList;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Setter
 @Getter
@@ -37,34 +34,15 @@ public class CommandIdentifier {
 
     }
 
-    public ClientCommand getCommand(String commandLine) throws Exception{
-        CommandArgumentList args = parseCommand(commandLine);
-        return commandList.get(args.getCommand().getValue().toString());
+    public ClientCommand getCommand(String commandLine) throws UndefindCommandException{
+        CommandArgumentList args = CommandParser.parseCommand(commandLine);
+        String command = args.getCommand().getValue().toString();
+        if (!commandList.containsKey(command)){
+            throw new UndefindCommandException("Unexpected command: '" + command + "'. Try write 'help'");
+        }
+        ClientCommand clientCommand = commandList.get(command);
+        clientCommand.setArgumentList(args);
+        return clientCommand;
     }
 
-    public static CommandArgumentList parseCommand(String commandLine) throws Exception {
-        CommandArgumentList argList = new CommandArgumentList();
-        Pattern pattern = Pattern.compile("^(\\w+)(?:\\s+(\\S+))?$");
-        Matcher matcher = pattern.matcher(commandLine.trim());
-
-        if (matcher.matches()) {
-            String command = matcher.group(1);
-            argList.addArgument(new CommandArgument(command.toLowerCase()));
-
-            if (matcher.group(2) != null) {
-                String argument = matcher.group(2);
-
-                argList.addArgument(new CommandArgument(argument));
-            } else {
-                argList.addArgument(new CommandArgument(null));
-            }
-        } else {
-            throw new Exception("Error: the command '" + commandLine + "' does not match the format: 'command' 'argumentInLine' | 'command' #noArguments | 'command' {aLotOfArguments]");
-        }
-        if (argList.length() < 1 || argList.length() > 2){
-            throw new Exception("Error: the command '" + commandLine + "' does not match the format: 'command' 'argumentInLine' | 'command' #noArguments | 'command' {aLotOfArguments]");
-        }
-
-        return argList;
-    }
 }

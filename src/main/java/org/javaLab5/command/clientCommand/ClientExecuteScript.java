@@ -6,10 +6,9 @@ import org.javaLab5.command.CommandArgumentList;
 
 public class ClientExecuteScript extends ClientCommand{
     @Override
-    public CommandArgumentList input(String inputCommand) throws Exception {
-        CommandArgumentList args = CommandIdentifier.parseCommand(inputCommand);
+    public CommandArgumentList input() throws Exception{
         ScriptExecutes scriptExecutes = new ScriptExecutes();
-        scriptExecutes.execute((String)args.getFirstArgument().getValue());
+        scriptExecutes.execute((String)argumentList.getFirstArgument().getValue());
         return null;
     }
 }

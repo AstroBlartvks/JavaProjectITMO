@@ -7,7 +7,6 @@ import org.javaLab5.command.CommandArgumentList;
 import org.javaLab5.command.serverCommand.CommandManager;
 import org.javaLab5.command.serverCommand.ResponseStatus;
 import org.javaLab5.command.serverCommand.ServerResponse;
-import org.javaLab5.inputManager.InputManager;
 import org.javaLab5.inputManager.ScannerManager;
 
 import java.io.File;
@@ -59,11 +58,10 @@ public class ScriptExecutes {
             ScannerManager.setMainFileScanner();
 
             // User input handling
-            InputManager inputManager = new InputManager();
             CommandIdentifier commandIndent = new CommandIdentifier();
 
             while (scriptScanner.hasNextLine()) {
-                String input = inputManager.input();
+                String input = ScannerManager.readLine();
                 ClientCommand clientCommand;
                 CommandArgumentList commandArgList;
 
@@ -81,7 +79,7 @@ public class ScriptExecutes {
                 }
 
                 try {
-                    commandArgList = clientCommand.input(input);
+                    commandArgList = clientCommand.input();
                 } catch (RecursionDetectedException e) {
                     throw e;
                 } catch (Exception e) {

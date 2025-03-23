@@ -4,9 +4,8 @@ import org.javaLab5.command.CommandArgumentList;
 
 public class ClientCountByDistance extends ClientCommand{
     @Override
-    public CommandArgumentList input(String inputCommand) throws Exception{
-        CommandArgumentList argList = CommandIdentifier.parseCommand(inputCommand);
-        argList.checkArgumentType(Double.class);
-        return argList;
+    public CommandArgumentList input(){
+        argumentList.convertArgumentType(Double.class);
+        return argumentList;
     }
 }

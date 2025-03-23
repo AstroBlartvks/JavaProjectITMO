@@ -1,11 +1,11 @@
 package org.javaLab5.collection;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.javaLab5.model.Route;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Represents a custom collection of Route objects.
@@ -13,19 +13,21 @@ import java.util.stream.IntStream;
  * for managing, updating, and retrieving routes.
  */
 @Getter
+@Setter
 public class CustomCollection {
     private final Set<Route> collection = new TreeSet<>();
+    private int nextId = 1;
 
     /**
      * Adds a new Route to the collection.
      * Ensures that the route ID is unique.
      *
      * @param route the Route object to be added
-     * @throws Exception if the ID is already present in the collection
+     * @throws IdMustBeUniqueException if the ID is already present in the collection
      */
-    public void addElement(Route route) throws Exception {
+    public void addElement(Route route) throws IdMustBeUniqueException {
         if (this.containsID(route.getId())) {
-            throw new Exception("'id' must be unique, it can't be: " + route.getId() +
+            throw new IdMustBeUniqueException("'id' must be unique, it can't be: " + route.getId() +
                     ".\nNew Route: " + route + "\nOld Route: " + this.getRouteInsideByID(route.getId()));
         }
         this.collection.add(route);
@@ -36,7 +38,10 @@ public class CustomCollection {
      *
      * @param route the Route object with updated data
      */
-    public void updateElement(Route route) {
+    public void updateElement(Route route) throws IllegalArgumentException {
+        if (!containsID(route.getId())){
+            throw new IllegalArgumentException("There is no such 'Route' with 'id'="+route.getId());
+        }
         this.collection.removeIf(r -> r.getId() == route.getId());
         this.collection.add(route);
     }
@@ -86,10 +91,10 @@ public class CustomCollection {
      * @return the matching Route object, or null if not found
      */
     public Route getRouteInsideByID(int id) {
-        return this.collection.stream()
+        Optional<Route> route = this.collection.stream()
                 .filter(r -> r.getId() == id)
-                .findFirst()
-                .orElse(null);
+                .findFirst();
+        return route.orElse(null);
     }
 
     /**
@@ -98,14 +103,7 @@ public class CustomCollection {
      * @return a unique integer ID
      */
     public int getNewID() {
-        Set<Integer> ids = this.collection.stream()
-                .map(Route::getId)
-                .collect(Collectors.toCollection(TreeSet::new));
-
-        return IntStream.range(1, ids.size() + 2)
-                .filter(i -> !ids.contains(i))
-                .findFirst()
-                .orElse(ids.size() + 1);
+        return nextId++;
     }
 
     /**

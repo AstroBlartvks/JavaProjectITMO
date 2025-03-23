@@ -2,8 +2,6 @@ package org.javaLab5.command;
 
 import lombok.Getter;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +26,8 @@ public class CommandArgumentList {
      *
      * @return a new CommandArgumentList containing only element-related arguments
      */
-    public CommandArgumentList getElementArguments(){
-        CommandArgumentList elementArgs = new CommandArgumentList();
-        this.argList.subList(2, this.argList.size()).forEach(elementArgs::addArgument);
-        return elementArgs;
+    public CommandArgument getSecondArgument(){
+        return argList.get(2);
     }
 
     /**
@@ -84,49 +80,32 @@ public class CommandArgumentList {
     /**
      * Validates and converts the first argument to the specified type.
      *
-     * @param type the expected type of the first argument
+     * @param clazz the expected type of the first argument
      * @param <T> the type parameter
-     * @throws Exception if the argument cannot be converted to the specified type
+     * @throws IllegalArgumentException if the argument cannot be converted to the specified type
      */
-    public <T> void checkArgumentType(Class<T> type) throws Exception {
+    public <T> void convertArgumentType(Class<T> clazz) throws IllegalArgumentException {
         String argument = getFirstArgument().getValue().toString();
-        Object convertedValue;
 
         try {
-            if (type == String.class) {
-                convertedValue = argument;
-            } else if (type == Boolean.class) {
-                convertedValue = Boolean.parseBoolean(argument);
+            Object parsedValue;
+
+            if (clazz == Integer.class) {
+                parsedValue = Integer.parseInt(argument);
+            } else if (clazz == Double.class) {
+                parsedValue = Double.parseDouble(argument);
+            } else if (clazz == Boolean.class) {
+                parsedValue = Boolean.parseBoolean(argument);
+            } else if (clazz == String.class) {
+                return;
             } else {
-                convertedValue = parseUsingReflection(type, argument);
+                throw new IllegalArgumentException("Unsupported type of argument: " + clazz.getSimpleName());
             }
-            updateByIndex(1, new CommandArgument(convertedValue));
 
+            T arg = clazz.cast(parsedValue);
+            updateByIndex(1, new CommandArgument(arg));
         } catch (Exception e) {
-            throw new Exception("Argument must be capable of being converted to '" + type.getSimpleName() + "', but '" + argument + "' cannot be transformed", e);
-        }
-    }
-
-    /**
-     * Uses reflection to parse a string into the specified type.
-     *
-     * @param type the expected type
-     * @param argument the string value to convert
-     * @param <T> the type parameter
-     * @return the converted value
-     */
-    private <T> T parseUsingReflection(Class<T> type, String argument){
-        try {
-            Method method = type.getMethod("valueOf", String.class);
-            return type.cast(method.invoke(null, argument));
-        } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("Unsupported type: " + type.getName(), e);
-        } catch (InvocationTargetException e) {
-            throw new IllegalArgumentException("Error invoking valueOf on type: " + type.getName(), e.getCause());
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException("Cannot access valueOf method on type: " + type.getName(), e);
-        } catch (Exception e) {
-            throw new RuntimeException("Unexpected error while parsing", e);
+            throw new IllegalArgumentException("Argument must be capable of being converted to '" + clazz.getSimpleName() + "', but '" + argument + "' cannot be transformed", e);
         }
     }
 

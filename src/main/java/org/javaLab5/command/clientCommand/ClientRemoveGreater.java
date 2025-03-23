@@ -8,20 +8,18 @@ import org.javaLab5.model.Location;
 
 public class ClientRemoveGreater extends ClientCommand{
     @Override
-    public CommandArgumentList input(String inputCommand) throws Exception {
-        CommandArgumentList args = CommandIdentifier.parseCommand(inputCommand);
-
+    public CommandArgumentList input(){
         String name = ArgumentRequester.requestString("Write 'name' -> Route", "'name' can't be empty or null", x -> x != null && !x.isEmpty());
         Coordinates coordinates = ArgumentRequester.requestCoordinates();
         Location from = ArgumentRequester.requestLocation("from");
         Location to = ArgumentRequester.requestLocation("to");
         Double distance = ArgumentRequester.requestDouble("Write 'distance' -> Route", "Distance must be 'Double' and > 1", x -> x > 1);
 
-        args.addArgument(new CommandArgument(name));
-        args.addArgument(new CommandArgument(coordinates));
-        args.addArgument(new CommandArgument(from));
-        args.addArgument(new CommandArgument(to));
-        args.addArgument(new CommandArgument(distance));
-        return args;
+        argumentList.addArgument(new CommandArgument(name));
+        argumentList.addArgument(new CommandArgument(coordinates));
+        argumentList.addArgument(new CommandArgument(from));
+        argumentList.addArgument(new CommandArgument(to));
+        argumentList.addArgument(new CommandArgument(distance));
+        return argumentList;
     }
 }

@@ -98,6 +98,7 @@ public class ScannerManager {
      * @return {@code true} if there is another line of input available, {@code false} otherwise.
      */
     public static boolean hasNextLine() {
+        System.out.print(">>> ");
         if (scanner == null || !scanner.hasNextLine()){
             ScannerManager.setConsoleScanner();
         }

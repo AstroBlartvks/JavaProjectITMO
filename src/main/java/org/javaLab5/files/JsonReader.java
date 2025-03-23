@@ -1,13 +1,13 @@
 package org.javaLab5.files;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.javaLab5.collection.CustomCollection;
 import org.javaLab5.model.Route;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * A class responsible for reading JSON files and converting them into a {@link CustomCollection} of {@link Route} objects.
@@ -17,63 +17,61 @@ public class JsonReader extends ReadHandler {
     /**
      * Reads a JSON file and parses its content into a {@link CustomCollection}.
      *
-     * @param Path the file path of the JSON file to be read.
+     * @param path the file path of the JSON file to be read.
      * @return a {@link CustomCollection} containing parsed routes.
      * @throws Exception if the file cannot be read or contains invalid data.
      */
     @Override
-    public CustomCollection readFile(String Path) throws Exception{
-        File jsonFile = new File(Path);
+    public CustomCollection readFile(String path) throws Exception {
+        File jsonFile = new File(path);
         CustomCollection customCollection = new CustomCollection();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        JsonNode rootNode = objectMapper.readTree(jsonFile);
-        Iterator<Map.Entry<String, JsonNode>> fields = rootNode.fields();
+        Set<JsonNode> routeList = objectMapper.readValue(jsonFile, new TypeReference<Set<JsonNode>>() {});
 
-        while (fields.hasNext()) {
-            Map.Entry<String, JsonNode> entry = fields.next();
-            String routeKey = entry.getKey();
-            JsonNode routeNode = entry.getValue();
+        int maxId = 0;
 
+        for (JsonNode routeNode : routeList) {
             if (!routeNode.has("name") || routeNode.get("name").asText().trim().isEmpty()) {
-                throw new IllegalArgumentException(routeKey + ": 'name' can't be null or empty");
+                throw new IllegalArgumentException("'name' can't be null or empty");
             }
 
             if (!routeNode.has("coordinates") || !routeNode.get("coordinates").has("x") || !routeNode.get("coordinates").has("y") || routeNode.get("coordinates").isNull()) {
-                throw new IllegalArgumentException(routeKey + ": 'coordinates' can't be null");
+                throw new IllegalArgumentException("'coordinates' can't be null");
             }
 
-            validateCoordination(routeNode.get("coordinates"), routeKey);
+            validateCoordination(routeNode.get("coordinates"), "Route");
 
-            validateNumericType(routeNode, "distance", Double.class, routeKey);
+            validateNumericType(routeNode, "distance", Double.class, "Route");
             if (routeNode.get("distance").asDouble() <= 1) {
-                throw new IllegalArgumentException(routeKey + ": 'distance' must be greater than 1");
+                throw new IllegalArgumentException("'distance' must be greater than 1");
             }
 
             if (routeNode.has("from")) {
                 if (!routeNode.get("from").isNull()) {
-                    validateLocation(routeNode.get("from"), routeKey, "from");
+                    validateLocation(routeNode.get("from"), "Route", "from");
                 }
             } else {
-                throw new IllegalArgumentException(routeKey + ": missing required 'from' argument");
+                throw new IllegalArgumentException("Missing required 'from' argument");
             }
 
             if (routeNode.has("to")) {
                 if (!routeNode.get("to").isNull()) {
-                    validateLocation(routeNode.get("to"), routeKey, "to");
+                    validateLocation(routeNode.get("to"), "Route", "to");
                 }
             } else {
-                throw new IllegalArgumentException(routeKey + ": missing required 'to' argument");
+                throw new IllegalArgumentException("Missing required 'to' argument");
             }
+
+            Route route = objectMapper.treeToValue(routeNode, Route.class);
+            customCollection.addElement(route);
+            maxId = Math.max(route.getId(), maxId);
         }
 
-        Map<String, Route> routes = objectMapper.readValue(jsonFile, objectMapper.getTypeFactory().constructMapType(Map.class, String.class, Route.class));
-        for (String routeName: routes.keySet()) {
-            customCollection.addElement(routes.get(routeName));
-        }
-
+        customCollection.setNextId(maxId + 1);
         return customCollection;
     }
+
 
     /**
      * Validates the presence and numeric type of coordinates.

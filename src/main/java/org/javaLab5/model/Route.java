@@ -97,4 +97,17 @@ public class Route implements Comparable<Route> {
                 ", creationDate='" + this.creationDate + '\'' +
                 '}';
     }
+
+    /**
+     * Set data from RouteDTO
+     *
+     * @param routeDTO The 'RouteDataTransferObject' object that we get information from
+     */
+    public void setFromRouteDataTransferObject(RouteDataTransferObject routeDTO){
+        setName(routeDTO.getName());
+        setCoordinates(routeDTO.getCoordinates());
+        setFrom(routeDTO.getFrom());
+        setTo(routeDTO.getTo());
+        setDistance(routeDTO.getDistance());
+    }
 }

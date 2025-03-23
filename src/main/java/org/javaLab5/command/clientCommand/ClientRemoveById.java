@@ -4,9 +4,8 @@ import org.javaLab5.command.CommandArgumentList;
 
 public class ClientRemoveById extends ClientCommand {
     @Override
-    public CommandArgumentList input(String inputCommand) throws Exception {
-        CommandArgumentList argList = CommandIdentifier.parseCommand(inputCommand);
-        argList.checkArgumentType(Integer.class);
-        return argList;
+    public CommandArgumentList input(){
+        argumentList.convertArgumentType(Integer.class);
+        return argumentList;
     }
 }

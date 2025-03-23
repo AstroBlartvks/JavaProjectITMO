@@ -5,15 +5,16 @@ import org.javaLab5.collection.CustomCollection;
 import org.javaLab5.command.clientCommand.ClientCommand;
 import org.javaLab5.command.clientCommand.CommandIdentifier;
 import org.javaLab5.command.CommandArgumentList;
+import org.javaLab5.command.clientCommand.UndefindCommandException;
 import org.javaLab5.command.serverCommand.CommandManager;
 import org.javaLab5.command.serverCommand.ResponseStatus;
 import org.javaLab5.command.serverCommand.ServerResponse;
 import org.javaLab5.files.JsonReader;
 import org.javaLab5.files.Reader;
-import org.javaLab5.inputManager.InputManager;
 
 //Уберу после разделения на сервер и клиент
 import org.javaLab5.command.clientCommand.scriptHandler.ScriptExecutes;
+import org.javaLab5.inputManager.ScannerManager;
 //execute_script src/resources/scripts/script1.sc
 
 //Pray to god that this works
@@ -32,21 +33,22 @@ public class Main {
         ScriptExecutes.collection = collection;
 
         CommandManager commandManager = new CommandManager(collection);
-
-        InputManager inputManager = new InputManager();
         CommandIdentifier commandIndent = new CommandIdentifier();
 
 
-        while (inputManager.hasNextInput()) {
+        while (ScannerManager.hasNextLine()) {
             //User
-            String input = inputManager.input();
+            String input = ScannerManager.readLine();
             ClientCommand clientCommand;
             CommandArgumentList commandArgList;
 
             try {
                 clientCommand = commandIndent.getCommand(input);
-            } catch (Exception e) {
-                System.out.println("Command: '" + input + "' doesn't exist, check 'help'");
+            } catch (UndefindCommandException e) {
+                System.out.println("Exception: " + e);
+                continue;
+            } catch (Exception e){
+                System.out.println("Unexpected exception: '" + e);
                 continue;
             }
 
@@ -56,7 +58,7 @@ public class Main {
             }
 
             try {
-                commandArgList = clientCommand.input(input);
+                commandArgList = clientCommand.input();
             } catch (Exception e) {
                 System.out.println("Exception: " + e);
                 continue;

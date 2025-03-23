@@ -2,6 +2,8 @@ package org.javaLab5.files;
 
 import org.javaLab5.collection.CustomCollection;
 
+import java.io.IOException;
+
 /**
  * The {@code Writer} class is responsible for writing data to a file whose
  * path is specified through an environment variable. The class delegates the
@@ -44,7 +46,7 @@ public class Writer {
         String Path = System.getenv(JavaFileStrings.JAVAEE);
 
         if (Path == null){
-            throw new Exception("The path to the file in the environment variable '" + JavaFileStrings.JAVAEE + "' was not found!");
+            throw new IllegalStateException("The path to the file in the environment variable '" + JavaFileStrings.JAVAEE + "' was not found!");
         }
 
         writeHandler.writeFile(Path, collection);
