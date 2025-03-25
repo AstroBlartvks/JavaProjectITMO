@@ -3,9 +3,10 @@ package org.javaLab5.inputManager;
 import org.javaLab5.model.Coordinates;
 import org.javaLab5.model.Location;
 
+import java.util.InvalidPropertiesFormatException;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -25,7 +26,11 @@ import java.util.function.Predicate;
  * </p>
  */
 public class ArgumentRequester {
+    private static NewScannerManager newScannerManager;
 
+    public static void setNewScannerManager(NewScannerManager newScannerManager){
+        ArgumentRequester.newScannerManager = newScannerManager;
+    }
     /**
      *
      * @param <T> data type (String, Double, Float, Long)
@@ -37,33 +42,36 @@ public class ArgumentRequester {
      */
     private static <T> Optional<T> requestValue(String requested, String exceptionString,
                                                 Function<String, T> parser, Predicate<T> validator) {
-        ScannerManager.saveScanner();
         boolean validInput = false;
         T value = null;
+        newScannerManager.saveActiveScanner();
 
         while (!validInput) {
-            System.out.print(requested + ":\n>>> ");
-            String input = ScannerManager.readLine().trim();
-
-            if (validator == null && input.isEmpty()) {
-                return Optional.empty();
-            }
-
             try {
+                System.out.print(requested + ":\n>>> ");
+                String input = newScannerManager.readLine();
+
+                if (validator == null && input.isEmpty()) {
+                    return Optional.empty();
+                }
+
                 value = parser.apply(input);
                 if (validator == null || validator.test(value)) {
                     validInput = true;
                 } else {
-                    System.out.println("Validation failed: " + exceptionString);
+                    throw new InvalidPropertiesFormatException("Validation failed: " + exceptionString);
                 }
+            } catch (NoSuchElementException e){
+                newScannerManager.activeConsole();
+                System.out.println("Script has ended, write by yourself!");
             } catch (Exception e) {
-                System.out.println("Incorrect input format: " + e.getMessage());
+                newScannerManager.activeConsole();
+                System.out.println("Incorrect input format: " + e);
             }
 
-            ScannerManager.setConsoleScanner();
         }
 
-        ScannerManager.loadScanner();
+        newScannerManager.loadActiveScanner(); //!
         return Optional.of(value);
     }
 

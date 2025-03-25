@@ -3,6 +3,7 @@ package org.javaLab5;
 import org.javaLab5.collection.CustomCollection;
 
 import org.javaLab5.command.clientCommand.ClientCommand;
+import org.javaLab5.inputManager.ArgumentRequester;
 import org.javaLab5.inputManager.CommandIdentifier;
 import org.javaLab5.command.CommandArgumentList;
 import org.javaLab5.command.clientCommand.UndefindCommandException;
@@ -12,9 +13,8 @@ import org.javaLab5.command.serverCommand.ServerResponse;
 import org.javaLab5.files.JsonReader;
 import org.javaLab5.files.Reader;
 
-//Уберу после разделения на сервер и клиент
-import org.javaLab5.command.clientCommand.scriptHandler.ScriptExecutes;
-import org.javaLab5.inputManager.ScannerManager;
+
+import org.javaLab5.inputManager.NewScannerManager;
 //execute_script src/resources/scripts/script1.sc
 
 //Pray to god that this works
@@ -30,15 +30,14 @@ public class Main {
             System.exit(-1);
         }
 
-        ScriptExecutes.collection = collection;
-
+        NewScannerManager newScannerManager = new NewScannerManager();
         CommandManager commandManager = new CommandManager(collection);
-        CommandIdentifier commandIndent = new CommandIdentifier();
+        CommandIdentifier commandIndent = new CommandIdentifier(newScannerManager);
+        ArgumentRequester.setNewScannerManager(newScannerManager);
 
-
-        while (ScannerManager.hasNextLine()) {
+        while (newScannerManager.hasNextLine()) {
             //User
-            String input = ScannerManager.readLine();
+            String input = newScannerManager.readLine();
             ClientCommand clientCommand;
             CommandArgumentList commandArgList;
 

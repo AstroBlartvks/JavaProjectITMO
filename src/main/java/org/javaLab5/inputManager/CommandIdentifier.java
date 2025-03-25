@@ -13,7 +13,7 @@ import java.util.Map;
 public class CommandIdentifier {
     private Map<String, ClientCommand> commandList = new HashMap<>();
 
-    public CommandIdentifier(){
+    public CommandIdentifier(NewScannerManager scannerManager){
         commandList.put("info", new ClientInfo());
         commandList.put("show", new ClientShow());
         commandList.put("clear", new ClientClear());
@@ -24,7 +24,7 @@ public class CommandIdentifier {
 
         commandList.put("count_by_distance", new ClientCountByDistance());
         commandList.put("remove_by_id", new ClientRemoveById());
-        commandList.put("execute_script", new ClientExecuteScript());
+        commandList.put("execute_script", new ClientExecuteScript(scannerManager));
 
         commandList.put("add", new ClientAdd());
         commandList.put("update", new ClientUpdate());

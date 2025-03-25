@@ -1,13 +1,6 @@
 package org.javaLab5.command.clientCommand.scriptHandler;
 
-import org.javaLab5.collection.CustomCollection;
-import org.javaLab5.command.clientCommand.ClientCommand;
-import org.javaLab5.inputManager.CommandIdentifier;
-import org.javaLab5.command.CommandArgumentList;
-import org.javaLab5.command.serverCommand.CommandManager;
-import org.javaLab5.command.serverCommand.ResponseStatus;
-import org.javaLab5.command.serverCommand.ServerResponse;
-import org.javaLab5.inputManager.ScannerManager;
+import org.javaLab5.inputManager.NewScannerManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,19 +16,19 @@ import java.util.Stack;
  */
 public class ScriptExecutes {
     private static final Stack<String> scriptStack = new Stack<>();
+    private final NewScannerManager newScannerManager;
 
-    //Временная коллекция уберу когда будет работать логика сервер-клиент
-    public static CustomCollection collection;
+    public ScriptExecutes(NewScannerManager newScannerManager) {
+        this.newScannerManager = newScannerManager;
+    }
 
     /**
-     * Executes a script file by reading and processing each line as a command.
+     * Running a script file by reading and processing each line as a command.
      *
      * @param scriptName The name of the script file to execute.
      * @throws Exception If the script file does not exist, is unreadable, or recursion is detected.
      */
-    public void execute(String scriptName) throws Exception {
-        //Временная коллекция уберу когда будет работать логика сервер-клиент
-        CommandManager commandManager = new CommandManager(collection);
+    public void run(String scriptName) throws Exception {
 
         if (!new File(scriptName).exists()) {
             throw new Exception("Script-file '" + scriptName + "' doesn't exist!");
@@ -44,73 +37,41 @@ public class ScriptExecutes {
             throw new Exception("Insufficient permissions to read the '" + scriptName + "' script-file");
         }
 
-        if (scriptStack.contains(scriptName)) {
-            String fileSeq = scriptStack.toString();
-            scriptStack.clear();
-            ScannerManager.closeFileScanner();
-            ScannerManager.setConsoleScanner();
-            throw new RecursionDetectedException("Recursion in files detected: " + fileSeq + "!");
-        }
+        findRecursion(scriptName);
 
-        try (Scanner scriptScanner = new Scanner(new File(scriptName))) {
-            scriptStack.add(scriptName);
-            ScannerManager.setFileScanner(scriptScanner);
-            ScannerManager.setMainFileScanner();
-
-            // User input handling
-            CommandIdentifier commandIndent = new CommandIdentifier();
-
-            while (scriptScanner.hasNextLine()) {
-                String input = ScannerManager.readLine();
-                ClientCommand clientCommand;
-                CommandArgumentList commandArgList;
-
-                System.out.println(">>> " + input);
-                try {
-                    clientCommand = commandIndent.getCommand(input);
-                } catch (Exception e) {
-                    System.out.println("Command: '" + input + "' doesn't exist, check 'help'");
-                    continue;
-                }
-
-                if (clientCommand == null) {
-                    System.out.println("Unexpected command: '" + input + "'. Try writing 'help'");
-                    continue;
-                }
-
-                try {
-                    commandArgList = clientCommand.input();
-                } catch (RecursionDetectedException e) {
-                    throw e;
-                } catch (Exception e) {
-                    System.out.println("Exception: " + e);
-                    continue;
-                }
-
-                if (commandArgList == null) {
-                    continue;
-                }
-
-                //Временно уберу когда будет работать логика сервер-клиент
-                try {
-                    ServerResponse response = commandManager.executeCommand(commandArgList);
-                    if (response.getStatus() == ResponseStatus.EXIT) {
-                        System.exit(0);
-                    }
-                    System.out.println(response);
-                } catch (Exception e) {
-                    ServerResponse response = new ServerResponse(ResponseStatus.EXCEPTION, e);
-                    System.out.println(response);
-                }
-            }
-            scriptStack.pop();
-            ScannerManager.setConsoleScanner();
+        try {
+            Scanner scriptScanner = new Scanner(new File(scriptName));
+            newScannerManager.setFileScanner(scriptScanner);
+            newScannerManager.activeFile();
         } catch (FileNotFoundException exception) {
-            throw new Exception("Script-file '" + scriptName + "' doesn't exist!");
+            throw new ScriptExecuteScannerException("Script-file '" + scriptName + "' doesn't exist!");
         } catch (NoSuchElementException exception) {
-            throw new Exception("Script-file '" + scriptName + "' is empty!");
+            throw new ScriptExecuteScannerException("Script-file '" + scriptName + "' is empty!");
         } catch (IllegalStateException exception) {
-            throw new Exception("Unexpected error!");
+            throw new ScriptExecuteScannerException("Unexpected error!");
+        } catch (Exception e){
+            throw new ScriptExecuteScannerException("Unexpected exception " + e.getMessage());
         }
+
+        addScriptToStack(scriptName);
+    }
+
+    private void findRecursion(String scriptName){
+        if (!scriptStack.contains(scriptName)) {
+            return;
+        }
+        String fileSeq = scriptStack.toString();
+        scriptStack.clear();
+        newScannerManager.closeFileScanner();
+        newScannerManager.activeConsole();
+        throw new RecursionDetectedException("Recursion in files detected: " + fileSeq + "!");
+    }
+
+    private void addScriptToStack(String name){
+        scriptStack.push(name);
+    }
+
+    public static void popLastScript(){
+        scriptStack.pop();
     }
 }
