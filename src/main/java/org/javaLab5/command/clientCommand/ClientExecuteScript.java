@@ -6,7 +6,7 @@ import org.javaLab5.inputManager.NewScannerManager;
 
 
 public class ClientExecuteScript extends ClientCommand{
-    ScriptExecutes scriptExecutes;
+    private final ScriptExecutes scriptExecutes;
 
     public ClientExecuteScript(NewScannerManager newScannerManager){
         scriptExecutes = new ScriptExecutes(newScannerManager);

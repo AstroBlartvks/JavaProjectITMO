@@ -16,6 +16,6 @@ public class ServerResponse {
 
     @Override
     public String toString(){
-        return "Response{\nstatus="+this.status.toString()+",\nvalue='''\n"+this.value+"\n'''}";
+        return "\nResponse{\nstatus="+this.status.toString()+",\nvalue='''\n"+this.value+"\n'''}";
     }
 }

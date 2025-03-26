@@ -2,8 +2,6 @@ package org.javaLab5.files;
 
 import org.javaLab5.collection.CustomCollection;
 
-import java.io.IOException;
-
 /**
  * The {@code Writer} class is responsible for writing data to a file whose
  * path is specified through an environment variable. The class delegates the

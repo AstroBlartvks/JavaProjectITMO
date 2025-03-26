@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.javaLab5.command.clientCommand.scriptHandler.ScriptExecutes;
 
 import java.util.Scanner;
+import java.util.Stack;
 
 
 /**
@@ -35,11 +36,32 @@ public class NewScannerManager {
      */
     private Scanner memScanner;
 
+    private static final Stack<Scanner> fileScannerStack = new Stack<>();
 
     public NewScannerManager(){
         this.consoleScanner = new Scanner(System.in);
         this.fileScanner = null;
         this.activeConsole();
+    }
+
+    public void pushScannerToStack(Scanner scanner){
+        fileScannerStack.push(scanner);
+    }
+
+    public Scanner popScannerFromStack(){
+        return fileScannerStack.pop();
+    }
+
+    public Scanner getLastScannerFromStack(){
+        return fileScannerStack.peek();
+    }
+
+    public boolean isScannerStackEmpty(){
+        return fileScannerStack.isEmpty();
+    }
+
+    public void clearScannerStack(){
+        fileScannerStack.clear();
     }
 
     /**
@@ -54,7 +76,7 @@ public class NewScannerManager {
             this.activeConsole();
         }
 
-        String line =  this.activeScanner.nextLine().trim();
+        String line = this.activeScanner.nextLine().trim();
         if (this.activeScanner == this.fileScanner){
             System.out.println(line);
         }
@@ -72,9 +94,15 @@ public class NewScannerManager {
         System.out.print(">>> ");
         boolean isNextLine = this.activeScanner.hasNextLine();
 
-        if (!isNextLine && (this.activeScanner == this.fileScanner)){
+        if (!isNextLine && (activeScanner == fileScanner)){
             ScriptExecutes.popLastScript();
-            this.activeConsole();
+            popScannerFromStack().close();
+            if (!isScannerStackEmpty()) {
+                activeScanner = getLastScannerFromStack();
+                fileScanner = activeScanner;
+            } else {
+                activeConsole();
+            }
             return true;
         }
 

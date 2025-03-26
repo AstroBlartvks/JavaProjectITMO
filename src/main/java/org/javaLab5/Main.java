@@ -1,12 +1,13 @@
 package org.javaLab5;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import org.javaLab5.collection.CustomCollection;
 
 import org.javaLab5.command.clientCommand.ClientCommand;
 import org.javaLab5.inputManager.ArgumentRequester;
 import org.javaLab5.inputManager.CommandIdentifier;
 import org.javaLab5.command.CommandArgumentList;
-import org.javaLab5.command.clientCommand.UndefindCommandException;
+import org.javaLab5.command.clientCommand.UndefinedCommandException;
 import org.javaLab5.command.serverCommand.CommandManager;
 import org.javaLab5.command.serverCommand.ResponseStatus;
 import org.javaLab5.command.serverCommand.ServerResponse;
@@ -15,7 +16,10 @@ import org.javaLab5.files.Reader;
 
 
 import org.javaLab5.inputManager.NewScannerManager;
-//execute_script src/resources/scripts/script1.sc
+//execute_script src/resources/scripts/script1.sc - пример рабоыт программы
+//execute_script src/resources/scripts/rcs1.sc - рекурсия
+//execute_script src/resources/scripts/main.sc - много скриптов
+
 
 //Pray to god that this works
 public class Main {
@@ -25,8 +29,11 @@ public class Main {
         Reader reader = new Reader(new JsonReader());
         try {
             collection = reader.readFromEnv();
+        } catch (JsonMappingException e) {
+            System.err.println("Program can't parse your Json file, check this error and try fix it!\n\t" + e.getMessage());
+            System.exit(-1);
         } catch (Exception e) {
-            System.out.println("Ops... Program got some exception(s) while reading!\n" + e);
+            System.err.println("Ops... Exception while reading!\n" + e.getMessage());
             System.exit(-1);
         }
 
@@ -43,11 +50,11 @@ public class Main {
 
             try {
                 clientCommand = commandIndent.getCommand(input);
-            } catch (UndefindCommandException e) {
-                System.out.println("Exception: " + e);
+            } catch (UndefinedCommandException e) {
+                System.out.println("Exception: " + e.getMessage());
                 continue;
             } catch (Exception e){
-                System.out.println("Unexpected exception: '" + e);
+                System.out.println("Unexpected exception: " + e.getMessage());
                 continue;
             }
 
@@ -59,7 +66,7 @@ public class Main {
             try {
                 commandArgList = clientCommand.input();
             } catch (Exception e) {
-                System.out.println("Exception: " + e);
+                System.out.println("Exception: " + e.getMessage());
                 continue;
             }
 
@@ -75,7 +82,7 @@ public class Main {
                 }
                 System.out.println(response);
             } catch (Exception e) {
-                ServerResponse response = new ServerResponse(ResponseStatus.EXCEPTION, e);
+                ServerResponse response = new ServerResponse(ResponseStatus.EXCEPTION, e.getMessage());
                 System.out.println(response);
             }
         }

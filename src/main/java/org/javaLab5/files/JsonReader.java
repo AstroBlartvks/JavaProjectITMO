@@ -27,45 +27,68 @@ public class JsonReader extends ReadHandler {
         CustomCollection customCollection = new CustomCollection();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        Set<JsonNode> routeList = objectMapper.readValue(jsonFile, new TypeReference<Set<JsonNode>>() {});
+        Set<JsonNode> routeList = objectMapper.readValue(jsonFile, new TypeReference<>() {});
 
         int maxId = 0;
-
+        boolean validCoordinates;
+        boolean validLocation;
+        boolean hasAtMinimumOneException;
         for (JsonNode routeNode : routeList) {
+            hasAtMinimumOneException = false;
             if (!routeNode.has("name") || routeNode.get("name").asText().trim().isEmpty()) {
-                throw new IllegalArgumentException("'name' can't be null or empty");
+                System.err.println("Warning about: \n\tHAS AN EXCEPTION: 'name' can't be null or empty. 'Route' will not be added to the collection");
+                hasAtMinimumOneException = true;
             }
 
             if (!routeNode.has("coordinates") || !routeNode.get("coordinates").has("x") || !routeNode.get("coordinates").has("y") || routeNode.get("coordinates").isNull()) {
-                throw new IllegalArgumentException("'coordinates' can't be null");
+                System.err.println("Warning about: \n\tHAS AN EXCEPTION: 'coordinates' can't be null. 'Route' will not be added to the collection");
+                hasAtMinimumOneException = true;
             }
 
-            validateCoordination(routeNode.get("coordinates"), "Route");
+            validCoordinates = validateCoordination(routeNode.get("coordinates"));
+            if (!validCoordinates){
+                System.err.println("Warning about:\n\tHAS INVALID COORDINATES. 'Route' will not be added to the collection");
+                hasAtMinimumOneException = true;
+            }
 
-            validateNumericType(routeNode, "distance", Double.class, "Route");
+            validateNumericType(routeNode, "distance", Double.class);
             if (routeNode.get("distance").asDouble() <= 1) {
-                throw new IllegalArgumentException("'distance' must be greater than 1");
+                System.err.println("Warning about: \n\tHAS AN EXCEPTION: 'distance' must be greater than 1. 'Route' will not be added to the collection");
+                hasAtMinimumOneException = true;
             }
 
             if (routeNode.has("from")) {
                 if (!routeNode.get("from").isNull()) {
-                    validateLocation(routeNode.get("from"), "Route", "from");
+                    validLocation = validateLocation(routeNode.get("from"), "from");
+                    if (!validLocation){
+                        System.err.println("Warning about:\n\tHAS INVALID LOCATION 'from'. 'Route' will not be added to the collection");
+                        hasAtMinimumOneException = true;
+                    }
                 }
             } else {
-                throw new IllegalArgumentException("Missing required 'from' argument");
+                System.err.println("Warning about: \n\tHAS AN EXCEPTION: Missing required 'from' argument. 'Route' will not be added to the collection");
             }
 
             if (routeNode.has("to")) {
                 if (!routeNode.get("to").isNull()) {
-                    validateLocation(routeNode.get("to"), "Route", "to");
+                    validLocation = validateLocation(routeNode.get("to"), "to");
+                    if (!validLocation){
+                        System.err.println("Warning about:\n\tHAS INVALID LOCATION 'to'. 'Route' will not be added to the collection");
+                        hasAtMinimumOneException = true;
+                    }
                 }
             } else {
-                throw new IllegalArgumentException("Missing required 'to' argument");
+                System.err.println("Warning about: \n\tHAS AN EXCEPTION: Missing required 'to' argument. 'Route' will not be added to the collection");
+                hasAtMinimumOneException = true;
             }
 
-            Route route = objectMapper.treeToValue(routeNode, Route.class);
-            customCollection.addElement(route);
-            maxId = Math.max(route.getId(), maxId);
+            if (!hasAtMinimumOneException) {
+                Route route = objectMapper.treeToValue(routeNode, Route.class);
+                customCollection.addElement(route);
+                maxId = Math.max(route.getId(), maxId);
+            }else{
+                System.err.println("These errors are in the 'Route':\n\t"+routeNode+"\n");
+            }
         }
 
         customCollection.setNextId(maxId + 1);
@@ -76,12 +99,11 @@ public class JsonReader extends ReadHandler {
     /**
      * Validates the presence and numeric type of coordinates.
      *
-     * @param node     the JSON node containing coordinate data.
-     * @param routeKey the key of the route being validated.
+     * @param node the JSON node containing coordinate data.
      */
-    private static void validateCoordination(JsonNode node, String routeKey) {
-        validateNumericType(node, "x", Double.class, routeKey);
-        validateNumericType(node, "y", Double.class, routeKey);
+    private boolean validateCoordination(JsonNode node) {
+        boolean valid = validateNumericType(node, "x", Double.class);
+        return valid && validateNumericType(node, "y", Double.class);
     }
 
     /**
@@ -90,40 +112,45 @@ public class JsonReader extends ReadHandler {
      * @param node         the JSON node containing the field.
      * @param field        the field name to validate.
      * @param expectedType the expected numeric type (Double, Long, Float).
-     * @param routeKey     the key of the route being validated.
      * @throws IllegalArgumentException if the field is missing or not of the expected type.
      */
-    private static void validateNumericType(JsonNode node, String field, Class<?> expectedType, String routeKey) {
+    private boolean validateNumericType(JsonNode node, String field, Class<?> expectedType) {
         if (!node.has(field)) {
-            throw new IllegalArgumentException(routeKey + ": missing required '" + field + "' argument");
+            System.err.println("Route" + ": missing required '" + field + "' argument");
+            return false;
         }
         JsonNode valueNode = node.get(field);
         if (expectedType == Double.class && !valueNode.isNumber()) {
-            throw new IllegalArgumentException(routeKey + ": '" + field + "' must be a double (found: " + valueNode + ")");
+            System.err.println("Route" + ": '" + field + "' must be a double (found: " + valueNode + ")");
+            return false;
         }
         if (expectedType == Long.class && !valueNode.isIntegralNumber()) {
-            throw new IllegalArgumentException(routeKey + ": '" + field + "' must be a long (found: " + valueNode + ")");
+            System.err.println("Route" + ": '" + field + "' must be a long (found: " + valueNode + ")");
+            return false;
         }
         if (expectedType == Float.class && !valueNode.isFloatingPointNumber() && !valueNode.isNumber()) {
-            throw new IllegalArgumentException(routeKey + ": '" + field + "' must be a float (found: " + valueNode + ")");
+            System.err.println("Route" + ": '" + field + "' must be a float (found: " + valueNode + ")");
+            return false;
         }
+        return true;
     }
 
     /**
      * Validates that a location node contains valid numeric coordinates and a non-empty name.
      *
      * @param node      the JSON node representing the location.
-     * @param routeKey  the key of the route being validated.
      * @param fieldName the name of the location field ("from" or "to").
      * @throws IllegalArgumentException if any required field is missing or invalid.
      */
-    private static void validateLocation(JsonNode node, String routeKey, String fieldName) {
-        validateNumericType(node, "x", Long.class, routeKey);
-        validateNumericType(node, "y", Float.class, routeKey);
-        validateNumericType(node, "z", Float.class, routeKey);
+    private boolean validateLocation(JsonNode node, String fieldName) {
+        boolean valid = validateNumericType(node, "x", Long.class);
+        valid = valid && validateNumericType(node, "y", Float.class);
+        valid = valid && validateNumericType(node, "z", Float.class);
 
         if (!node.has("name") || !node.get("name").isTextual() || node.get("name").asText().trim().isEmpty()) {
-            throw new IllegalArgumentException(routeKey + ": '" + fieldName + ".name' must be a non-empty string");
+            System.err.println("Route" + ": '" + fieldName + ".name' must be a non-empty string");
+            return false;
         }
+        return valid;
     }
 }

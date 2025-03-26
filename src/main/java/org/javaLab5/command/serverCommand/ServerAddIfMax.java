@@ -16,7 +16,7 @@ public class ServerAddIfMax extends ServerCommand{
     }
 
     @Override
-    public ServerResponse execute(CommandArgumentList args) throws Exception {
+    public ServerResponse execute(CommandArgumentList args) {
         RouteDataTransferObject routeDTO = (RouteDataTransferObject) args.getSecondArgument().getValue();
         Route newRoute = new Route();
 

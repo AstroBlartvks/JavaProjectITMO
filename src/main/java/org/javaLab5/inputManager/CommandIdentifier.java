@@ -35,11 +35,11 @@ public class CommandIdentifier {
 
     }
 
-    public ClientCommand getCommand(String commandLine) throws UndefindCommandException{
+    public ClientCommand getCommand(String commandLine) throws UndefinedCommandException {
         CommandArgumentList args = CommandParser.parseCommand(commandLine);
         String command = args.getCommand().getValue().toString();
         if (!commandList.containsKey(command)){
-            throw new UndefindCommandException("Unexpected command: '" + command + "'. Try write 'help'");
+            throw new UndefinedCommandException("Unexpected command: '" + command + "'. Try write 'help'");
         }
         ClientCommand clientCommand = commandList.get(command);
         clientCommand.setArgumentList(args);

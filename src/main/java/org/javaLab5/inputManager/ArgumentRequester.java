@@ -66,7 +66,7 @@ public class ArgumentRequester {
                 System.out.println("Script has ended, write by yourself!");
             } catch (Exception e) {
                 newScannerManager.activeConsole();
-                System.out.println("Incorrect input format: " + e);
+                System.out.println("Incorrect input format: " + e.getMessage() + ". " + exceptionString);
             }
 
         }

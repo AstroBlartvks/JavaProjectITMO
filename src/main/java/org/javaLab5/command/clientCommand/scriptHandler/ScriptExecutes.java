@@ -42,6 +42,7 @@ public class ScriptExecutes {
         try {
             Scanner scriptScanner = new Scanner(new File(scriptName));
             newScannerManager.setFileScanner(scriptScanner);
+            newScannerManager.pushScannerToStack(scriptScanner);
             newScannerManager.activeFile();
         } catch (FileNotFoundException exception) {
             throw new ScriptExecuteScannerException("Script-file '" + scriptName + "' doesn't exist!");
@@ -64,6 +65,7 @@ public class ScriptExecutes {
         scriptStack.clear();
         newScannerManager.closeFileScanner();
         newScannerManager.activeConsole();
+        newScannerManager.clearScannerStack();
         throw new RecursionDetectedException("Recursion in files detected: " + fileSeq + "!");
     }
 
