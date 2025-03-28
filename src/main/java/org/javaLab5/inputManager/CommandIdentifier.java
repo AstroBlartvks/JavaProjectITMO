@@ -13,7 +13,7 @@ import java.util.Map;
 public class CommandIdentifier {
     private Map<String, ClientCommand> commandList = new HashMap<>();
 
-    public CommandIdentifier(NewScannerManager scannerManager){
+    public CommandIdentifier(ScannerManager scannerManager, ArgumentRequester argumentRequester){
         commandList.put("info", new ClientInfo());
         commandList.put("show", new ClientShow());
         commandList.put("clear", new ClientClear());
@@ -26,11 +26,11 @@ public class CommandIdentifier {
         commandList.put("remove_by_id", new ClientRemoveById());
         commandList.put("execute_script", new ClientExecuteScript(scannerManager));
 
-        commandList.put("add", new ClientAdd());
-        commandList.put("update", new ClientUpdate());
-        commandList.put("add_if_max", new ClientAddIfMax());
-        commandList.put("add_if_min", new ClientAddIfMin());
-        commandList.put("remove_greater", new ClientRemoveGreater());
+        commandList.put("add", new ClientAdd(argumentRequester));
+        commandList.put("update", new ClientUpdate(argumentRequester));
+        commandList.put("add_if_max", new ClientAddIfMax(argumentRequester));
+        commandList.put("add_if_min", new ClientAddIfMin(argumentRequester));
+        commandList.put("remove_greater", new ClientRemoveGreater(argumentRequester));
         commandList.put("count_greater_than_distance", new ClientCountGreaterThanDistance());
 
     }

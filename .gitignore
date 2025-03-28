@@ -1,4 +1,5 @@
 target/
+.idea/
 **/src/main/java/org/AstrosLab/command/old
 **/src/test
 **/JavaDoc

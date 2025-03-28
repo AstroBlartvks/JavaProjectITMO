@@ -18,7 +18,7 @@ import java.util.Stack;
  */
 @Setter
 @Getter
-public class NewScannerManager {
+public class ScannerManager {
     /**
      * The current {@code Scanner} being used for input. It may point to either the console or a file.
      */
@@ -38,7 +38,7 @@ public class NewScannerManager {
 
     private static final Stack<Scanner> fileScannerStack = new Stack<>();
 
-    public NewScannerManager(){
+    public ScannerManager(){
         this.consoleScanner = new Scanner(System.in);
         this.fileScanner = null;
         this.activeConsole();
@@ -76,11 +76,15 @@ public class NewScannerManager {
             this.activeConsole();
         }
 
-        String line = this.activeScanner.nextLine().trim();
-        if (this.activeScanner == this.fileScanner){
-            System.out.println(line);
+        String line = this.activeScanner.nextLine();
+        if (line.isEmpty()){
+            return "";
         }
-        return line;
+
+        if (this.activeScanner == this.fileScanner){
+            System.out.println(line.trim());
+        }
+        return line.trim();
     }
 
     /**
@@ -95,7 +99,6 @@ public class NewScannerManager {
         boolean isNextLine = this.activeScanner.hasNextLine();
 
         if (!isNextLine && (activeScanner == fileScanner)){
-            ScriptExecutes.popLastScript();
             popScannerFromStack().close();
             if (!isScannerStackEmpty()) {
                 activeScanner = getLastScannerFromStack();

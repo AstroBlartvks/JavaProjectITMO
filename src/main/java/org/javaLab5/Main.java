@@ -15,7 +15,7 @@ import org.javaLab5.files.JsonReader;
 import org.javaLab5.files.Reader;
 
 
-import org.javaLab5.inputManager.NewScannerManager;
+import org.javaLab5.inputManager.ScannerManager;
 //execute_script src/resources/scripts/script1.sc - пример рабоыт программы
 //execute_script src/resources/scripts/rcs1.sc - рекурсия
 //execute_script src/resources/scripts/main.sc - много скриптов
@@ -37,14 +37,14 @@ public class Main {
             System.exit(-1);
         }
 
-        NewScannerManager newScannerManager = new NewScannerManager();
+        ScannerManager scannerManager = new ScannerManager();
         CommandManager commandManager = new CommandManager(collection);
-        CommandIdentifier commandIndent = new CommandIdentifier(newScannerManager);
-        ArgumentRequester.setNewScannerManager(newScannerManager);
+        ArgumentRequester argumentRequester = new ArgumentRequester(scannerManager);
+        CommandIdentifier commandIndent = new CommandIdentifier(scannerManager, argumentRequester);
 
-        while (newScannerManager.hasNextLine()) {
+        while (scannerManager.hasNextLine()) {
             //User
-            String input = newScannerManager.readLine();
+            String input = scannerManager.readLine();
             ClientCommand clientCommand;
             CommandArgumentList commandArgList;
 
@@ -52,9 +52,6 @@ public class Main {
                 clientCommand = commandIndent.getCommand(input);
             } catch (UndefinedCommandException e) {
                 System.out.println("Exception: " + e.getMessage());
-                continue;
-            } catch (Exception e){
-                System.out.println("Unexpected exception: " + e.getMessage());
                 continue;
             }
 
@@ -78,7 +75,7 @@ public class Main {
             try {
                 ServerResponse response = commandManager.executeCommand(commandArgList);
                 if (response.getStatus() == ResponseStatus.EXIT){
-                    System.exit(0);
+                    return;
                 }
                 System.out.println(response);
             } catch (Exception e) {

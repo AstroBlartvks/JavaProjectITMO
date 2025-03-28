@@ -30,10 +30,12 @@ public class JsonReader extends ReadHandler {
         Set<JsonNode> routeList = objectMapper.readValue(jsonFile, new TypeReference<>() {});
 
         int maxId = 0;
-        boolean validCoordinates;
-        boolean validLocation;
-        boolean hasAtMinimumOneException;
+
         for (JsonNode routeNode : routeList) {
+            boolean validCoordinates;
+            boolean validLocation;
+            boolean hasAtMinimumOneException;
+            
             hasAtMinimumOneException = false;
             if (!routeNode.has("name") || routeNode.get("name").asText().trim().isEmpty()) {
                 System.err.println("Warning about: \n\tHAS AN EXCEPTION: 'name' can't be null or empty. 'Route' will not be added to the collection");
@@ -45,7 +47,7 @@ public class JsonReader extends ReadHandler {
                 hasAtMinimumOneException = true;
             }
 
-            validCoordinates = validateCoordination(routeNode.get("coordinates"));
+            validCoordinates = validateCoordinates(routeNode.get("coordinates"));
             if (!validCoordinates){
                 System.err.println("Warning about:\n\tHAS INVALID COORDINATES. 'Route' will not be added to the collection");
                 hasAtMinimumOneException = true;
@@ -101,7 +103,7 @@ public class JsonReader extends ReadHandler {
      *
      * @param node the JSON node containing coordinate data.
      */
-    private boolean validateCoordination(JsonNode node) {
+    private boolean validateCoordinates(JsonNode node) {
         boolean valid = validateNumericType(node, "x", Double.class);
         return valid && validateNumericType(node, "y", Double.class);
     }

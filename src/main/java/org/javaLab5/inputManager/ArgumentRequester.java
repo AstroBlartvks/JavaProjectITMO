@@ -25,12 +25,14 @@ import java.util.function.Predicate;
  * properties of these objects.
  * </p>
  */
-public class ArgumentRequester {
-    private static NewScannerManager newScannerManager;
 
-    public static void setNewScannerManager(NewScannerManager newScannerManager){
-        ArgumentRequester.newScannerManager = newScannerManager;
+public class ArgumentRequester {
+    private final ScannerManager scannerManager;
+
+    public ArgumentRequester(ScannerManager scannerManager) {
+        this.scannerManager = scannerManager;
     }
+
     /**
      *
      * @param <T> data type (String, Double, Float, Long)
@@ -40,16 +42,16 @@ public class ArgumentRequester {
      * @param validator validator for data
      * @return Optional
      */
-    private static <T> Optional<T> requestValue(String requested, String exceptionString,
+    private <T> Optional<T> requestValue(String requested, String exceptionString,
                                                 Function<String, T> parser, Predicate<T> validator) {
         boolean validInput = false;
         T value = null;
-        newScannerManager.saveActiveScanner();
+        scannerManager.saveActiveScanner();
 
         while (!validInput) {
             try {
                 System.out.print(requested + ":\n>>> ");
-                String input = newScannerManager.readLine();
+                String input = scannerManager.readLine();
 
                 if (validator == null && input.isEmpty()) {
                     return Optional.empty();
@@ -62,16 +64,16 @@ public class ArgumentRequester {
                     throw new InvalidPropertiesFormatException("Validation failed: " + exceptionString);
                 }
             } catch (NoSuchElementException e){
-                newScannerManager.activeConsole();
+                scannerManager.activeConsole();
                 System.out.println("Script has ended, write by yourself!");
             } catch (Exception e) {
-                newScannerManager.activeConsole();
+                scannerManager.activeConsole();
                 System.out.println("Incorrect input format: " + e.getMessage() + ". " + exceptionString);
             }
 
         }
 
-        newScannerManager.loadActiveScanner(); //!
+        scannerManager.loadActiveScanner(); //!
         return Optional.of(value);
     }
 
@@ -84,7 +86,7 @@ public class ArgumentRequester {
      * @param validator a {@link Predicate} that defines the validation logic for the input.
      * @return the valid {@code Double} value entered by the user, or {@code null} if the input is empty and no validation is applied.
      */
-    public static Optional<Double> requestDouble(String requested, String exceptionString, Predicate<Double> validator) {
+    public Optional<Double> requestDouble(String requested, String exceptionString, Predicate<Double> validator) {
         return requestValue(requested, exceptionString, Double::parseDouble, validator);
     }
 
@@ -97,7 +99,7 @@ public class ArgumentRequester {
      * @param validator a {@link Predicate} that defines the validation logic for the input.
      * @return the valid {@code Float} value entered by the user, or {@code null} if the input is empty and no validation is applied.
      */
-    public static Optional<Float> requestFloat(String requested, String exceptionString, Predicate<Float> validator) {
+    public Optional<Float> requestFloat(String requested, String exceptionString, Predicate<Float> validator) {
         return requestValue(requested, exceptionString, Float::parseFloat, validator);
     }
 
@@ -110,7 +112,7 @@ public class ArgumentRequester {
      * @param validator a {@link Predicate} that defines the validation logic for the input.
      * @return the valid {@code String} entered by the user, or {@code null} if the input is empty and no validation is applied.
      */
-    public static Optional<String> requestString(String requested, String exceptionString, Predicate<String> validator) {
+    public Optional<String> requestString(String requested, String exceptionString, Predicate<String> validator) {
         return requestValue(requested, exceptionString, input -> input, validator);
     }
 
@@ -123,7 +125,7 @@ public class ArgumentRequester {
      * @param validator a {@link Predicate} that defines the validation logic for the input.
      * @return the valid {@code Long} value entered by the user, or {@code null} if the input is empty and no validation is applied.
      */
-    public static Optional<Long> requestLong(String requested, String exceptionString, Predicate<Long> validator) {
+    public Optional<Long> requestLong(String requested, String exceptionString, Predicate<Long> validator) {
         return requestValue(requested, exceptionString, Long::parseLong, validator);
     }
 
@@ -132,7 +134,7 @@ public class ArgumentRequester {
      *
      * @return a {@link Coordinates} object containing the values entered by the user.
      */
-    public static Coordinates requestCoordinates() throws IllegalArgumentException{
+    public Coordinates requestCoordinates() throws IllegalArgumentException{
         Coordinates coordinates = new Coordinates();
 
         Optional<Double> x = requestDouble("Write 'x' -> Coordinates.x", "'x' must be Double and cannot be null", d -> true);
@@ -159,7 +161,7 @@ public class ArgumentRequester {
      * @param requested the context or description of the location being requested, to be included in the prompts.
      * @return a {@link Location} object containing the values entered by the user, or {@code null} if the user does not provide valid values.
      */
-    public static Location requestLocation(String requested) {
+    public Location requestLocation(String requested) {
         Optional<Long> x = requestLong("Write 'x' -> Location.x (" + requested + ") || Press Enter: null -> Location(" + requested + ")", "'x' must be long", null);
 
         if (x.isEmpty()) {

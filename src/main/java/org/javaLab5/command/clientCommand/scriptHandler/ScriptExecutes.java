@@ -1,6 +1,6 @@
 package org.javaLab5.command.clientCommand.scriptHandler;
 
-import org.javaLab5.inputManager.NewScannerManager;
+import org.javaLab5.inputManager.ScannerManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,17 +9,18 @@ import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 /**
  * Handles the execution of script files, ensuring proper command execution
  * while preventing recursion loops.
  */
 public class ScriptExecutes {
-    private static final Stack<String> scriptStack = new Stack<>();
-    private final NewScannerManager newScannerManager;
+    private final Stack<ScriptFile> scriptFilesStack = new Stack<>();
+    private final ScannerManager scannerManager;
 
-    public ScriptExecutes(NewScannerManager newScannerManager) {
-        this.newScannerManager = newScannerManager;
+    public ScriptExecutes(ScannerManager scannerManager) {
+        this.scannerManager = scannerManager;
     }
 
     /**
@@ -37,13 +38,18 @@ public class ScriptExecutes {
             throw new Exception("Insufficient permissions to read the '" + scriptName + "' script-file");
         }
 
-        findRecursion(scriptName);
+        if (isItRecursion(scriptName)){
+            return;
+        }
 
         try {
             Scanner scriptScanner = new Scanner(new File(scriptName));
-            newScannerManager.setFileScanner(scriptScanner);
-            newScannerManager.pushScannerToStack(scriptScanner);
-            newScannerManager.activeFile();
+            ScriptFile scriptFile = new ScriptFile(scriptName, scriptScanner);
+            scriptFilesStack.push(scriptFile);
+
+            scannerManager.setFileScanner(scriptScanner);
+            scannerManager.pushScannerToStack(scriptScanner);
+            scannerManager.activeFile();
         } catch (FileNotFoundException exception) {
             throw new ScriptExecuteScannerException("Script-file '" + scriptName + "' doesn't exist!");
         } catch (NoSuchElementException exception) {
@@ -54,26 +60,18 @@ public class ScriptExecutes {
             throw new ScriptExecuteScannerException("Unexpected exception " + e.getMessage());
         }
 
-        addScriptToStack(scriptName);
     }
 
-    private void findRecursion(String scriptName){
-        if (!scriptStack.contains(scriptName)) {
-            return;
+    private boolean isItRecursion(String scriptName){
+        boolean alreadyExists = scriptFilesStack.stream()
+                .anyMatch(scriptFile -> scriptFile.getScriptName().equals(scriptName));
+
+        if (!alreadyExists) {
+            return false;
         }
-        String fileSeq = scriptStack.toString();
-        scriptStack.clear();
-        newScannerManager.closeFileScanner();
-        newScannerManager.activeConsole();
-        newScannerManager.clearScannerStack();
-        throw new RecursionDetectedException("Recursion in files detected: " + fileSeq + "!");
+
+        System.out.println("Recursion in file detected: " + scriptName + "!");
+        return true;
     }
 
-    private void addScriptToStack(String name){
-        scriptStack.push(name);
-    }
-
-    public static void popLastScript(){
-        scriptStack.pop();
-    }
 }

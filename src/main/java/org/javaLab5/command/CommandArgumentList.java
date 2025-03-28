@@ -22,7 +22,7 @@ public class CommandArgumentList {
     }
 
     /**
-     * Retrieves all arguments except the command name itself.
+     * Retrieves argument with index 2
      *
      * @return a new CommandArgumentList containing only element-related arguments
      */
