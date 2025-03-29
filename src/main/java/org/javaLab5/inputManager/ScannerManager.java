@@ -2,7 +2,6 @@ package org.javaLab5.inputManager;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.javaLab5.command.clientCommand.scriptHandler.ScriptExecutes;
 
 import java.util.Scanner;
 import java.util.Stack;
@@ -22,46 +21,29 @@ public class ScannerManager {
     /**
      * The current {@code Scanner} being used for input. It may point to either the console or a file.
      */
-    private Scanner activeScanner;
-    /**
-     * The {@code Scanner} instance used for reading input from a file.
-     */
-    private Scanner fileScanner;
-    /**
-     * The current {@code Scanner} being used for input. It may point to either the console or a file.
-     */
-    private Scanner consoleScanner;
-    /**
-     * A temporary {@code Scanner} instance used for saving the current scanner state.
-     */
-    private Scanner memScanner;
-
-    private static final Stack<Scanner> fileScannerStack = new Stack<>();
+    private final Stack<SmartScanner> scannersStack = new Stack<>();
+    private SmartScanner activeSmartScanner;
 
     public ScannerManager(){
-        this.consoleScanner = new Scanner(System.in);
-        this.fileScanner = null;
-        this.activeConsole();
+        SmartScanner consoleScanner = getSmartScanner();
+        pushScanner(consoleScanner);
+        activeSmartScanner = consoleScanner;
     }
 
-    public void pushScannerToStack(Scanner scanner){
-        fileScannerStack.push(scanner);
+    public void pushScanner(SmartScanner scanner){
+        scannersStack.push(scanner);
     }
 
-    public Scanner popScannerFromStack(){
-        return fileScannerStack.pop();
+    public void setLastScannerAsActive(){
+        activeSmartScanner = scannersStack.peek();
     }
 
-    public Scanner getLastScannerFromStack(){
-        return fileScannerStack.peek();
+    public void setConsoleScanner(){
+        activeSmartScanner = scannersStack.firstElement();
     }
 
-    public boolean isScannerStackEmpty(){
-        return fileScannerStack.isEmpty();
-    }
-
-    public void clearScannerStack(){
-        fileScannerStack.clear();
+    private SmartScanner getSmartScanner(){
+        return new SmartScanner(new Scanner(System.in), SmartScannerType.CONSOLE, "CONSOLE");
     }
 
     /**
@@ -71,20 +53,18 @@ public class ScannerManager {
      *
      * @return The line of input read from the current {@code Scanner}.
      */
-    public String readLine(){
-        if (this.activeScanner == null){
-            this.activeConsole();
+    public String readLine() throws IllegalStateException{
+        if (activeSmartScanner.isClosed() || !activeSmartScanner.hasNextLine()){
+            throw new IllegalStateException("Scanner closed!");
         }
+        return activeSmartScanner.nextLine();
+    }
 
-        String line = this.activeScanner.nextLine();
-        if (line.isEmpty()){
-            return "";
-        }
-
-        if (this.activeScanner == this.fileScanner){
-            System.out.println(line.trim());
-        }
-        return line.trim();
+    public void reCreateScannerManager(){
+        scannersStack.clear();
+        SmartScanner consoleScanner = getSmartScanner();
+        pushScanner(consoleScanner);
+        activeSmartScanner = consoleScanner;
     }
 
     /**
@@ -96,46 +76,18 @@ public class ScannerManager {
      */
     public boolean hasNextLine(){
         System.out.print(">>> ");
-        boolean isNextLine = this.activeScanner.hasNextLine();
 
-        if (!isNextLine && (activeScanner == fileScanner)){
-            popScannerFromStack().close();
-            if (!isScannerStackEmpty()) {
-                activeScanner = getLastScannerFromStack();
-                fileScanner = activeScanner;
-            } else {
-                activeConsole();
+        boolean isNextLine = activeSmartScanner.hasNextLine();
+
+        if (!isNextLine || activeSmartScanner.isClosed()){
+            scannersStack.pop().close();
+            if (scannersStack.isEmpty()){
+                return false;
             }
-            return true;
+            activeSmartScanner = scannersStack.peek();
         }
 
-        return isNextLine;
+        return !scannersStack.isEmpty();
     }
 
-    public void activeConsole(){
-        this.activeScanner = this.consoleScanner;
-    }
-
-    public void activeFile(){
-        this.activeScanner = this.fileScanner;
-    }
-
-    public void closeFileScanner(){
-        this.fileScanner.close();
-    }
-
-    /**
-     * Saves the current {@code Scanner} instance to the temporary scanner.
-     * This method allows restoring the previous {@code Scanner} state later.
-     */
-    public void saveActiveScanner(){
-        memScanner = activeScanner;
-    }
-
-    /**
-     * Restores the {@code Scanner} to the previous state saved by {@link #saveActiveScanner()}.
-     */
-    public void loadActiveScanner(){
-        activeScanner = memScanner;
-    }
 }

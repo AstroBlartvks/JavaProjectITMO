@@ -46,7 +46,6 @@ public class ArgumentRequester {
                                                 Function<String, T> parser, Predicate<T> validator) {
         boolean validInput = false;
         T value = null;
-        scannerManager.saveActiveScanner();
 
         while (!validInput) {
             try {
@@ -63,17 +62,17 @@ public class ArgumentRequester {
                 } else {
                     throw new InvalidPropertiesFormatException("Validation failed: " + exceptionString);
                 }
-            } catch (NoSuchElementException e){
-                scannerManager.activeConsole();
-                System.out.println("Script has ended, write by yourself!");
-            } catch (Exception e) {
-                scannerManager.activeConsole();
-                System.out.println("Incorrect input format: " + e.getMessage() + ". " + exceptionString);
+            } catch (IllegalStateException e) {
+                scannerManager.reCreateScannerManager();
+                System.out.println("Scanner closed because: (You pressed CTRL+D) OR (Script has ended).\nBut you have to write this!");
+            } catch (Exception e){
+                scannerManager.setConsoleScanner();
+                System.out.println(e + ". " + exceptionString);
             }
 
         }
 
-        scannerManager.loadActiveScanner(); //!
+        scannerManager.setLastScannerAsActive();
         return Optional.of(value);
     }
 
@@ -86,7 +85,7 @@ public class ArgumentRequester {
      * @param validator a {@link Predicate} that defines the validation logic for the input.
      * @return the valid {@code Double} value entered by the user, or {@code null} if the input is empty and no validation is applied.
      */
-    public Optional<Double> requestDouble(String requested, String exceptionString, Predicate<Double> validator) {
+    public Optional<Double> requestDouble(String requested, String exceptionString, Predicate<Double> validator){
         return requestValue(requested, exceptionString, Double::parseDouble, validator);
     }
 

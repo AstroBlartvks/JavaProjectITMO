@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 
 @Getter
-public class ScriptFile {
+public class ScriptFile{
 
     private final Scanner fileScanner;
     private final String scriptName;

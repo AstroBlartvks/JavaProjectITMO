@@ -1,6 +1,8 @@
 package org.javaLab5.command.clientCommand.scriptHandler;
 
 import org.javaLab5.inputManager.ScannerManager;
+import org.javaLab5.inputManager.SmartScanner;
+import org.javaLab5.inputManager.SmartScannerType;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,14 +11,12 @@ import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 /**
  * Handles the execution of script files, ensuring proper command execution
  * while preventing recursion loops.
  */
 public class ScriptExecutes {
-    private final Stack<ScriptFile> scriptFilesStack = new Stack<>();
     private final ScannerManager scannerManager;
 
     public ScriptExecutes(ScannerManager scannerManager) {
@@ -44,12 +44,10 @@ public class ScriptExecutes {
 
         try {
             Scanner scriptScanner = new Scanner(new File(scriptName));
-            ScriptFile scriptFile = new ScriptFile(scriptName, scriptScanner);
-            scriptFilesStack.push(scriptFile);
+            SmartScanner smartScanner = new SmartScanner(scriptScanner, SmartScannerType.FILE, scriptName);
+            scannerManager.pushScanner(smartScanner);
+            scannerManager.setLastScannerAsActive();
 
-            scannerManager.setFileScanner(scriptScanner);
-            scannerManager.pushScannerToStack(scriptScanner);
-            scannerManager.activeFile();
         } catch (FileNotFoundException exception) {
             throw new ScriptExecuteScannerException("Script-file '" + scriptName + "' doesn't exist!");
         } catch (NoSuchElementException exception) {
@@ -63,8 +61,8 @@ public class ScriptExecutes {
     }
 
     private boolean isItRecursion(String scriptName){
-        boolean alreadyExists = scriptFilesStack.stream()
-                .anyMatch(scriptFile -> scriptFile.getScriptName().equals(scriptName));
+        boolean alreadyExists = scannerManager.getScannersStack().stream()
+                .anyMatch(scriptFile -> scriptFile.getName().equals(scriptName));
 
         if (!alreadyExists) {
             return false;

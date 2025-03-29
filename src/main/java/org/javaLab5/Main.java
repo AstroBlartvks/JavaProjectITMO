@@ -16,6 +16,7 @@ import org.javaLab5.files.Reader;
 
 
 import org.javaLab5.inputManager.ScannerManager;
+
 //execute_script src/resources/scripts/script1.sc - пример рабоыт программы
 //execute_script src/resources/scripts/rcs1.sc - рекурсия
 //execute_script src/resources/scripts/main.sc - много скриптов
@@ -45,6 +46,7 @@ public class Main {
         while (scannerManager.hasNextLine()) {
             //User
             String input = scannerManager.readLine();
+
             ClientCommand clientCommand;
             CommandArgumentList commandArgList;
 
