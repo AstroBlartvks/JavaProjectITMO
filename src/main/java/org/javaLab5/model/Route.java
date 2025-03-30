@@ -103,7 +103,7 @@ public class Route implements Comparable<Route> {
      *
      * @param routeDTO The 'RouteDataTransferObject' object that we get information from
      */
-    public void setFromRouteDataTransferObject(RouteDataTransferObject routeDTO){
+    public void setFromRouteDataTransferObject(CreateRouteDTO routeDTO){
         setName(routeDTO.getName());
         setCoordinates(routeDTO.getCoordinates());
         setFrom(routeDTO.getFrom());

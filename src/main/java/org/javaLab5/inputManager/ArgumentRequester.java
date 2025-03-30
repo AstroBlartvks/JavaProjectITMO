@@ -4,7 +4,6 @@ import org.javaLab5.model.Coordinates;
 import org.javaLab5.model.Location;
 
 import java.util.InvalidPropertiesFormatException;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;

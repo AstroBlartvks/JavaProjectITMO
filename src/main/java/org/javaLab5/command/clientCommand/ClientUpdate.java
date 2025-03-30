@@ -18,7 +18,7 @@ public class ClientUpdate extends ClientCommand{
             throw new IllegalArgumentException("The 'update' command has syntax and must contain the 'id' argument example: 'update id {element}'");
         }
 
-        argumentList.convertArgumentType(Integer.class);
+        argumentList.convertArgumentToNeedType(Integer::valueOf);
         argumentList.addArgument(new CommandArgument(RouteDTOParser.parse(this.argumentRequester)));
 
         return argumentList;

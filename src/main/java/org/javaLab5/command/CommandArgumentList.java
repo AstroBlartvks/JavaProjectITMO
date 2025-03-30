@@ -2,6 +2,7 @@ package org.javaLab5.command;
 
 import lombok.Getter;
 
+import java.util.function.Function;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,32 +81,23 @@ public class CommandArgumentList {
     /**
      * Validates and converts the first argument to the specified type.
      *
-     * @param clazz the expected type of the first argument
+     * @param parser the expected type of the first argument
      * @param <T> the type parameter
      * @throws IllegalArgumentException if the argument cannot be converted to the specified type
      */
-    public <T> void convertArgumentType(Class<T> clazz) throws IllegalArgumentException {
-        String argument = getFirstArgument().getValue().toString();
+    public <T> void convertArgumentToNeedType(Function<String, T> parser) throws IllegalArgumentException {
+        //Тут всегда будет string
+        //Я не сильно хочу менять CommandParser.parseCommand, так как он тогда должен быть ункальным для каждой команды,
+        //а еще второго аргумента может не быть или он разных типов
+        String argument = (String) getFirstArgument().getValue();
 
         try {
-            Object parsedValue;
-
-            if (clazz == Integer.class) {
-                parsedValue = Integer.parseInt(argument);
-            } else if (clazz == Double.class) {
-                parsedValue = Double.parseDouble(argument);
-            } else if (clazz == Boolean.class) {
-                parsedValue = Boolean.parseBoolean(argument);
-            } else if (clazz == String.class) {
-                return;
-            } else {
-                throw new IllegalArgumentException("Unsupported type of argument: " + clazz.getSimpleName());
-            }
-
-            T arg = clazz.cast(parsedValue);
-            updateByIndex(1, new CommandArgument(arg));
+            T parsedValue = parser.apply(argument);
+            updateByIndex(1, new CommandArgument(parsedValue));
         } catch (Exception e) {
-            throw new IllegalArgumentException("Argument must be capable of being converted to '" + clazz.getSimpleName() + "', but '" + argument + "' cannot be transformed", e);
+            throw new IllegalArgumentException(
+                    "Argument must be convertible to '" + parser.getClass() + "', but '" + argument + "' cannot be transformed", e
+            );
         }
     }
 

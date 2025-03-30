@@ -27,15 +27,15 @@ public class ScriptExecutes {
      * Running a script file by reading and processing each line as a command.
      *
      * @param scriptName The name of the script file to execute.
-     * @throws Exception If the script file does not exist, is unreadable, or recursion is detected.
+     * @throws ScriptExecuteScannerException If the script file does not exist, is unreadable, or recursion is detected.
      */
-    public void run(String scriptName) throws Exception {
+    public void run(String scriptName) throws ScriptExecuteScannerException {
 
         if (!new File(scriptName).exists()) {
-            throw new Exception("Script-file '" + scriptName + "' doesn't exist!");
+            throw new ScriptExecuteScannerException("Script-file '" + scriptName + "' doesn't exist!");
         }
         if (!Files.isReadable(Paths.get(scriptName))) {
-            throw new Exception("Insufficient permissions to read the '" + scriptName + "' script-file");
+            throw new ScriptExecuteScannerException("Insufficient permissions to read the '" + scriptName + "' script-file");
         }
 
         if (isItRecursion(scriptName)){

@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class RouteDataTransferObject {
+public class CreateRouteDTO {
     private String name;
     private Coordinates coordinates;
     private Location from;

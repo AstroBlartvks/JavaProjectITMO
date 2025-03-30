@@ -3,7 +3,7 @@ package org.javaLab5.command.serverCommand;
 import org.javaLab5.collection.CustomCollection;
 import org.javaLab5.command.CommandArgumentList;
 import org.javaLab5.model.Route;
-import org.javaLab5.model.RouteDataTransferObject;
+import org.javaLab5.model.CreateRouteDTO;
 
 import java.util.Date;
 import java.util.Set;
@@ -36,7 +36,7 @@ public class ServerRemoveGreater extends ServerCommand{
     }
 
     private Route handleNewRoute(CommandArgumentList args) {
-        RouteDataTransferObject routeDTO = (RouteDataTransferObject) args.getSecondArgument().getValue();
+        CreateRouteDTO routeDTO = (CreateRouteDTO) args.getSecondArgument().getValue();
         Route newRoute = new Route();
 
         newRoute.setId(collection.getNewID());

@@ -5,7 +5,7 @@ import org.javaLab5.command.CommandArgumentList;
 public class ClientRemoveById extends ClientCommand {
     @Override
     public CommandArgumentList input(){
-        argumentList.convertArgumentType(Integer.class);
+        argumentList.convertArgumentToNeedType(Integer::valueOf);
         return argumentList;
     }
 }

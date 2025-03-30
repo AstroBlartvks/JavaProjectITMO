@@ -10,7 +10,6 @@ import lombok.Setter;
 @Setter
 public class CommandArgument {
     private final Object value;
-    private final Class<?> type; //Пока debug средство, потом уберу, мб
 
     /**
      * Constructor for creating the 'command-argument' class
@@ -19,7 +18,6 @@ public class CommandArgument {
      */
     public CommandArgument(Object value) {
         this.value = value;
-        this.type = value != null ? value.getClass() : null;
     }
 
     /**
