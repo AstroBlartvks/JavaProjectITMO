@@ -3,8 +3,8 @@ package org.javaLab5.inputManager;
 import org.javaLab5.command.CommandArgument;
 import org.javaLab5.command.CommandArgumentList;
 
-public class CommandParser {
-    public static CommandArgumentList parseCommand(String commandLine) {
+public class CommandAndArgumentsParser {
+    public static CommandArgumentList parseCommandAndArguments(String commandLine) {
         CommandArgumentList argList = new CommandArgumentList();
         String[] stringArgs = commandLine.split("\\s+", 2);
         argList.addArgument(new CommandArgument(stringArgs[0]));

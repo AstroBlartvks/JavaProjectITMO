@@ -12,4 +12,8 @@ public abstract class ClientCommand {
     public CommandArgumentList input() throws Exception{
         return argumentList;
     }
+
+    public void createArgumentListForInput(CommandArgumentList args){
+        this.argumentList = args;
+    }
 }
