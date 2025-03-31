@@ -43,8 +43,13 @@ public class Main {
         CommandIdentifier commandIndent = new CommandIdentifier(scannerManager, argumentRequester);
 
         while (scannerManager.hasNextLine()) {
-            //User
-            String input = scannerManager.readLine();
+            String input;
+            try {
+                input = scannerManager.readLine();
+            } catch (IllegalStateException e){
+                System.out.println("System.in closed: " + e.getMessage());
+                continue;
+            }
             CommandArgumentList commandArgList;
 
             try {

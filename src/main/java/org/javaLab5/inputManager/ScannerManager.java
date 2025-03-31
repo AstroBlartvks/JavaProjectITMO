@@ -63,6 +63,15 @@ public class ScannerManager {
         if (activeSmartScanner.isClosed()){
             throw new IllegalStateException("Scanner closed!");
         }
+
+        if (!activeSmartScanner.hasNextLine()){
+            scannersStack.pop().close();
+            if (!scannersStack.isEmpty()) {
+                setLastScannerAsActive();
+            }
+            throw new IllegalStateException("Scanner has ended!");
+        }
+
         return activeSmartScanner.nextLine();
     }
 
