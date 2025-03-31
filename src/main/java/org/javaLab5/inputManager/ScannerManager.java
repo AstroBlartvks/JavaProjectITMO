@@ -25,7 +25,7 @@ public class ScannerManager {
     private SmartScanner activeSmartScanner;
 
     public ScannerManager(){
-        SmartScanner consoleScanner = getSmartScanner();
+        SmartScanner consoleScanner = getNewSmartScanner();
         pushScanner(consoleScanner);
         activeSmartScanner = consoleScanner;
     }
@@ -38,11 +38,17 @@ public class ScannerManager {
         activeSmartScanner = scannersStack.peek();
     }
 
+    public void checkIfSystemInClosed() throws SystemInClosedException{
+        if (!activeSmartScanner.hasNextLine() && activeSmartScanner.getType() == SmartScannerType.CONSOLE){
+            throw new SystemInClosedException("System.in closed by your CTRL+D, program will be closed!");
+        }
+    }
+
     public void setConsoleScanner(){
         activeSmartScanner = scannersStack.firstElement();
     }
 
-    private SmartScanner getSmartScanner(){
+    private SmartScanner getNewSmartScanner(){
         return new SmartScanner(new Scanner(System.in), SmartScannerType.CONSOLE, "CONSOLE");
     }
 
@@ -54,17 +60,10 @@ public class ScannerManager {
      * @return The line of input read from the current {@code Scanner}.
      */
     public String readLine() throws IllegalStateException{
-        if (activeSmartScanner.isClosed() || !activeSmartScanner.hasNextLine()){
+        if (activeSmartScanner.isClosed()){
             throw new IllegalStateException("Scanner closed!");
         }
         return activeSmartScanner.nextLine();
-    }
-
-    public void reCreateScannerManager(){
-        scannersStack.clear();
-        SmartScanner consoleScanner = getSmartScanner();
-        pushScanner(consoleScanner);
-        activeSmartScanner = consoleScanner;
     }
 
     /**
@@ -80,6 +79,12 @@ public class ScannerManager {
         boolean isNextLine = activeSmartScanner.hasNextLine();
 
         if (!isNextLine || activeSmartScanner.isClosed()){
+            if (scannersStack.isEmpty()){
+                scannersStack.push(getNewSmartScanner());
+                activeSmartScanner = scannersStack.firstElement();
+                return true;
+            }
+
             scannersStack.pop().close();
             if (scannersStack.isEmpty()){
                 return false;

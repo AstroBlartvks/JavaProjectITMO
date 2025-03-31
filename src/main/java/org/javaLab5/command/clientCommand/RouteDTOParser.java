@@ -2,6 +2,7 @@ package org.javaLab5.command.clientCommand;
 
 
 import org.javaLab5.inputManager.ArgumentRequester;
+import org.javaLab5.inputManager.SystemInClosedException;
 import org.javaLab5.model.Coordinates;
 import org.javaLab5.model.Location;
 import org.javaLab5.model.CreateRouteDTO;
@@ -9,7 +10,7 @@ import org.javaLab5.model.CreateRouteDTO;
 import java.util.Optional;
 
 public class RouteDTOParser {
-    public static CreateRouteDTO parse(ArgumentRequester argumentRequester){
+    public static CreateRouteDTO parse(ArgumentRequester argumentRequester) throws IllegalArgumentException, SystemInClosedException {
         Optional<String> name = argumentRequester.requestString("Write 'name' -> Route", "'name' can't be empty or null", x -> x != null && !x.isEmpty());
         Coordinates coordinates = argumentRequester.requestCoordinates();
         Location from = argumentRequester.requestLocation("from");

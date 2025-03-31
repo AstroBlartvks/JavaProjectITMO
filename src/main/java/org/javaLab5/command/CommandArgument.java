@@ -1,16 +1,13 @@
 package org.javaLab5.command;
 
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * Abstraction over arguments passed to a command
  */
 @Getter
-@Setter
 public class CommandArgument {
     private final Object value;
-
     /**
      * Constructor for creating the 'command-argument' class
      *
@@ -26,7 +23,7 @@ public class CommandArgument {
      * @return String text representation
      */
     @Override
-    public String toString(){
+    public String toString() {
         return this.value != null ? this.value.toString() : "null";
     }
 

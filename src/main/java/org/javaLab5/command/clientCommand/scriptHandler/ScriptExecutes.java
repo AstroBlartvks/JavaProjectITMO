@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import java.util.Stack;
 
 /**
  * Handles the execution of script files, ensuring proper command execution

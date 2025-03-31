@@ -87,7 +87,7 @@ public class CommandArgumentList {
      */
     public <T> void convertArgumentToNeedType(Function<String, T> parser) throws IllegalArgumentException {
         //Тут всегда будет string
-        //Я не сильно хочу менять CommandParser.parseCommand, так как он тогда должен быть ункальным для каждой команды,
+        //Я не сильно хочу менять CommandParser.parseCommand, так как он тогда должен быть уникальным для каждой команды,
         //а еще второго аргумента может не быть или он разных типов
         String argument = (String) getFirstArgument().getValue();
 

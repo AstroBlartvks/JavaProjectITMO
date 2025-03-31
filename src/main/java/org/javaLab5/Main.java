@@ -3,11 +3,9 @@ package org.javaLab5;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.javaLab5.collection.CustomCollection;
 
-import org.javaLab5.command.clientCommand.ClientCommand;
 import org.javaLab5.inputManager.ArgumentRequester;
 import org.javaLab5.inputManager.CommandIdentifier;
 import org.javaLab5.command.CommandArgumentList;
-import org.javaLab5.command.clientCommand.UndefinedCommandException;
 import org.javaLab5.command.serverCommand.CommandManager;
 import org.javaLab5.command.serverCommand.ResponseStatus;
 import org.javaLab5.command.serverCommand.ServerResponse;
@@ -16,8 +14,9 @@ import org.javaLab5.files.Reader;
 
 
 import org.javaLab5.inputManager.ScannerManager;
+import org.javaLab5.inputManager.SystemInClosedException;
 
-//execute_script src/resources/scripts/script1.sc - пример рабоыт программы
+//execute_script src/resources/scripts/script1.sc - пример работы программы
 //execute_script src/resources/scripts/rcs1.sc - рекурсия
 //execute_script src/resources/scripts/main.sc - много скриптов
 
@@ -46,24 +45,13 @@ public class Main {
         while (scannerManager.hasNextLine()) {
             //User
             String input = scannerManager.readLine();
-
-            ClientCommand clientCommand;
             CommandArgumentList commandArgList;
 
             try {
-                clientCommand = commandIndent.getCommand(input);
-            } catch (UndefinedCommandException e) {
-                System.out.println("Exception: " + e.getMessage());
-                continue;
-            }
-
-            if (clientCommand == null) {
-                System.out.println("Unexpected command: '" + input + "'. Try write 'help'");
-                continue;
-            }
-
-            try {
-                commandArgList = clientCommand.input();
+                commandArgList = commandIndent.getCommand(input);
+            } catch (SystemInClosedException e) {
+                System.out.println("System.in closed: " + e.getMessage());
+                return;
             } catch (Exception e) {
                 System.out.println("Exception: " + e.getMessage());
                 continue;

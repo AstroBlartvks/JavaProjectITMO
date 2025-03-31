@@ -4,6 +4,7 @@ import org.javaLab5.model.Coordinates;
 import org.javaLab5.model.Location;
 
 import java.util.InvalidPropertiesFormatException;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -42,7 +43,7 @@ public class ArgumentRequester {
      * @return Optional
      */
     private <T> Optional<T> requestValue(String requested, String exceptionString,
-                                                Function<String, T> parser, Predicate<T> validator) {
+                                                Function<String, T> parser, Predicate<T> validator) throws SystemInClosedException{
         boolean validInput = false;
         T value = null;
 
@@ -61,9 +62,9 @@ public class ArgumentRequester {
                 } else {
                     throw new InvalidPropertiesFormatException("Validation failed: " + exceptionString);
                 }
-            } catch (IllegalStateException e) {
-                scannerManager.reCreateScannerManager();
-                System.out.println("Scanner closed because: (You pressed CTRL+D) OR (Script has ended).\nBut you have to write this!");
+            } catch (NoSuchElementException e) {
+                scannerManager.setConsoleScanner();
+                scannerManager.checkIfSystemInClosed();
             } catch (Exception e){
                 scannerManager.setConsoleScanner();
                 System.out.println(e + ". " + exceptionString);
@@ -84,7 +85,7 @@ public class ArgumentRequester {
      * @param validator a {@link Predicate} that defines the validation logic for the input.
      * @return the valid {@code Double} value entered by the user, or {@code null} if the input is empty and no validation is applied.
      */
-    public Optional<Double> requestDouble(String requested, String exceptionString, Predicate<Double> validator){
+    public Optional<Double> requestDouble(String requested, String exceptionString, Predicate<Double> validator) throws SystemInClosedException{
         return requestValue(requested, exceptionString, Double::parseDouble, validator);
     }
 
@@ -97,7 +98,7 @@ public class ArgumentRequester {
      * @param validator a {@link Predicate} that defines the validation logic for the input.
      * @return the valid {@code Float} value entered by the user, or {@code null} if the input is empty and no validation is applied.
      */
-    public Optional<Float> requestFloat(String requested, String exceptionString, Predicate<Float> validator) {
+    public Optional<Float> requestFloat(String requested, String exceptionString, Predicate<Float> validator) throws SystemInClosedException{
         return requestValue(requested, exceptionString, Float::parseFloat, validator);
     }
 
@@ -110,7 +111,7 @@ public class ArgumentRequester {
      * @param validator a {@link Predicate} that defines the validation logic for the input.
      * @return the valid {@code String} entered by the user, or {@code null} if the input is empty and no validation is applied.
      */
-    public Optional<String> requestString(String requested, String exceptionString, Predicate<String> validator) {
+    public Optional<String> requestString(String requested, String exceptionString, Predicate<String> validator) throws SystemInClosedException{
         return requestValue(requested, exceptionString, input -> input, validator);
     }
 
@@ -123,7 +124,7 @@ public class ArgumentRequester {
      * @param validator a {@link Predicate} that defines the validation logic for the input.
      * @return the valid {@code Long} value entered by the user, or {@code null} if the input is empty and no validation is applied.
      */
-    public Optional<Long> requestLong(String requested, String exceptionString, Predicate<Long> validator) {
+    public Optional<Long> requestLong(String requested, String exceptionString, Predicate<Long> validator) throws SystemInClosedException{
         return requestValue(requested, exceptionString, Long::parseLong, validator);
     }
 
@@ -132,7 +133,7 @@ public class ArgumentRequester {
      *
      * @return a {@link Coordinates} object containing the values entered by the user.
      */
-    public Coordinates requestCoordinates() throws IllegalArgumentException{
+    public Coordinates requestCoordinates() throws IllegalArgumentException, SystemInClosedException{
         Coordinates coordinates = new Coordinates();
 
         Optional<Double> x = requestDouble("Write 'x' -> Coordinates.x", "'x' must be Double and cannot be null", d -> true);
@@ -159,7 +160,7 @@ public class ArgumentRequester {
      * @param requested the context or description of the location being requested, to be included in the prompts.
      * @return a {@link Location} object containing the values entered by the user, or {@code null} if the user does not provide valid values.
      */
-    public Location requestLocation(String requested) {
+    public Location requestLocation(String requested) throws SystemInClosedException {
         Optional<Long> x = requestLong("Write 'x' -> Location.x (" + requested + ") || Press Enter: null -> Location(" + requested + ")", "'x' must be long", null);
 
         if (x.isEmpty()) {
