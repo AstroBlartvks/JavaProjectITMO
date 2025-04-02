@@ -1,4 +1,8 @@
 target/
+.idea/
+**/src/main/java/org/AstrosLab/command/old
+**/src/test
+**/JavaDoc
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
