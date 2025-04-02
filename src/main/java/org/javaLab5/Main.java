@@ -3,18 +3,13 @@ package org.javaLab5;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.javaLab5.collection.CustomCollection;
 
-import org.javaLab5.inputManager.ArgumentRequester;
-import org.javaLab5.inputManager.CommandIdentifier;
+import org.javaLab5.inputManager.*;
 import org.javaLab5.command.CommandArgumentList;
 import org.javaLab5.command.serverCommand.CommandManager;
 import org.javaLab5.command.serverCommand.ResponseStatus;
 import org.javaLab5.command.serverCommand.ServerResponse;
 import org.javaLab5.files.JsonReader;
 import org.javaLab5.files.Reader;
-
-
-import org.javaLab5.inputManager.ScannerManager;
-import org.javaLab5.inputManager.SystemInClosedException;
 
 //execute_script src/resources/scripts/script1.sc - пример работы программы
 //execute_script src/resources/scripts/rcs1.sc - рекурсия
@@ -40,26 +35,22 @@ public class Main {
         ScannerManager scannerManager = new ScannerManager();
         CommandManager commandManager = new CommandManager(collection);
         ArgumentRequester argumentRequester = new ArgumentRequester(scannerManager);
-        CommandIdentifier commandIndent = new CommandIdentifier(scannerManager, argumentRequester);
+        CommandHandler commandHandler = new CommandHandler(scannerManager, argumentRequester);
 
         while (scannerManager.hasNextLine()) {
             String input;
             try {
                 input = scannerManager.readLine();
             } catch (IllegalStateException e){
-                System.out.println("System.in closed: " + e.getMessage());
+                System.out.println("Scanner exception: " + e.getMessage());
                 continue;
             }
             CommandArgumentList commandArgList;
 
             try {
-                commandArgList = commandIndent.getCommand(input);
-            } catch (SystemInClosedException e) {
-                System.out.println("System.in closed: " + e.getMessage());
+                commandArgList = commandHandler.handle(input);
+            } catch (SystemInClosedException | ScannerException e){
                 return;
-            } catch (Exception e) {
-                System.out.println("Exception: " + e.getMessage());
-                continue;
             }
 
             if (commandArgList == null){

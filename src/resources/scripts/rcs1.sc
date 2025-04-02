@@ -12,4 +12,3 @@ from
 to
 2
 execute_script src/resources/scripts/rcs2.sc
-show

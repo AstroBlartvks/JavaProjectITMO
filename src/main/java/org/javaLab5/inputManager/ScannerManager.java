@@ -44,7 +44,11 @@ public class ScannerManager {
         }
     }
 
-    public void setConsoleScanner(){
+    public void setConsoleScanner() throws ScannerException{
+        if (scannersStack.isEmpty()){
+            throw new ScannerException("Console scanner was closed!");
+        }
+
         activeSmartScanner = scannersStack.firstElement();
     }
 
@@ -59,17 +63,18 @@ public class ScannerManager {
      *
      * @return The line of input read from the current {@code Scanner}.
      */
-    public String readLine() throws IllegalStateException{
+    public String readLine() throws ScannerException{
         if (activeSmartScanner.isClosed()){
-            throw new IllegalStateException("Scanner closed!");
+            throw new ScannerException("Scanner closed!");
         }
 
         if (!activeSmartScanner.hasNextLine()){
             scannersStack.pop().close();
             if (!scannersStack.isEmpty()) {
                 setLastScannerAsActive();
+            } else {
+                throw new ScannerException("Scanner has ended!");
             }
-            throw new IllegalStateException("Scanner has ended!");
         }
 
         return activeSmartScanner.nextLine();
@@ -85,9 +90,18 @@ public class ScannerManager {
     public boolean hasNextLine(){
         System.out.print(">>> ");
 
+        if (activeSmartScanner.isClosed() && scannersStack.isEmpty()){
+            return false;
+        }
+
         boolean isNextLine = activeSmartScanner.hasNextLine();
 
-        if (!isNextLine || activeSmartScanner.isClosed()){
+        if (!isNextLine){
+
+            if (activeSmartScanner.getType() == SmartScannerType.CONSOLE){
+                return false;
+            }
+
             if (scannersStack.isEmpty()){
                 scannersStack.push(getNewSmartScanner());
                 activeSmartScanner = scannersStack.firstElement();

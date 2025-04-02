@@ -62,7 +62,7 @@ public class ArgumentRequester {
                 } else {
                     throw new InvalidPropertiesFormatException("Validation failed: " + exceptionString);
                 }
-            } catch (NoSuchElementException e) {
+            } catch (NoSuchElementException | ScannerException e) {
                 scannerManager.setConsoleScanner();
                 scannerManager.checkIfSystemInClosed();
             } catch (Exception e){

@@ -10,10 +10,10 @@ import java.util.Map;
 
 @Setter
 @Getter
-public class CommandIdentifier {
+public class CommandHandler {
     private Map<String, ClientCommand> commandList = new HashMap<>();
 
-    public CommandIdentifier(ScannerManager scannerManager, ArgumentRequester argumentRequester){
+    public CommandHandler(ScannerManager scannerManager, ArgumentRequester argumentRequester){
         commandList.put("info", new ClientInfo());
         commandList.put("show", new ClientShow());
         commandList.put("clear", new ClientClear());
@@ -35,14 +35,25 @@ public class CommandIdentifier {
 
     }
 
-    public CommandArgumentList getCommand(String commandLine) throws UndefinedCommandException, IllegalArgumentException, SystemInClosedException {
+    public CommandArgumentList handle(String commandLine) throws IllegalArgumentException, SystemInClosedException {
         CommandArgumentList arguments = CommandAndArgumentsParser.parseCommandAndArguments(commandLine);
+        CommandArgumentList toServerCommandArgumentList;
         String command = (String) arguments.getCommand().getValue();
         if (!commandList.containsKey(command)){
-            throw new UndefinedCommandException("Unexpected command: '" + command + "'. Try write 'help'");
+            System.out.println("Unexpected command: '" + command + "'. Try write 'help'");
+            return null;
         }
         ClientCommand clientCommand = commandList.get(command);
-        return clientCommand.input(arguments);
+        try {
+            toServerCommandArgumentList = clientCommand.input(arguments);
+        } catch (SystemInClosedException | ScannerException e) {
+            System.out.println("System.in|Console.Scanner closed: " + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
+            return null;
+        }
+        return toServerCommandArgumentList;
     }
 
 }
