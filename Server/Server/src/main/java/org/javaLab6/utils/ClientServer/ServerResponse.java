@@ -1,15 +1,20 @@
 package org.javaLab6.utils.ClientServer;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class ServerResponse {
+    @JsonProperty("value")
     private Object value;
+    @JsonProperty("status")
     private ResponseStatus status;
 
-    public ServerResponse(ResponseStatus status, Object value){
+    @JsonCreator
+    public ServerResponse(@JsonProperty("status") ResponseStatus status, @JsonProperty("value") Object value){
         this.status = status;
         this.value = value;
     }

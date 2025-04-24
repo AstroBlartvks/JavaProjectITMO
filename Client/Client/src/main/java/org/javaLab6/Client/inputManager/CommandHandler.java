@@ -39,7 +39,7 @@ public class CommandHandler {
         CommandArgumentList arguments = CommandAndArgumentsParser.parseCommandAndArguments(commandLine);
         CommandArgumentList toServerCommandArgumentList;
         String command = (String) arguments.getCommand().getValue();
-        if (!commandList.containsKey(command)){
+        if (!commandList.containsKey(command) || command == null){
             System.out.println("Unexpected command: '" + command + "'. Try write 'help'");
             return null;
         }

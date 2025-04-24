@@ -1,16 +1,28 @@
 package org.javaLab6.Client.utils.ClientServer;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import org.javaLab6.Client.utils.command.CommandArgumentList;
+import lombok.Setter;
+import org.javaLab6.Client.utils.command.CommandArgument;
+
+import java.util.List;
 
 @Getter
+@Setter
 public class ClientRequest {
+    @JsonProperty("state")
     ClientStatus state;
-    CommandArgumentList request;
+    @JsonProperty("request")
+    List<CommandArgument> request;
 
-    public ClientRequest(ClientStatus state, CommandArgumentList command){
+    @JsonCreator
+    public ClientRequest(
+            @JsonProperty("state") ClientStatus state,
+            @JsonProperty("request") List<CommandArgument> request
+    ) {
         this.state = state;
-        this.request = command;
+        this.request = request;
     }
 
     @Override

@@ -23,24 +23,6 @@ public class CommandArgumentList {
     }
 
     /**
-     * Retrieves argument with index 2
-     *
-     * @return a new CommandArgumentList containing only element-related arguments
-     */
-    public CommandArgument getSecondArgument(){
-        return argList.get(2);
-    }
-
-    /**
-     * Returns the number of arguments in the list.
-     *
-     * @return the number of arguments
-     */
-    public int length(){
-        return argList.size();
-    }
-
-    /**
      * Retrieves the command argument (first element in the list).
      *
      * @return the command argument
@@ -86,9 +68,6 @@ public class CommandArgumentList {
      * @throws IllegalArgumentException if the argument cannot be converted to the specified type
      */
     public <T> void convertArgumentToNeedType(Function<String, T> parser) throws IllegalArgumentException {
-        //Тут всегда будет string
-        //Я не сильно хочу менять CommandParser.parseCommand, так как он тогда должен быть уникальным для каждой команды,
-        //а еще второго аргумента может не быть или он разных типов
         String argument = (String) getFirstArgument().getValue();
 
         try {

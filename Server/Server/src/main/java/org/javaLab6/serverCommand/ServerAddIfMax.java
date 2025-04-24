@@ -8,6 +8,7 @@ import org.javaLab6.utils.model.Route;
 import org.javaLab6.utils.model.CreateRouteDTO;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 public class ServerAddIfMax extends ServerCommand{
@@ -19,12 +20,16 @@ public class ServerAddIfMax extends ServerCommand{
 
     @Override
     public ServerResponse execute(CommandArgumentList args) {
-        CreateRouteDTO routeDTO = (CreateRouteDTO) args.getSecondArgument().getValue();
+        CreateRouteDTO routeDTO = CreateRouteDTO.fromMap((LinkedHashMap<String, Object>) args.getLastArgument().getValue());
         Route newRoute = new Route();
 
         newRoute.setId(collection.getNewID());
         newRoute.setCreationDate(new Date());
         newRoute.setFromRouteDataTransferObject(routeDTO);
+
+        if (collection.isExist(newRoute)){
+            return new ServerResponse(ResponseStatus.EXCEPTION, "This Route is already exist");
+        }
 
         Optional<Route> maxRoute = this.collection.getCollection().stream().max(Route::compareTo);
         if (maxRoute.isEmpty() || newRoute.compareTo(maxRoute.get()) > 0){

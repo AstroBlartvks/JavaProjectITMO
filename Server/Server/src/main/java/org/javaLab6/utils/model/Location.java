@@ -3,6 +3,8 @@ package org.javaLab6.utils.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.LinkedHashMap;
+
 /**
  * The {@code Location} class represents a location with coordinates and a name.
  * <p>
@@ -50,5 +52,15 @@ public class Location {
                 ", z=" + this.z +
                 ", name='" + this.name +
                 "'}";
+    }
+
+    public static Location fromMap(LinkedHashMap<String, Object> map) {
+        if (map == null) return null;
+        Location location = new Location();
+        location.setName((String) map.get("name"));
+        location.setX(Long.parseLong(map.get("x").toString()));
+        location.setY(Float.valueOf(map.get("y").toString()));
+        location.setZ(Float.valueOf(map.get("z").toString()));
+        return location;
     }
 }

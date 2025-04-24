@@ -8,6 +8,7 @@ import org.javaLab6.utils.model.Route;
 import org.javaLab6.utils.model.CreateRouteDTO;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 
 public class ServerUpdate extends ServerCommand{
     private final CustomCollection collection;
@@ -22,12 +23,17 @@ public class ServerUpdate extends ServerCommand{
             throw new IllegalArgumentException("There is no such 'Route' with 'id'=" + args.getFirstArgument().getValue());
         }
 
-        CreateRouteDTO routeDTO = (CreateRouteDTO) args.getSecondArgument().getValue();
+        CreateRouteDTO routeDTO = CreateRouteDTO.fromMap((LinkedHashMap<String, Object>) args.getLastArgument().getValue());
         Route newRoute = new Route();
 
         newRoute.setId((int)args.getFirstArgument().getValue());
         newRoute.setCreationDate(new Date());
         newRoute.setFromRouteDataTransferObject(routeDTO);
+
+        if (collection.isExist(newRoute)){
+            return new ServerResponse(ResponseStatus.EXCEPTION, "This Route is already exist");
+        }
+
         this.collection.updateElement(newRoute);
 
         return new ServerResponse(ResponseStatus.OK, "Route{id="+newRoute.getId()+",name="+newRoute.getName()+"} successfully updated");

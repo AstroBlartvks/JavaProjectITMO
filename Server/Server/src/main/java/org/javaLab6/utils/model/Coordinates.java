@@ -3,6 +3,8 @@ package org.javaLab6.utils.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.LinkedHashMap;
+
 /**
  * The {@code Coordinates} class represents a set of coordinates with {@code x} and {@code y} values.
  * <p>
@@ -36,5 +38,13 @@ public class Coordinates {
                 "x=" + this.x +
                 ", y=" + this.y +
                 '}';
+    }
+
+    public static Coordinates fromMap(LinkedHashMap<String, Object> map) {
+        if (map == null) return null;
+        Coordinates coordinates = new Coordinates();
+        coordinates.setX((Double) map.get("x"));
+        coordinates.setY((Double) map.get("y"));
+        return coordinates;
     }
 }

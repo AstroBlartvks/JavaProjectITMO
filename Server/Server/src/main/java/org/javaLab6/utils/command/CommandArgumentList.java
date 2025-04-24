@@ -22,13 +22,19 @@ public class CommandArgumentList {
         this.argList.add(arg);
     }
 
+    public void setArgList(List<CommandArgument> args){
+        for (CommandArgument arg : args){
+            addArgument(arg);
+        }
+    }
+
     /**
      * Retrieves argument with index 2
      *
      * @return a new CommandArgumentList containing only element-related arguments
      */
-    public CommandArgument getSecondArgument(){
-        return argList.get(2);
+    public CommandArgument getLastArgument(){
+        return argList.get(argList.size() - 1);
     }
 
     /**
@@ -66,39 +72,6 @@ public class CommandArgumentList {
      */
     public CommandArgument getArgumentByIndex(int index){
         return argList.get(index);
-    }
-
-    /**
-     * Updates an argument at the specified index.
-     *
-     * @param index the index of the argument to update
-     * @param arg the new argument value
-     */
-    public void updateByIndex(int index, CommandArgument arg){
-        argList.set(index, arg);
-    }
-
-    /**
-     * Validates and converts the first argument to the specified type.
-     *
-     * @param parser the expected type of the first argument
-     * @param <T> the type parameter
-     * @throws IllegalArgumentException if the argument cannot be converted to the specified type
-     */
-    public <T> void convertArgumentToNeedType(Function<String, T> parser) throws IllegalArgumentException {
-        //Тут всегда будет string
-        //Я не сильно хочу менять CommandParser.parseCommand, так как он тогда должен быть уникальным для каждой команды,
-        //а еще второго аргумента может не быть или он разных типов
-        String argument = (String) getFirstArgument().getValue();
-
-        try {
-            T parsedValue = parser.apply(argument);
-            updateByIndex(1, new CommandArgument(parsedValue));
-        } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "Argument must be convertible to '" + parser.getClass() + "', but '" + argument + "' cannot be transformed", e
-            );
-        }
     }
 
     /**
