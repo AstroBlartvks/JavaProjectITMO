@@ -141,11 +141,6 @@ public class  CustomCollection {
                 .count();
     }
 
-    public boolean isExist(Route r2) {
-        return this.collection.stream()
-                .anyMatch(r -> r.equals(r2));
-    }
-
     /**
      * Retrieves all Route distances sorted in descending order.
      *

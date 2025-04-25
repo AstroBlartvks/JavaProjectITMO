@@ -26,10 +26,6 @@ public class ServerAddIfMin extends ServerCommand {
         newRoute.setCreationDate(new Date());
         newRoute.setFromRouteDataTransferObject(routeDTO);
 
-        if (collection.isExist(newRoute)){
-            return new ServerResponse(ResponseStatus.EXCEPTION, "This Route is already exist");
-        }
-
         Optional<Route> minRoute = this.collection.getCollection().stream().min(Route::compareTo);
         if (minRoute.isEmpty() || newRoute.compareTo(minRoute.get()) < 0){
             this.collection.addElement(newRoute);

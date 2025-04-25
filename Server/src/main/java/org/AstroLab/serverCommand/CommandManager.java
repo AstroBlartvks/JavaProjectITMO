@@ -35,10 +35,10 @@ public class CommandManager {
     }
 
     public ServerResponse executeCommand(CommandArgumentList commandArgList) throws Exception {
-        ServerCommand serverCommand = commandList.get(commandArgList.getCommand().toString());
+        ServerCommand serverCommand = commandList.get(commandArgList.getArgumentByIndex(0).toString());
 
         if (serverCommand == null){
-            throw new Exception("Unexpected command: '"+commandArgList.getCommand().toString()+"'!");
+            throw new Exception("Unexpected command: '"+commandArgList.getArgumentByIndex(0).toString()+"'!");
         }
 
         return serverCommand.execute(commandArgList);

@@ -27,10 +27,6 @@ public class ServerAddIfMax extends ServerCommand{
         newRoute.setCreationDate(new Date());
         newRoute.setFromRouteDataTransferObject(routeDTO);
 
-        if (collection.isExist(newRoute)){
-            return new ServerResponse(ResponseStatus.EXCEPTION, "This Route is already exist");
-        }
-
         Optional<Route> maxRoute = this.collection.getCollection().stream().max(Route::compareTo);
         if (maxRoute.isEmpty() || newRoute.compareTo(maxRoute.get()) > 0){
             this.collection.addElement(newRoute);

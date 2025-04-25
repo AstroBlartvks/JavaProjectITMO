@@ -1,12 +1,12 @@
 package org.AstroLab;
 
 import org.AstroLab.inputManager.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.AstroLab.utils.ClientServer.ClientRequest;
 import org.AstroLab.utils.ClientServer.ClientStatus;
 import org.AstroLab.utils.ClientServer.ResponseStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
 import org.AstroLab.utils.command.CommandArgumentList;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.net.ConnectException;
@@ -52,7 +52,7 @@ public final class Client {
             CommandArgumentList commandArgList = handleCommand(inputString);
             if (commandArgList == null) continue;
 
-            ClientRequest request = new ClientRequest(ClientStatus.REQUEST, commandArgList.getArgList());
+            ClientRequest request = new ClientRequest(ClientStatus.REQUEST, commandArgList);
             communicateWithServer(request);
         }
         shutdown();
@@ -65,17 +65,17 @@ public final class Client {
                 sendRequest(socket, request);
                 ServerResponse response = receiveResponse(socket);
 
-                if (response.getStatus() == ResponseStatus.EXIT){
-                    isRunning = false;
+                switch (response.getStatus()) {
+                    case EXIT:
+                        isRunning = false;
+                        return;
+                    case EXCEPTION:
+                        System.err.println("Server exception:\n" + response);
+                        return;
+                    default:
+                        System.out.println("Server response:\n" + response.getValue());
+                        return;
                 }
-                else if (response.getStatus() == ResponseStatus.OK || response.getStatus() == ResponseStatus.TEXT || response.getStatus() == ResponseStatus.DATA) {
-                    System.out.println(response.getValue());
-                } else if (response.getStatus() == ResponseStatus.EXCEPTION){
-                    System.err.println("Server exception: " + response);
-                }else {
-                    System.out.println("Server response: " + response);
-                }
-                return;
             } catch (ConnectException | SocketTimeoutException e) {
                 handleRetry(attempt, e);
             } catch (IOException e) {

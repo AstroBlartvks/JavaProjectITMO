@@ -8,6 +8,7 @@ import org.AstroLab.files.JsonReader;
 import org.AstroLab.files.Reader;
 import org.AstroLab.serverCommand.CommandManager;
 import org.AstroLab.utils.ClientServer.ClientRequest;
+import org.AstroLab.utils.ClientServer.ProtocolUtils;
 import org.AstroLab.utils.ClientServer.ResponseStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
 import org.AstroLab.utils.command.CommandArgumentList;
@@ -16,7 +17,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Server {
@@ -108,37 +108,37 @@ public class Server {
 
     private void handleRead(SelectionKey key) throws IOException {
         SocketChannel clientChannel = (SocketChannel) key.channel();
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
-        StringBuilder messageBuilder = new StringBuilder();
-
-        while (clientChannel.read(buffer) > 0) {
-            buffer.flip();
-            messageBuilder.append(StandardCharsets.UTF_8.decode(buffer));
-            buffer.clear();
-        }
-
-        String fullMessage = messageBuilder.toString().trim();
-        ClientRequest clientRequest = objectMapper.readValue(fullMessage, ClientRequest.class);
-
-        CommandArgumentList command = new CommandArgumentList();
-        command.setArgList(clientRequest.getRequest());
-        ServerResponse response;
         try {
-            response = commandManager.executeCommand(command);
-        } catch (Exception e) {
-            response = new ServerResponse(ResponseStatus.EXCEPTION, e.getMessage());
+            ByteBuffer buffer = ProtocolUtils.readCompleteMessage(clientChannel);
+            ClientRequest clientRequest = ProtocolUtils.deserializeFromBuffer(buffer, ClientRequest.class);
+            ServerResponse response = executeCommandSafely(clientRequest.getRequest());
+            sendResponse(clientChannel, response);
+
+        } catch (IOException e) {
+            handleClientDisconnect(clientChannel, key);
+            return;
         }
-
-        if (response == null) response = new ServerResponse(ResponseStatus.EXCEPTION, "Unknown Exception");
-
-        String jsonResponse = objectMapper.writeValueAsString(response) + "\n";
-        ByteBuffer responseBuffer = ByteBuffer.wrap(jsonResponse.getBytes(StandardCharsets.UTF_8));
-        while (responseBuffer.hasRemaining()) {
-            clientChannel.write(responseBuffer);
-        }
-
         key.interestOps(SelectionKey.OP_READ);
-        clientChannel.close();
+    }
+
+    private ServerResponse executeCommandSafely(CommandArgumentList command) {
+        try {
+            return commandManager.executeCommand(command);
+        } catch (Exception e) {
+            return new ServerResponse(ResponseStatus.EXCEPTION, e.getMessage());
+        }
+    }
+
+    private void sendResponse(SocketChannel channel, ServerResponse response) throws IOException {
+        ByteBuffer responseBuffer = ProtocolUtils.serializeToBuffer(response);
+        while (responseBuffer.hasRemaining()) {
+            channel.write(responseBuffer);
+        }
+    }
+
+    private void handleClientDisconnect(SocketChannel channel, SelectionKey key) throws IOException {
+        channel.close();
+        key.cancel();
     }
 
     private void closeChannel(SelectionKey key) {

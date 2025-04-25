@@ -1,15 +1,17 @@
 package org.AstroLab.utils.command;
 
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Represents a list of command arguments used in command execution.
  */
-@Getter
 public class CommandArgumentList {
+    @JsonProperty("argList")
     private final List<CommandArgument> argList = new ArrayList<>();
 
     /**
@@ -21,17 +23,12 @@ public class CommandArgumentList {
         this.argList.add(arg);
     }
 
-    public void setArgList(List<CommandArgument> args){
-        for (CommandArgument arg : args){
-            addArgument(arg);
-        }
-    }
-
     /**
      * Retrieves argument with index 2
      *
      * @return a new CommandArgumentList containing only element-related arguments
      */
+    @JsonIgnore
     public CommandArgument getLastArgument(){
         return argList.get(argList.size() - 1);
     }
@@ -50,6 +47,7 @@ public class CommandArgumentList {
      *
      * @return the command argument
      */
+    @JsonIgnore
     public CommandArgument getCommand(){
         return getArgumentByIndex(0);
     }
@@ -59,8 +57,9 @@ public class CommandArgumentList {
      *
      * @return the first argument
      */
+    @JsonIgnore
     public CommandArgument getFirstArgument(){
-        return getArgumentByIndex(1);
+        return argList.size() < 2 ? null : getArgumentByIndex(1);
     }
 
     /**
@@ -69,6 +68,7 @@ public class CommandArgumentList {
      * @param index the index of the argument
      * @return the argument at the specified index
      */
+    @JsonIgnore
     public CommandArgument getArgumentByIndex(int index){
         return argList.get(index);
     }
@@ -81,5 +81,35 @@ public class CommandArgumentList {
     @Override
     public String toString(){
         return argList.toString();
+    }
+
+    /**
+     * Updates an argument at the specified index.
+     *
+     * @param index the index of the argument to update
+     * @param arg the new argument value
+     */
+    public void updateByIndex(int index, CommandArgument arg){
+        argList.set(index, arg);
+    }
+
+    /**
+     * Validates and converts the first argument to the specified type.
+     *
+     * @param parser the expected type of the first argument
+     * @param <T> the type parameter
+     * @throws IllegalArgumentException if the argument cannot be converted to the specified type
+     */
+    public <T> void convertArgumentToNeedType(Function<String, T> parser) throws IllegalArgumentException {
+        String argument = (String) getFirstArgument().getValue();
+
+        try {
+            T parsedValue = parser.apply(argument);
+            updateByIndex(1, new CommandArgument(parsedValue));
+        } catch (Exception e) {
+            throw new IllegalArgumentException(
+                    "Argument '" + argument + "' cannot be transformed", e
+            );
+        }
     }
 }

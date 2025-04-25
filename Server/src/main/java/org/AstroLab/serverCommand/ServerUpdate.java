@@ -30,10 +30,6 @@ public class ServerUpdate extends ServerCommand{
         newRoute.setCreationDate(new Date());
         newRoute.setFromRouteDataTransferObject(routeDTO);
 
-        if (collection.isExist(newRoute)){
-            return new ServerResponse(ResponseStatus.EXCEPTION, "This Route is already exist");
-        }
-
         this.collection.updateElement(newRoute);
 
         return new ServerResponse(ResponseStatus.OK, "Route{id="+newRoute.getId()+",name="+newRoute.getName()+"} successfully updated");
