@@ -2,7 +2,10 @@ package org.AstroLab.collection;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.AstroLab.Server;
 import org.AstroLab.utils.model.Route;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,6 +18,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class  CustomCollection {
+    private static final Logger logger = LogManager.getLogger(CustomCollection.class);
     private final Set<Route> collection = new TreeSet<>();
     private int nextId = 1;
 
@@ -30,6 +34,7 @@ public class  CustomCollection {
             throw new IdMustBeUniqueException("'id' must be unique, it can't be: " + route.getId() +
                     ".\nNew Route: " + route + "\nOld Route: " + this.getRouteInsideByID(route.getId()));
         }
+        logger.info("Route id={} added", route.getId());
         this.collection.add(route);
     }
 
@@ -44,6 +49,7 @@ public class  CustomCollection {
         }
         this.collection.removeIf(r -> r.getId() == route.getId());
         this.collection.add(route);
+        logger.info("Route id={} updated", route.getId());
     }
 
     /**
@@ -52,6 +58,7 @@ public class  CustomCollection {
      * @param id the ID of the Route to be removed
      */
     public void removeByID(int id) {
+        logger.info("Route id={} removed", id);
         this.collection.removeIf(r -> r.getId() == id);
     }
 
@@ -59,6 +66,7 @@ public class  CustomCollection {
      * Clears all elements from the collection.
      */
     public void clear() {
+        logger.info("Collection cleaned");
         this.collection.clear();
     }
 
@@ -103,6 +111,7 @@ public class  CustomCollection {
      * @return a unique integer ID
      */
     public int getNewID() {
+        logger.info("Created new id={}", nextId+1);
         return nextId++;
     }
 

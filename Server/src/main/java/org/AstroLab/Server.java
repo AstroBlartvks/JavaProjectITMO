@@ -13,6 +13,9 @@ import org.AstroLab.utils.ClientServer.ResponseStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
 import org.AstroLab.utils.command.CommandArgumentList;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -20,6 +23,7 @@ import java.nio.channels.*;
 import java.util.*;
 
 public class Server {
+    private static final Logger logger = LogManager.getLogger(Server.class);
     private static final int TIMEOUT_MS = 1000;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private CommandManager commandManager;
@@ -29,7 +33,7 @@ public class Server {
 
     public Server(String[] args) {
         if (args.length < 2){
-            System.err.println("Not enough parameters (It have to be 2: <host port>");
+            logger.error("Not enough parameters (It have to be 2: <host port>");
             isRunning = false;
             return;
         }
@@ -38,7 +42,7 @@ public class Server {
             this.host = args[0];
             this.port = Integer.parseInt(args[1]);
         } catch (NumberFormatException e){
-            System.err.println("Your port is broken: " + e.getMessage());
+            logger.error("Your port is broken: {}", e.getMessage());
             isRunning = false;
             return;
         }
@@ -59,9 +63,9 @@ public class Server {
                 serverChannel.configureBlocking(false);
                 serverChannel.register(selector, SelectionKey.OP_ACCEPT);
             } catch (IllegalArgumentException | SecurityException | AlreadyBoundException e){
-                System.err.println("You can't bind server{ip="+this.host+", port="+this.port+"}, because: "+ e.getMessage());
+                logger.error("You can't bind server{ip={}, port={}}, because: {}", this.host, this.port, e.getMessage());
             } catch (ClosedChannelException | ClosedSelectorException e) {
-                System.err.println("Your server's channel or selector closed! " + e.getMessage());
+                logger.error("Your server's channel or selector closed! {}", e.getMessage());
             }
 
             System.out.println("Server started on " + host + ":" + port);
@@ -91,7 +95,7 @@ public class Server {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Server error: " + e.getMessage());
+            logger.error("Server error: {}", e.getMessage());
         }
     }
 
@@ -102,8 +106,7 @@ public class Server {
         clientChannel.configureBlocking(false);
         clientChannel.register(selector, SelectionKey.OP_READ);
 
-        System.out.println("Accepted connection from: "
-                + clientChannel.getRemoteAddress());
+        logger.info("Accepted connection from: {}", clientChannel.getRemoteAddress());
     }
 
     private void handleRead(SelectionKey key) throws IOException {
@@ -143,11 +146,10 @@ public class Server {
 
     private void closeChannel(SelectionKey key) {
         try {
-            System.out.println("Closing connection: "
-                    + ((SocketChannel) key.channel()).getRemoteAddress());
+            logger.info("Closing connection: {}", ((SocketChannel) key.channel()).getRemoteAddress());
             key.channel().close();
         } catch (IOException ex) {
-            System.err.println("Error closing channel: " + ex.getMessage());
+            logger.error("Error closing channel: {}", ex.getMessage());
         }
     }
 
@@ -158,10 +160,10 @@ public class Server {
             CustomCollection customCollection = reader.readFromEnv();
             commandManager = new CommandManager(customCollection);
         } catch (JsonMappingException e) {
-            System.err.println("Program can't parse your Json file, check this error and try fix it!\n\t" + e.getMessage());
+            logger.error("Program can't parse your Json file, check this error and try fix it!\n\t{}", e.getMessage());
             System.exit(-1);
         } catch (Exception e) {
-            System.err.println("Ops... Exception while reading!\n" + e.getMessage());
+            logger.error("Ops... Exception while reading!\n{}", e.getMessage());
             System.exit(-1);
         }
 

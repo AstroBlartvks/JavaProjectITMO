@@ -3,8 +3,12 @@ package org.AstroLab.files;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.AstroLab.Server;
 import org.AstroLab.collection.CustomCollection;
 import org.AstroLab.utils.model.Route;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.Set;
@@ -13,6 +17,7 @@ import java.util.Set;
  * A class responsible for reading JSON files and converting them into a {@link CustomCollection} of {@link Route} objects.
  */
 public class JsonReader extends ReadHandler {
+    private static final Logger logger = LogManager.getLogger(JsonReader.class);
 
     /**
      * Reads a JSON file and parses its content into a {@link CustomCollection}.
@@ -38,24 +43,24 @@ public class JsonReader extends ReadHandler {
             
             hasAtMinimumOneException = false;
             if (!routeNode.has("name") || routeNode.get("name").asText().trim().isEmpty()) {
-                System.err.println("Warning about: \n\tHAS AN EXCEPTION: 'name' can't be null or empty. 'Route' will not be added to the collection");
+                logger.warn("Warning about: \n\tHAS AN EXCEPTION: 'name' can't be null or empty. 'Route' will not be added to the collection");
                 hasAtMinimumOneException = true;
             }
 
             if (!routeNode.has("coordinates") || !routeNode.get("coordinates").has("x") || !routeNode.get("coordinates").has("y") || routeNode.get("coordinates").isNull()) {
-                System.err.println("Warning about: \n\tHAS AN EXCEPTION: 'coordinates' can't be null. 'Route' will not be added to the collection");
+                logger.warn("Warning about: \n\tHAS AN EXCEPTION: 'coordinates' can't be null. 'Route' will not be added to the collection");
                 hasAtMinimumOneException = true;
             }
 
             validCoordinates = validateCoordinates(routeNode.get("coordinates"));
             if (!validCoordinates){
-                System.err.println("Warning about:\n\tHAS INVALID COORDINATES. 'Route' will not be added to the collection");
+                logger.warn("Warning about:\n\tHAS INVALID COORDINATES. 'Route' will not be added to the collection");
                 hasAtMinimumOneException = true;
             }
 
             validateNumericType(routeNode, "distance", Double.class);
             if (routeNode.get("distance").asDouble() <= 1) {
-                System.err.println("Warning about: \n\tHAS AN EXCEPTION: 'distance' must be greater than 1. 'Route' will not be added to the collection");
+                logger.warn("Warning about: \n\tHAS AN EXCEPTION: 'distance' must be greater than 1. 'Route' will not be added to the collection");
                 hasAtMinimumOneException = true;
             }
 
@@ -63,24 +68,24 @@ public class JsonReader extends ReadHandler {
                 if (!routeNode.get("from").isNull()) {
                     validLocation = validateLocation(routeNode.get("from"), "from");
                     if (!validLocation){
-                        System.err.println("Warning about:\n\tHAS INVALID LOCATION 'from'. 'Route' will not be added to the collection");
+                        logger.warn("Warning about:\n\tHAS INVALID LOCATION 'from'. 'Route' will not be added to the collection");
                         hasAtMinimumOneException = true;
                     }
                 }
             } else {
-                System.err.println("Warning about: \n\tHAS AN EXCEPTION: Missing required 'from' argument. 'Route' will not be added to the collection");
+                logger.warn("Warning about: \n\tHAS AN EXCEPTION: Missing required 'from' argument. 'Route' will not be added to the collection");
             }
 
             if (routeNode.has("to")) {
                 if (!routeNode.get("to").isNull()) {
                     validLocation = validateLocation(routeNode.get("to"), "to");
                     if (!validLocation){
-                        System.err.println("Warning about:\n\tHAS INVALID LOCATION 'to'. 'Route' will not be added to the collection");
+                        logger.warn("Warning about:\n\tHAS INVALID LOCATION 'to'. 'Route' will not be added to the collection");
                         hasAtMinimumOneException = true;
                     }
                 }
             } else {
-                System.err.println("Warning about: \n\tHAS AN EXCEPTION: Missing required 'to' argument. 'Route' will not be added to the collection");
+                logger.warn("Warning about: \n\tHAS AN EXCEPTION: Missing required 'to' argument. 'Route' will not be added to the collection");
                 hasAtMinimumOneException = true;
             }
 
@@ -89,7 +94,7 @@ public class JsonReader extends ReadHandler {
                 customCollection.addElement(route);
                 maxId = Math.max(route.getId(), maxId);
             }else{
-                System.err.println("These errors are in the 'Route':\n\t"+routeNode+"\n");
+                logger.error("These errors are in the 'Route':\n\t{}\n", routeNode);
             }
         }
 
@@ -118,20 +123,20 @@ public class JsonReader extends ReadHandler {
      */
     private boolean validateNumericType(JsonNode node, String field, Class<?> expectedType) {
         if (!node.has(field)) {
-            System.err.println("Route" + ": missing required '" + field + "' argument");
+            logger.error("Route: missing required '{}' argument", field);
             return false;
         }
         JsonNode valueNode = node.get(field);
         if (expectedType == Double.class && !valueNode.isNumber()) {
-            System.err.println("Route" + ": '" + field + "' must be a double (found: " + valueNode + ")");
+            logger.error("Route: '{}' must be a double (found: {})", field, valueNode);
             return false;
         }
         if (expectedType == Long.class && !valueNode.isIntegralNumber()) {
-            System.err.println("Route" + ": '" + field + "' must be a long (found: " + valueNode + ")");
+            logger.error("Route: '{}' must be a long (found: {})", field, valueNode);
             return false;
         }
         if (expectedType == Float.class && !valueNode.isFloatingPointNumber() && !valueNode.isNumber()) {
-            System.err.println("Route" + ": '" + field + "' must be a float (found: " + valueNode + ")");
+            logger.error("Route: '{}' must be a float (found: {})", field, valueNode);
             return false;
         }
         return true;
@@ -150,7 +155,7 @@ public class JsonReader extends ReadHandler {
         valid = valid && validateNumericType(node, "z", Float.class);
 
         if (!node.has("name") || !node.get("name").isTextual() || node.get("name").asText().trim().isEmpty()) {
-            System.err.println("Route" + ": '" + fieldName + ".name' must be a non-empty string");
+            logger.error("Route: '{}.name' must be a non-empty string", fieldName);
             return false;
         }
         return valid;
