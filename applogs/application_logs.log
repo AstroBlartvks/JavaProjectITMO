@@ -172,3 +172,23 @@ print_field_descending_distance:
 2025-04-27 18:09:07 [main] INFO  org.AstroLabServer.Server - Request from client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]: RequestStatus=REQUEST;Request=[show]}
 2025-04-27 18:09:07 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]: TEXT
 2025-04-27 18:09:07 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]
+2025-04-27 18:14:10 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=2 added
+2025-04-27 18:14:10 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=4 added
+2025-04-27 18:14:10 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=6 added
+2025-04-27 18:14:10 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=7 added
+2025-04-27 18:14:10 [main] INFO  org.AstroLabServer.Server - Server started on localhost:8000
+2025-04-27 18:14:11 [main] INFO  org.AstroLabServer.Server - Accepted connection from: /127.0.0.1:57948
+2025-04-27 18:14:11 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57948]: OK
+2025-04-27 18:14:11 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57948]
+2025-04-27 18:14:14 [main] INFO  org.AstroLabServer.Server - Request from client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57948]: RequestStatus=REQUEST;Request=[help]}
+2025-04-27 18:14:14 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57948]: TEXT
+2025-04-27 18:14:14 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57948]
+2025-04-27 18:14:16 [main] INFO  org.AstroLabServer.Server - Request from client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57948]: RequestStatus=REQUEST;Request=[show]}
+2025-04-27 18:14:16 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57948]: TEXT
+2025-04-27 18:14:16 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57948]
+2025-04-27 18:14:18 [main] INFO  org.AstroLabServer.Server - Request from client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57948]: RequestStatus=REQUEST;Request=[info]}
+2025-04-27 18:14:18 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57948]: TEXT
+2025-04-27 18:14:18 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57948]
+2025-04-27 18:14:23 [main] INFO  org.AstroLabServer.Server - Request from client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57948]: RequestStatus=REQUEST;Request=[print_field_descending_distance]}
+2025-04-27 18:14:23 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57948]: OK
+2025-04-27 18:14:23 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57948]

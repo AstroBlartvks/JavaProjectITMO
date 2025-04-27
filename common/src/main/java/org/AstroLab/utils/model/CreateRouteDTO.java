@@ -3,6 +3,7 @@ package org.AstroLab.utils.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 @Setter
@@ -25,7 +26,7 @@ public class CreateRouteDTO {
                 '}';
     }
 
-    public static CreateRouteDTO fromMap(LinkedHashMap<String, Object> map) {
+    public static CreateRouteDTO fromMap(HashMap<String, Object> map) {
         if (map == null) return null;
         CreateRouteDTO routeDTO = new CreateRouteDTO();
         routeDTO.setName((String) map.get("name"));
