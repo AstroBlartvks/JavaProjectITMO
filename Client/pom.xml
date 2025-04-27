@@ -2,6 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <groupId>com.AstroLab.client</groupId>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>client-api</artifactId>
     <version>1.0.0</version>
@@ -49,7 +50,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.AstroLab.Main</mainClass>
+                            <mainClass>org.AstroLabClient.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -86,7 +87,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>org.AstroLab.Main</mainClass>
+                            <mainClass>org.AstroLabClient.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
