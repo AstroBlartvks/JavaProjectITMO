@@ -9,3 +9,37 @@
 2025-04-26 12:10:38 [main] INFO  org.AstroLab.Server - Accepted connection from: /127.0.0.1:61449
 2025-04-26 12:10:38 [main] INFO  org.AstroLab.collection.CustomCollection - New id=9
 2025-04-26 12:10:38 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=8 added
+2025-04-26 12:20:11 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=2 added
+2025-04-26 12:20:11 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=4 added
+2025-04-26 12:20:11 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=6 added
+2025-04-26 12:20:11 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=7 added
+2025-04-26 12:20:19 [main] INFO  org.AstroLab.Server - Accepted connection from: /127.0.0.1:61517
+2025-04-26 12:20:22 [main] INFO  org.AstroLab.Server - Accepted connection from: /127.0.0.1:61518
+2025-04-26 12:20:57 [main] INFO  org.AstroLab.Server - Accepted connection from: /127.0.0.1:61524
+2025-04-26 12:21:14 [main] INFO  org.AstroLab.Server - Accepted connection from: /127.0.0.1:61528
+2025-04-26 12:21:32 [main] INFO  org.AstroLab.Server - Accepted connection from: /127.0.0.1:61532
+2025-04-26 12:21:46 [main] INFO  org.AstroLab.Server - Accepted connection from: /127.0.0.1:61536
+2025-04-27 15:07:49 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=2 added
+2025-04-27 15:07:49 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=4 added
+2025-04-27 15:07:49 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=6 added
+2025-04-27 15:07:49 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=7 added
+2025-04-27 15:07:49 [main] INFO  org.AstroLab.Server - Server started on localhost:8000
+2025-04-27 15:07:50 [main] INFO  org.AstroLab.Server - Accepted connection from: /127.0.0.1:63733
+2025-04-27 15:11:22 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=2 added
+2025-04-27 15:11:22 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=4 added
+2025-04-27 15:11:22 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=6 added
+2025-04-27 15:11:22 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=7 added
+2025-04-27 15:11:22 [main] INFO  org.AstroLab.Server - Server started on localhost:8000
+2025-04-27 15:11:27 [main] INFO  org.AstroLab.Server - Accepted connection from: /127.0.0.1:63752
+2025-04-27 15:31:29 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=2 added
+2025-04-27 15:31:29 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=4 added
+2025-04-27 15:31:29 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=6 added
+2025-04-27 15:31:29 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=7 added
+2025-04-27 15:31:29 [main] INFO  org.AstroLab.Server - Server started on localhost:8000
+2025-04-27 15:31:33 [main] INFO  org.AstroLab.Server - Accepted connection from: /127.0.0.1:63848
+2025-04-27 15:35:11 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=2 added
+2025-04-27 15:35:11 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=4 added
+2025-04-27 15:35:11 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=6 added
+2025-04-27 15:35:11 [main] INFO  org.AstroLab.collection.CustomCollection - Route id=7 added
+2025-04-27 15:35:11 [main] INFO  org.AstroLab.Server - Server started on localhost:8000
+2025-04-27 15:35:20 [main] INFO  org.AstroLab.Server - Accepted connection from: /127.0.0.1:63903

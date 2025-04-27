@@ -4,15 +4,11 @@ import org.AstroLab.inputManager.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.AstroLab.utils.ClientServer.ClientRequest;
 import org.AstroLab.utils.ClientServer.ClientStatus;
-import org.AstroLab.utils.ClientServer.ResponseStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
 import org.AstroLab.utils.command.CommandArgumentList;
 
 import java.io.*;
-import java.net.ConnectException;
-import java.net.Socket;
-import java.net.InetSocketAddress;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 
 public final class Client {
@@ -45,26 +41,38 @@ public final class Client {
     }
 
     public void run() {
-        while (isRunning && scannerManager.hasNextLine()) {
-            String inputString = input();
-            if (inputString == null) continue;
-
-            CommandArgumentList commandArgList = handleCommand(inputString);
-            if (commandArgList == null) continue;
-
-            ClientRequest request = new ClientRequest(ClientStatus.REQUEST, commandArgList);
-            communicateWithServer(request);
+        for (int attempt = 0; attempt < MAX_RETRIES; attempt++){
+            createSocketAndRun(attempt);
         }
         shutdown();
     }
 
-    private void communicateWithServer(ClientRequest request) {
+    private void createSocketAndRun(int attempt){
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(serverHost, serverPort), RETRY_DELAY_MS);
+            while (isRunning && scannerManager.hasNextLine()) {
+                String inputString = input();
+                if (inputString == null) continue;
+
+                CommandArgumentList commandArgList = handleCommand(inputString);
+                if (commandArgList == null) continue;
+                if (commandArgList.getCommand().toString().equals("exit")) return;
+
+                ClientRequest request = new ClientRequest(ClientStatus.REQUEST, commandArgList);
+                communicateWithServer(request, socket);
+            }
+        } catch (SocketException e) {
+            handleRetry(attempt, e);
+        } catch (Exception e) {
+            System.out.println("Unexpected Exception: " + e.getMessage());
+        }
+    }
+
+    private void communicateWithServer(ClientRequest request, Socket socket) throws SocketException{
         for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
-            try (Socket socket = new Socket()) {
-                socket.connect(new InetSocketAddress(serverHost, serverPort), RETRY_DELAY_MS);
+            try{
                 sendRequest(socket, request);
                 ServerResponse response = receiveResponse(socket);
-
                 switch (response.getStatus()) {
                     case EXIT:
                         isRunning = false;
@@ -76,9 +84,12 @@ public final class Client {
                         System.out.println("Server response:\n" + response.getValue());
                         return;
                 }
-            } catch (ConnectException | SocketTimeoutException e) {
+            } catch (SocketTimeoutException e) {
                 handleRetry(attempt, e);
             } catch (IOException e) {
+                if (e.getMessage().equals("Connection reset by peer")) {
+                    throw new SocketException("Server closed!");
+                }
                 System.out.println("Communication error: " + e.getMessage());
                 return;
             }

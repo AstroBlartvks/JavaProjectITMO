@@ -33,7 +33,7 @@ public class Server {
 
     public Server(String[] args) {
         if (args.length < 2){
-            logger.error("Not enough parameters (It have to be 2: <host port>");
+            logger.fatal("Not enough parameters (It have to be 2: <host port>");
             isRunning = false;
             return;
         }
@@ -42,7 +42,7 @@ public class Server {
             this.host = args[0];
             this.port = Integer.parseInt(args[1]);
         } catch (NumberFormatException e){
-            logger.error("Your port is broken: {}", e.getMessage());
+            logger.fatal("Your port is broken: {}", e.getMessage());
             isRunning = false;
             return;
         }
@@ -63,12 +63,12 @@ public class Server {
                 serverChannel.configureBlocking(false);
                 serverChannel.register(selector, SelectionKey.OP_ACCEPT);
             } catch (IllegalArgumentException | SecurityException | AlreadyBoundException e){
-                logger.error("You can't bind server{ip={}, port={}}, because: {}", this.host, this.port, e.getMessage());
+                logger.fatal("You can't bind server{ip={}, port={}}, because: {}", this.host, this.port, e.getMessage());
             } catch (ClosedChannelException | ClosedSelectorException e) {
-                logger.error("Your server's channel or selector closed! {}", e.getMessage());
+                logger.fatal("Your server's channel or selector closed! {}", e.getMessage());
             }
 
-            System.out.println("Server started on " + host + ":" + port);
+            logger.info("Server started on {}:{}", host, port);
 
             while (isRunning) {
                 if (selector.select(TIMEOUT_MS) == 0) {
