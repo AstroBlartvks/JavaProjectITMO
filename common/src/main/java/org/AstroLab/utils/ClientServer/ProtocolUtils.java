@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 public class ProtocolUtils {
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final int BufferSize = 4096;
 
     public static ByteBuffer serializeToBuffer(Object response) throws JsonProcessingException {
         String json = objectMapper.writeValueAsString(response) + "\n";
@@ -22,7 +23,7 @@ public class ProtocolUtils {
     }
 
     public static ByteBuffer readCompleteMessage(SocketChannel channel) throws IOException {
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        ByteBuffer buffer = ByteBuffer.allocate(BufferSize);
         while (true) {
             int bytesRead = channel.read(buffer);
             if (bytesRead == -1) {

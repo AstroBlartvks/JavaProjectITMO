@@ -51,6 +51,8 @@ public final class Client {
     private boolean createSocketAndRun(int attempt){
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress(serverHost, serverPort), RETRY_DELAY_MS);
+            System.out.println(receiveResponse(socket).getValue());
+
             while (isRunning && scannerManager.hasNextLine()) {
                 String inputString = input();
                 if (inputString == null) continue;

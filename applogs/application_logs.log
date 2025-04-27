@@ -54,3 +54,121 @@
 2025-04-27 16:30:23 [main] INFO  org.AstroLabServer.Server - Accepted connection from: /127.0.0.1:57361
 2025-04-27 16:30:32 [main] INFO  org.AstroLabServer.collection.CustomCollection - Created new id=9
 2025-04-27 16:30:32 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=8 added
+2025-04-27 17:01:16 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=2 added
+2025-04-27 17:01:16 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=4 added
+2025-04-27 17:01:16 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=6 added
+2025-04-27 17:01:16 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=7 added
+2025-04-27 17:01:16 [main] INFO  org.AstroLabServer.Server - Server started on localhost:8000
+2025-04-27 17:01:36 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=2 added
+2025-04-27 17:01:36 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=4 added
+2025-04-27 17:01:36 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=6 added
+2025-04-27 17:01:36 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=7 added
+2025-04-27 17:01:36 [main] INFO  org.AstroLabServer.Server - Server started on localhost:8000
+2025-04-27 17:38:56 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=2 added
+2025-04-27 17:38:56 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=4 added
+2025-04-27 17:38:56 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=6 added
+2025-04-27 17:38:56 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=7 added
+2025-04-27 17:38:56 [main] INFO  org.AstroLabServer.Server - Server started on localhost:8000
+2025-04-27 17:38:57 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=2 added
+2025-04-27 17:38:57 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=4 added
+2025-04-27 17:38:57 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=6 added
+2025-04-27 17:38:57 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=7 added
+2025-04-27 17:38:57 [main] ERROR org.AstroLabServer.Server - Server error: Address already in use: bind
+2025-04-27 17:38:57 [main] INFO  org.AstroLabServer.Server - Collection saved successfully!
+2025-04-27 17:49:16 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=2 added
+2025-04-27 17:49:16 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=4 added
+2025-04-27 17:49:16 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=6 added
+2025-04-27 17:49:16 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=7 added
+2025-04-27 17:49:16 [main] INFO  org.AstroLabServer.Server - Server started on localhost:8000
+2025-04-27 17:49:21 [main] INFO  org.AstroLabServer.Server - Collection saved successfully!
+2025-04-27 17:53:34 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=2 added
+2025-04-27 17:53:34 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=4 added
+2025-04-27 17:53:34 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=6 added
+2025-04-27 17:53:34 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=7 added
+2025-04-27 17:53:34 [main] INFO  org.AstroLabServer.Server - Server started on localhost:8000
+2025-04-27 17:53:37 [main] INFO  org.AstroLabServer.Server - Accepted connection from: /127.0.0.1:57773
+2025-04-27 17:53:41 [main] INFO  org.AstroLabServer.Server - Request from client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57773]: RequestStatus=REQUEST;Request=[help]}
+2025-04-27 17:53:41 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57773]: 
+Response{
+status=TEXT,
+value='''
+help: 
+	output help for available commands
+info: 
+	output information about the collection (type, initialization date, number of elements, etc.) to the standard output stream
+show: 
+	output all elements of the collection in a string representation to the standard output stream
+add {element}: 
+	add a new element to the collection
+update id {element}: 
+	update the value of the element a collection whose id is equal to the specified
+remove_by_id id: 
+	delete an item from the collection by its id
+clear: 
+	clear the collection
+save: 
+	save the collection to a file
+execute_script file_name: 
+	read and execute the script from the specified file. The script contains commands in the same form as they are entered by the user interactively.
+exit: 
+	terminate the program (without saving to a file)
+add_if_max {element}: 
+	add a new element to the collection if its value exceeds the value of the largest element in this collection
+add_if_min {element}: 
+	add a new element to the collection if its value is less than that of the smallest element in this collection
+remove_greater {element}: 
+	remove from the collection all elements exceeding the specified limit
+count_by_distance distance: 
+	output the number of elements whose value of the distance field is equal to the specified one
+count_greater_than_distance distance: 
+	output the number of elements whose value of the distance field is greater than the specified one
+print_field_descending_distance: 
+	print the values of the distance field of all elements in descending order
+'''}
+2025-04-27 18:04:12 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=2 added
+2025-04-27 18:04:12 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=4 added
+2025-04-27 18:04:12 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=6 added
+2025-04-27 18:04:12 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=7 added
+2025-04-27 18:04:12 [main] INFO  org.AstroLabServer.Server - Server started on localhost:8000
+2025-04-27 18:04:13 [main] INFO  org.AstroLabServer.Server - Accepted connection from: /127.0.0.1:57844
+2025-04-27 18:04:13 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57844]: OK
+2025-04-27 18:04:13 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57844]
+2025-04-27 18:06:04 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=2 added
+2025-04-27 18:06:04 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=4 added
+2025-04-27 18:06:04 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=6 added
+2025-04-27 18:06:04 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=7 added
+2025-04-27 18:06:04 [main] INFO  org.AstroLabServer.Server - Server started on localhost:8000
+2025-04-27 18:06:08 [main] INFO  org.AstroLabServer.Server - Accepted connection from: /127.0.0.1:57857
+2025-04-27 18:06:08 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57857]: OK
+2025-04-27 18:06:09 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57857]
+2025-04-27 18:08:18 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=2 added
+2025-04-27 18:08:18 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=4 added
+2025-04-27 18:08:18 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=6 added
+2025-04-27 18:08:18 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=7 added
+2025-04-27 18:08:18 [main] INFO  org.AstroLabServer.Server - Server started on localhost:8000
+2025-04-27 18:08:19 [main] INFO  org.AstroLabServer.Server - Accepted connection from: /127.0.0.1:57868
+2025-04-27 18:08:19 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57868]: OK
+2025-04-27 18:08:19 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57868]
+2025-04-27 18:08:22 [main] INFO  org.AstroLabServer.Server - Request from client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57868]: RequestStatus=REQUEST;Request=[info]}
+2025-04-27 18:08:22 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57868]: TEXT
+2025-04-27 18:08:22 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57868]
+2025-04-27 18:08:24 [main] INFO  org.AstroLabServer.Server - Request from client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57868]: RequestStatus=REQUEST;Request=[show]}
+2025-04-27 18:08:24 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57868]: TEXT
+2025-04-27 18:08:24 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57868]
+2025-04-27 18:08:40 [main] INFO  org.AstroLabServer.Server - Accepted connection from: /127.0.0.1:57873
+2025-04-27 18:08:40 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]: OK
+2025-04-27 18:08:40 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]
+2025-04-27 18:08:45 [main] INFO  org.AstroLabServer.Server - Request from client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]: RequestStatus=REQUEST;Request=[info]}
+2025-04-27 18:08:45 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]: TEXT
+2025-04-27 18:08:45 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]
+2025-04-27 18:08:53 [main] INFO  org.AstroLabServer.Server - Request from client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]: RequestStatus=REQUEST;Request=[show]}
+2025-04-27 18:08:53 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]: TEXT
+2025-04-27 18:08:53 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]
+2025-04-27 18:09:03 [main] INFO  org.AstroLabServer.Server - Request from client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]: RequestStatus=REQUEST;Request=[add, {name=xcv, coordinates={x=456.0, y=456.0}, from={x=456, y=456.0, z=456.0, name=456}, to=null, distance=7856.0}]}
+2025-04-27 18:09:03 [main] INFO  org.AstroLabServer.collection.CustomCollection - Created new id=9
+2025-04-27 18:09:03 [main] INFO  org.AstroLabServer.collection.CustomCollection - Route id=8 added
+2025-04-27 18:09:03 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]: OK
+2025-04-27 18:09:03 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]
+2025-04-27 18:09:07 [main] INFO  org.AstroLabServer.Server - Request from client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]: RequestStatus=REQUEST;Request=[show]}
+2025-04-27 18:09:07 [main] INFO  org.AstroLabServer.Server - Server response to client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]: TEXT
+2025-04-27 18:09:07 [main] INFO  org.AstroLabServer.Server - The request was successfully sent to the client=java.nio.channels.SocketChannel[connected local=/127.0.0.1:8000 remote=/127.0.0.1:57873]

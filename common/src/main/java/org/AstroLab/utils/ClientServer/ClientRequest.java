@@ -26,6 +26,6 @@ public class ClientRequest {
 
     @Override
     public String toString() {
-        return "RequestStatus=" + state.toString() + "\nRequest=" +request.toString() + "}";
+        return "RequestStatus=" + state.toString() + ";Request=" +request.toString() + "}";
     }
 }

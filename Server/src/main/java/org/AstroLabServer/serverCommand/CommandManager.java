@@ -2,6 +2,7 @@ package org.AstroLabServer.serverCommand;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.AstroLab.utils.command.CommandArgument;
 import org.AstroLabServer.collection.CustomCollection;
 import org.AstroLab.utils.ClientServer.ServerResponse;
 import org.AstroLab.utils.command.CommandArgumentList;
@@ -42,4 +43,5 @@ public class CommandManager {
 
         return serverCommand.execute(commandArgList);
     }
+    
 }

@@ -3,6 +3,7 @@ package org.AstroLabServer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import org.AstroLabServer.collection.CustomCollection;
 import org.AstroLabServer.files.JsonReader;
 import org.AstroLabServer.files.Reader;
@@ -29,32 +30,27 @@ public class Server {
     private CommandManager commandManager;
     private String host;
     private int port;
+    @Getter
     private boolean isRunning = true;
 
-    public Server(String[] args) {
+    public Server(String[] args){
         if (args.length < 2){
             logger.fatal("Not enough parameters (It have to be 2: <host port>");
             isRunning = false;
-            return;
         }
 
         try{
             this.host = args[0];
             this.port = Integer.parseInt(args[1]);
         } catch (NumberFormatException e){
-            logger.fatal("Your port is broken: {}", e.getMessage());
+            logger.fatal("Your host/port is broken {}", e.getMessage());
             isRunning = false;
-            return;
         }
 
         initCollectionCmdManager();
     }
 
     public void run() {
-        if (!isRunning){
-            return;
-        }
-
         try (ServerSocketChannel serverChannel = ServerSocketChannel.open();
              Selector selector = Selector.open()) {
 
@@ -86,7 +82,11 @@ public class Server {
                         if (key.isAcceptable()) {
                             handleAccept(key, selector);
                         } else if (key.isReadable()) {
-                            handleRead(key);
+                            SocketChannel clientChannel = (SocketChannel) key.channel();
+                            ClientRequest clientRequest = handleReadRequest(key, clientChannel);
+                            if (clientRequest == null) continue;
+                            ServerResponse response = executeCommandSafely(clientRequest.getRequest());
+                            sendResponse(clientChannel, response);
                         }
                     } catch (IOException e) {
                         System.err.println(e.getMessage());
@@ -96,6 +96,13 @@ public class Server {
             }
         } catch (IOException e) {
             logger.error("Server error: {}", e.getMessage());
+        }
+
+        try {
+            commandManager.getCommandList().get("save").execute(new CommandArgumentList());
+            logger.info("Collection saved successfully!");
+        } catch (Exception e){
+            logger.fatal("Server can't save the collection: {}", e.getMessage());
         }
     }
 
@@ -107,21 +114,21 @@ public class Server {
         clientChannel.register(selector, SelectionKey.OP_READ);
 
         logger.info("Accepted connection from: {}", clientChannel.getRemoteAddress());
+        sendResponse(clientChannel, new ServerResponse(ResponseStatus.OK, "You have connected to the server!"));
     }
 
-    private void handleRead(SelectionKey key) throws IOException {
-        SocketChannel clientChannel = (SocketChannel) key.channel();
+    private ClientRequest handleReadRequest(SelectionKey key, SocketChannel clientChannel) throws IOException {
+        ClientRequest clientRequest;
         try {
             ByteBuffer buffer = ProtocolUtils.readCompleteMessage(clientChannel);
-            ClientRequest clientRequest = ProtocolUtils.deserializeFromBuffer(buffer, ClientRequest.class);
-            ServerResponse response = executeCommandSafely(clientRequest.getRequest());
-            sendResponse(clientChannel, response);
-
+            clientRequest = ProtocolUtils.deserializeFromBuffer(buffer, ClientRequest.class);
+            logger.info("Request from client={}: {}", clientChannel, clientRequest);
         } catch (IOException e) {
             handleClientDisconnect(clientChannel, key);
-            return;
+            return null;
         }
         key.interestOps(SelectionKey.OP_READ);
+        return clientRequest;
     }
 
     private ServerResponse executeCommandSafely(CommandArgumentList command) {
@@ -133,10 +140,12 @@ public class Server {
     }
 
     private void sendResponse(SocketChannel channel, ServerResponse response) throws IOException {
+        logger.info("Server response to client={}: {}", channel, response.getStatus());
         ByteBuffer responseBuffer = ProtocolUtils.serializeToBuffer(response);
         while (responseBuffer.hasRemaining()) {
             channel.write(responseBuffer);
         }
+        logger.info("The request was successfully sent to the client={}", channel);
     }
 
     private void handleClientDisconnect(SocketChannel channel, SelectionKey key) throws IOException {
