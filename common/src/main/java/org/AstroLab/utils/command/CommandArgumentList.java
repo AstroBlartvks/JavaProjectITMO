@@ -24,25 +24,6 @@ public class CommandArgumentList {
     }
 
     /**
-     * Retrieves argument with index 2
-     *
-     * @return a new CommandArgumentList containing only element-related arguments
-     */
-    @JsonIgnore
-    public CommandArgument getLastArgument(){
-        return argList.get(argList.size() - 1);
-    }
-
-    /**
-     * Returns the number of arguments in the list.
-     *
-     * @return the number of arguments
-     */
-    public int length(){
-        return argList.size();
-    }
-
-    /**
      * Retrieves the command argument (first element in the list).
      *
      * @return the command argument
@@ -100,12 +81,13 @@ public class CommandArgumentList {
      * @param <T> the type parameter
      * @throws IllegalArgumentException if the argument cannot be converted to the specified type
      */
-    public <T> void convertArgumentToNeedType(Function<String, T> parser) throws IllegalArgumentException {
+    public <T> T convertArgumentToNeedType(Function<String, T> parser) throws IllegalArgumentException {
         String argument = (String) getFirstArgument().getValue();
 
         try {
             T parsedValue = parser.apply(argument);
             updateByIndex(1, new CommandArgument(parsedValue));
+            return parsedValue;
         } catch (Exception e) {
             throw new IllegalArgumentException(
                     "Argument '" + argument + "' cannot be transformed", e

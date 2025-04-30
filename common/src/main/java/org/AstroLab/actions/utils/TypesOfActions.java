@@ -1,0 +1,21 @@
+package org.AstroLab.actions.utils;
+
+public enum TypesOfActions {
+    ADD("ADD"),
+    ADD_IF_MAX("ADD_IF_MAX"),
+    ADD_IF_MIN("ADD_IF_MIN"),
+    CLEAR("CLEAR"),
+    COUNT_BY_DISTANCE("COUNT_BY_DISTANCE"),
+    COUNT_GREATER_THAN_DISTANCE("COUNT_GREATER_THAN_DISTANCE"),
+    HELP("HELP"),
+    INFO("INFO"),
+    PRINT_FIELD_DESCENDING_DISTANCE("PRINT_FIELD_DESCENDING_DISTANCE"),
+    REMOVE_BY_ID("REMOVE_BY_ID"),
+    REMOVE_GREATER("REMOVE_GREATER"),
+    SHOW("SHOW"),
+    UPDATE("UPDATE");
+
+    TypesOfActions(String jsonName) {
+    }
+
+}

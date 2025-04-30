@@ -2,9 +2,7 @@ package org.AstroLab.utils.tcpProtocol.packet;
 
 import lombok.Getter;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 import java.util.Date;
 
 /**
@@ -31,13 +29,13 @@ public class PacketReader {
         buffer.put(src);
     }
 
-    public boolean hasPacket() {
+    public boolean notFullPacket() {
         buffer.flip();
         int remaining = buffer.remaining();
 
         if (remaining < Packet.HEADER_SIZE) {
             buffer.compact();
-            return false;
+            return true;
         }
 
         buffer.mark();
@@ -50,7 +48,7 @@ public class PacketReader {
         boolean ok = buffer.limit() >= need;
 
         buffer.compact();
-        return ok;
+        return !ok;
     }
 
     public Packet nextPacket() {

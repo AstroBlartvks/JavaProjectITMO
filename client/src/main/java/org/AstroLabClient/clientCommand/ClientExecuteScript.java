@@ -1,5 +1,6 @@
 package org.AstroLabClient.clientCommand;
 
+import org.AstroLab.actions.components.Action;
 import org.AstroLabClient.clientCommand.scriptHandler.ScriptExecuteScannerException;
 import org.AstroLabClient.clientCommand.scriptHandler.ScriptExecutes;
 import org.AstroLab.utils.command.CommandArgumentList;
@@ -14,7 +15,7 @@ public class ClientExecuteScript extends ClientCommand{
     }
 
     @Override
-    public CommandArgumentList input(CommandArgumentList argumentList) throws ScriptExecuteScannerException {
+    public Action input(CommandArgumentList argumentList) throws ScriptExecuteScannerException {
         scriptExecutes.run((String)argumentList.getFirstArgument().getValue());
         return null;
     }

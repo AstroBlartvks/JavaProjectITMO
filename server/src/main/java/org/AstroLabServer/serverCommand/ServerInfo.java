@@ -1,9 +1,9 @@
 package org.AstroLabServer.serverCommand;
 
-import org.AstroLabServer.collection.CustomCollection;
+import org.AstroLab.actions.components.Action;
 import org.AstroLab.utils.ClientServer.ResponseStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
-import org.AstroLab.utils.command.CommandArgumentList;
+import org.AstroLabServer.collection.CustomCollection;
 
 public class ServerInfo extends ServerCommand{
     private final CustomCollection collection;
@@ -13,7 +13,7 @@ public class ServerInfo extends ServerCommand{
     }
 
     @Override
-    public ServerResponse execute(CommandArgumentList args) {
+    public ServerResponse execute(Action args) {
         return new ServerResponse(ResponseStatus.TEXT, this.collection.toString());
     }
 }

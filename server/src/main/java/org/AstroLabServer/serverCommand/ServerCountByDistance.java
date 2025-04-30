@@ -1,5 +1,7 @@
 package org.AstroLabServer.serverCommand;
 
+import org.AstroLab.actions.components.Action;
+import org.AstroLab.actions.components.ActionCountByDistance;
 import org.AstroLabServer.collection.CustomCollection;
 import org.AstroLab.utils.ClientServer.ResponseStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
@@ -12,12 +14,9 @@ public class ServerCountByDistance extends ServerCommand{
         this.collection = collection;
     }
     @Override
-    public ServerResponse execute(CommandArgumentList args) throws Exception {
-        if (args.length() != 2){
-            throw new Exception("count_by_distance must have 2 arguments, not '"+args.length()+"'");
-        }
-
-        int counter = collection.countByDistance((double)args.getFirstArgument().getValue());
+    public ServerResponse execute(Action args) {
+        ActionCountByDistance action = (ActionCountByDistance) args;
+        int counter = collection.countByDistance(action.getDistance());
         return new ServerResponse(ResponseStatus.DATA, String.valueOf(counter));
     }
 }

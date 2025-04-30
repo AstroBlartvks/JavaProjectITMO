@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.AstroLab.utils.command.CommandArgumentList;
+import org.AstroLab.actions.components.Action;
 
 
 @Getter
@@ -13,12 +13,12 @@ public class ClientRequest {
     @JsonProperty("state")
     ClientStatus state;
     @JsonProperty("request")
-    CommandArgumentList request;
+    Action request;
 
     @JsonCreator
     public ClientRequest(
             @JsonProperty("state") ClientStatus state,
-            @JsonProperty("request") CommandArgumentList request
+            @JsonProperty("request") Action request
     ) {
         this.state = state;
         this.request = request;

@@ -1,14 +1,16 @@
 package org.AstroLabClient;
 
-import org.AstroLabClient.ClientProtocol.ClientProtocol;
-import org.AstroLabClient.inputManager.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.AstroLab.actions.components.Action;
 import org.AstroLab.utils.ClientServer.ClientRequest;
 import org.AstroLab.utils.ClientServer.ClientStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
-import org.AstroLab.utils.command.CommandArgumentList;
+import org.AstroLabClient.ClientProtocol.ClientProtocol;
+import org.AstroLabClient.inputManager.*;
 
-import java.net.*;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.rmi.ServerException;
 
 public final class Client {
@@ -16,7 +18,6 @@ public final class Client {
     private final CommandHandler commandHandler;
     private final String serverHost;
     private final int serverPort;
-    private final ObjectMapper objectMapper = new ObjectMapper();
     private static final int MAX_RETRIES = 3;
     private static final int RETRY_DELAY_MS = 5000;
     private boolean isRunning = true;
@@ -48,13 +49,13 @@ public final class Client {
             while (isRunning && scannerManager.hasNextLine()) {
                 String inputString = input();
                 if (inputString == null) continue;
+                if (inputString.equalsIgnoreCase("exit")) return true;
 
-                CommandArgumentList commandArgList = handleCommand(inputString);
-                if (commandArgList == null) continue;
-                if (commandArgList.getCommand().toString().equals("exit")) return true;
+                Action action = handleCommand(inputString);
+                if (action == null) continue;
 
-                ClientRequest request = new ClientRequest(ClientStatus.REQUEST, commandArgList);
-                communicateWithServer(clientProtocol, request, socket);
+                ClientRequest request = new ClientRequest(ClientStatus.REQUEST, action);
+                communicateWithServer(clientProtocol, request);
             }
         } catch (SocketException e) {
             handleRetry(attempt, e);
@@ -66,7 +67,7 @@ public final class Client {
         return false;
     }
 
-    private void communicateWithServer(ClientProtocol clientProtocol, ClientRequest request, Socket socket) throws SocketException, ServerException{
+    private void communicateWithServer(ClientProtocol clientProtocol, ClientRequest request) throws ServerException{
         for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
             clientProtocol.send(request);
             ServerResponse response;
@@ -120,7 +121,7 @@ public final class Client {
         }
     }
 
-    private CommandArgumentList handleCommand(String input){
+    private Action handleCommand(String input){
         try {
             return commandHandler.handle(input);
         } catch (SystemInClosedException | ScannerException e) {

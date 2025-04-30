@@ -1,5 +1,6 @@
 package org.AstroLabServer.serverCommand;
 
+import org.AstroLab.actions.components.Action;
 import org.AstroLabServer.collection.CustomCollection;
 import org.AstroLab.utils.ClientServer.ResponseStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
@@ -12,7 +13,7 @@ public class ServerClear extends ServerCommand{
         this.collection = collection;
     }
     @Override
-    public ServerResponse execute(CommandArgumentList args){
+    public ServerResponse execute(Action args){
         this.collection.clear();
         return new ServerResponse(ResponseStatus.OK, "Cleared successfully!");
     }

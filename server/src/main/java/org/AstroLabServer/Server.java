@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.AstroLab.actions.components.Action;
 import org.AstroLab.utils.tcpProtocol.packet.ClientClosedConnectionException;
 import org.AstroLab.utils.tcpProtocol.packet.PacketIsNullException;
 import org.AstroLabServer.ServerProtocol.ServerProtocol;
@@ -16,7 +17,6 @@ import org.AstroLabServer.serverCommand.CommandManager;
 import org.AstroLab.utils.ClientServer.ClientRequest;
 import org.AstroLab.utils.ClientServer.ResponseStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
-import org.AstroLab.utils.command.CommandArgumentList;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +36,6 @@ public class Server {
     private final String serverHost;
     private final int serverPort;
     private boolean isRunning;
-    private ReadableByteChannel consoleChannel;
 
     public Server(String host, int port){
         this.serverHost = host;
@@ -155,7 +154,7 @@ public class Server {
         return clientRequest;
     }
 
-    private ServerResponse executeCommandSafely(CommandArgumentList command) {
+    private ServerResponse executeCommandSafely(Action command) {
         try {
             return commandManager.executeCommand(command);
         } catch (Exception e) {
@@ -163,7 +162,7 @@ public class Server {
         }
     }
 
-    private void handleSendResponse(SocketChannel channel, ServerResponse response) throws IOException {
+    private void handleSendResponse(SocketChannel channel, ServerResponse response) {
         logger.info("Server response to client={}: {}", channel, response.getStatus());
         ServerProtocol serverProtocol = new ServerProtocol(channel);
         try {

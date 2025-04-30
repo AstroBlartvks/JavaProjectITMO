@@ -15,7 +15,7 @@ public class OnlyServerSave extends OnlyServerCommand{
     }
 
     @Override
-    public OnlyServerResult execute() throws Exception{
+    public OnlyServerResult execute(){
         Writer writer = new Writer((new JsonWriter()));
         try {
             writer.writeToEnv(this.collection);

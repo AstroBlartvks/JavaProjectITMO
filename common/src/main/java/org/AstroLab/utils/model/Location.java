@@ -3,8 +3,6 @@ package org.AstroLab.utils.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedHashMap;
-
 /**
  * The {@code Location} class represents a location with coordinates and a name.
  * <p>

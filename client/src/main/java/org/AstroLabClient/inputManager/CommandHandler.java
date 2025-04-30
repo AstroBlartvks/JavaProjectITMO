@@ -2,6 +2,7 @@ package org.AstroLabClient.inputManager;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.AstroLab.actions.components.Action;
 import org.AstroLab.utils.command.CommandArgumentList;
 import org.AstroLabClient.clientCommand.*;
 
@@ -17,7 +18,6 @@ public class CommandHandler {
         commandList.put("info", new ClientInfo());
         commandList.put("show", new ClientShow());
         commandList.put("clear", new ClientClear());
-        commandList.put("exit", new ClientExit());
         commandList.put("help", new ClientHelp());
         commandList.put("print_field_descending_distance", new ClientPrintFieldDescendingDistance());
 
@@ -34,9 +34,9 @@ public class CommandHandler {
 
     }
 
-    public CommandArgumentList handle(String commandLine) throws IllegalArgumentException, SystemInClosedException {
+    public Action handle(String commandLine) throws IllegalArgumentException, SystemInClosedException {
         CommandArgumentList arguments = CommandAndArgumentsParser.parseCommandAndArguments(commandLine);
-        CommandArgumentList toServerCommandArgumentList;
+        Action toServerCommandArgumentList;
         String command = (String) arguments.getCommand().getValue();
 
         if (!commandList.containsKey(command) || command == null){

@@ -12,7 +12,7 @@ import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 
 public class ClientProtocol extends TcpProtocol {
-    Socket socket;
+    private final Socket socket;
 
     public ClientProtocol(Socket socket){
         this.socket = socket;
@@ -25,7 +25,7 @@ public class ClientProtocol extends TcpProtocol {
 
         try {
             InputStream in = socket.getInputStream();
-            while (!reader.hasPacket()) {
+            while (reader.notFullPacket()) {
                 int status = in.read(readBuffer.array(), 0, readBuffer.capacity());
                 if (status == -1) {
                     throw new IOException("Server closed!");
@@ -49,7 +49,7 @@ public class ClientProtocol extends TcpProtocol {
     @Override
     public <T> ProtocolStates send(T data) {
         try {
-            ByteBuffer packet = Packet.encode(serializeToBytes(data));;
+            ByteBuffer packet = Packet.encode(serializeToBytes(data));
             OutputStream out = socket.getOutputStream();
             out.write(packet.array(), 0, packet.limit());
             out.flush();

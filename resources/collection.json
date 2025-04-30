@@ -68,6 +68,27 @@
   },
   "distance" : 3.1415
 }, {
+  "id" : 10,
+  "name" : "TESTMAIN",
+  "coordinates" : {
+    "x" : 111.0,
+    "y" : 222.0
+  },
+  "creationDate" : 1746042230066,
+  "from" : {
+    "x" : 78,
+    "y" : 790.0,
+    "z" : 754.0,
+    "name" : "9075874"
+  },
+  "to" : {
+    "x" : 678867867,
+    "y" : 676876.0,
+    "z" : 6.4747872E10,
+    "name" : "yuuyuy"
+  },
+  "distance" : 5.6569788574E10
+}, {
   "id" : 6,
   "name" : "ZZZ2",
   "coordinates" : {
@@ -78,4 +99,25 @@
   "from" : null,
   "to" : null,
   "distance" : 444.0
+}, {
+  "id" : 9,
+  "name" : "test",
+  "coordinates" : {
+    "x" : 14.0,
+    "y" : 88.0
+  },
+  "creationDate" : 1746040837514,
+  "from" : {
+    "x" : 111,
+    "y" : 111.0,
+    "z" : 111.0,
+    "name" : "testLoc1"
+  },
+  "to" : {
+    "x" : 222,
+    "y" : 222.0,
+    "z" : 222.0,
+    "name" : "testLoc2"
+  },
+  "distance" : 222.0
 } ]

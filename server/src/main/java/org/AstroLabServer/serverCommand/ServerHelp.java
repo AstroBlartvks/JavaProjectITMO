@@ -1,12 +1,12 @@
 package org.AstroLabServer.serverCommand;
 
+import org.AstroLab.actions.components.Action;
 import org.AstroLab.utils.ClientServer.ResponseStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
-import org.AstroLab.utils.command.CommandArgumentList;
 
 public class ServerHelp extends ServerCommand{
     @Override
-    public ServerResponse execute(CommandArgumentList args){
+    public ServerResponse execute(Action args){
         String Text = """
                 help:\s
                 \toutput help for available commands
@@ -22,8 +22,6 @@ public class ServerHelp extends ServerCommand{
                 \tdelete an item from the collection by its id
                 clear:\s
                 \tclear the collection
-                save:\s
-                \tsave the collection to a file
                 execute_script file_name:\s
                 \tread and execute the script from the specified file. The script contains commands in the same form as they are entered by the user interactively.
                 exit:\s

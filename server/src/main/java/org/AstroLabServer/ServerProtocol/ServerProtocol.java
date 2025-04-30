@@ -1,6 +1,5 @@
 package org.AstroLabServer.ServerProtocol;
 
-import org.AstroLab.utils.ClientServer.ClientRequest;
 import org.AstroLab.utils.tcpProtocol.ProtocolStates;
 import org.AstroLab.utils.tcpProtocol.TcpProtocol;
 import org.AstroLab.utils.tcpProtocol.packet.ClientClosedConnectionException;
@@ -28,7 +27,7 @@ public class ServerProtocol extends TcpProtocol {
         PacketReader reader = new PacketReader();
         ByteBuffer readBuffer = ByteBuffer.allocate(PacketReader.INITIAL_BUFFER_SIZE);
         try {
-            while (!reader.hasPacket()) {
+            while (reader.notFullPacket()) {
                 readBuffer.clear();
                 int bytesRead = socketChannel.read(readBuffer);
                 if (bytesRead == -1) {

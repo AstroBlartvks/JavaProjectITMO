@@ -1,10 +1,11 @@
 package org.AstroLabServer.serverCommand;
 
-import org.AstroLabServer.collection.CustomCollection;
+import org.AstroLab.actions.components.Action;
+import org.AstroLab.actions.components.ActionCountGreaterThanDistance;
 import org.AstroLab.utils.ClientServer.ResponseStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
 import org.AstroLab.utils.command.CommandArgument;
-import org.AstroLab.utils.command.CommandArgumentList;
+import org.AstroLabServer.collection.CustomCollection;
 
 public class ServerCountGreaterThanDistance extends ServerCommand{
     private final CustomCollection collection;
@@ -13,8 +14,9 @@ public class ServerCountGreaterThanDistance extends ServerCommand{
         this.collection = collection;
     }
     @Override
-    public ServerResponse execute(CommandArgumentList args){
-        int count = this.collection.countGreaterThanDistance((double)args.getFirstArgument().getValue());
+    public ServerResponse execute(Action args){
+        ActionCountGreaterThanDistance action = (ActionCountGreaterThanDistance) args;
+        int count = this.collection.countGreaterThanDistance(action.getDistance());
         return new ServerResponse(ResponseStatus.OK, new CommandArgument(count));
     }
 }

@@ -3,8 +3,6 @@ package org.AstroLab.utils.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedHashMap;
-
 /**
  * The {@code Coordinates} class represents a set of coordinates with {@code x} and {@code y} values.
  * <p>

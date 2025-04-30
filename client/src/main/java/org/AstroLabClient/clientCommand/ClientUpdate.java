@@ -1,6 +1,7 @@
 package org.AstroLabClient.clientCommand;
 
-import org.AstroLab.utils.command.CommandArgument;
+import org.AstroLab.actions.components.Action;
+import org.AstroLab.actions.components.ActionUpdate;
 import org.AstroLab.utils.command.CommandArgumentList;
 import org.AstroLabClient.inputManager.ArgumentRequester;
 import org.AstroLabClient.inputManager.SystemInClosedException;
@@ -13,15 +14,15 @@ public class ClientUpdate extends ClientCommand{
     }
 
     @Override
-    public CommandArgumentList input(CommandArgumentList argumentList) throws IllegalArgumentException, SystemInClosedException {
+    public Action input(CommandArgumentList argumentList) throws IllegalArgumentException, SystemInClosedException {
 
         if (argumentList.getFirstArgument() == null){
             throw new IllegalArgumentException("The 'update' command has syntax and must contain the 'id' argument example: 'update id {element}'");
         }
 
-        argumentList.convertArgumentToNeedType(Integer::valueOf);
-        argumentList.addArgument(new CommandArgument(RouteDTOParser.parse(this.argumentRequester)));
-
-        return argumentList;
+        ActionUpdate action = new ActionUpdate();
+        action.setId(argumentList.convertArgumentToNeedType(Integer::valueOf));
+        action.setCreateRouteDTO(RouteDTOParser.parse(this.argumentRequester));
+        return action;
     }
 }

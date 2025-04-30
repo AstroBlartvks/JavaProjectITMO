@@ -1,9 +1,10 @@
 package org.AstroLabServer.serverCommand;
 
-import org.AstroLabServer.collection.CustomCollection;
+import org.AstroLab.actions.components.Action;
+import org.AstroLab.actions.components.ActionRemoveById;
 import org.AstroLab.utils.ClientServer.ResponseStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
-import org.AstroLab.utils.command.CommandArgumentList;
+import org.AstroLabServer.collection.CustomCollection;
 
 public class ServerRemoveById extends ServerCommand {
     private final CustomCollection collection;
@@ -13,8 +14,10 @@ public class ServerRemoveById extends ServerCommand {
     }
 
     @Override
-    public ServerResponse execute(CommandArgumentList args) throws Exception {
-        int id = (int)args.getFirstArgument().getValue();
+    public ServerResponse execute(Action args) throws Exception {
+        ActionRemoveById action = (ActionRemoveById) args;
+
+        int id = action.getId();
 
         if (!this.collection.containsID(id)){
             throw new Exception("There is no 'id'="+id+" in the collection");

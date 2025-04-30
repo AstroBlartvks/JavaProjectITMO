@@ -3,9 +3,6 @@ package org.AstroLab.utils.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-
 @Setter
 @Getter
 public class CreateRouteDTO {
