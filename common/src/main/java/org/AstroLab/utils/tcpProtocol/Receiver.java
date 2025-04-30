@@ -1,8 +1,8 @@
 package org.AstroLab.utils.tcpProtocol;
 
-import org.AstroLab.utils.tcpProtocol.packet.Packet;
 import org.AstroLab.utils.tcpProtocol.packet.PacketIsNullException;
+import java.net.SocketTimeoutException;
 
 public interface Receiver {
-    Packet receive() throws PacketIsNullException;
+    <T> T receive(Class<T> type) throws PacketIsNullException, SocketTimeoutException;
 }

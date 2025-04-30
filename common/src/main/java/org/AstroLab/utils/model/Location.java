@@ -54,13 +54,4 @@ public class Location {
                 "'}";
     }
 
-    public static Location fromMap(LinkedHashMap<String, Object> map) {
-        if (map == null) return null;
-        Location location = new Location();
-        location.setName((String) map.get("name"));
-        location.setX(Long.parseLong(map.get("x").toString()));
-        location.setY(Float.valueOf(map.get("y").toString()));
-        location.setZ(Float.valueOf(map.get("z").toString()));
-        return location;
-    }
 }

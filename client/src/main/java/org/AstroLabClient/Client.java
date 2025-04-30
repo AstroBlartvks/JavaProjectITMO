@@ -1,6 +1,5 @@
 package org.AstroLabClient;
 
-import org.AstroLab.utils.tcpProtocol.packet.Packet;
 import org.AstroLabClient.ClientProtocol.ClientProtocol;
 import org.AstroLabClient.inputManager.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,9 +8,8 @@ import org.AstroLab.utils.ClientServer.ClientStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
 import org.AstroLab.utils.command.CommandArgumentList;
 
-import java.io.*;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
+import java.rmi.ServerException;
 
 public final class Client {
     private final ScannerManager scannerManager;
@@ -21,7 +19,6 @@ public final class Client {
     private final ObjectMapper objectMapper = new ObjectMapper();
     private static final int MAX_RETRIES = 3;
     private static final int RETRY_DELAY_MS = 5000;
-    private static final int BUFFER_SIZE_BYTES = 4096;
     private boolean isRunning = true;
 
     public Client(String host, int port) {
@@ -41,12 +38,11 @@ public final class Client {
 
     private boolean createSocketAndRun(int attempt){
         try (Socket socket = new Socket()) {
+            socket.setSoTimeout(2 * RETRY_DELAY_MS);
             socket.connect(new InetSocketAddress(serverHost, serverPort), RETRY_DELAY_MS);
             ClientProtocol clientProtocol = new ClientProtocol(socket);
 
-            //Объеденить как и с нижним
-            Packet packet = clientProtocol.receive();
-            ServerResponse response = clientProtocol.deserializeFromBytes(packet.getData(), ServerResponse.class);
+            ServerResponse response = clientProtocol.receive(ServerResponse.class);
             System.out.println(response.getValue());
 
             while (isRunning && scannerManager.hasNextLine()) {
@@ -62,59 +58,42 @@ public final class Client {
             }
         } catch (SocketException e) {
             handleRetry(attempt, e);
+        } catch (ServerException e) {
+            return true;
         } catch (Exception e) {
             System.out.println("Unexpected Exception: " + e.getMessage());
         }
         return false;
     }
 
-    private void communicateWithServer(ClientProtocol clientProtocol, ClientRequest request, Socket socket) throws SocketException{
+    private void communicateWithServer(ClientProtocol clientProtocol, ClientRequest request, Socket socket) throws SocketException, ServerException{
         for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
-            try{
-                clientProtocol.send(request);
+            clientProtocol.send(request);
+            ServerResponse response;
 
-                //Убрать пакет, сделать нормальный generic метод receive
-                Packet packet = clientProtocol.receive();
-                ServerResponse response = clientProtocol.deserializeFromBytes(packet.getData(), ServerResponse.class);
-
-                switch (response.getStatus()) {
-                    case EXIT:
-                        isRunning = false;
-                        return;
-                    case EXCEPTION:
-                        System.err.println("Server exception:\n" + response);
-                        return;
-                    default:
-                        System.out.println("Server response:\n" + response.getValue());
-                        return;
-                }
+            try {
+                response = clientProtocol.receive(ServerResponse.class);
             } catch (SocketTimeoutException e) {
-                handleRetry(attempt, e);
-            } catch (IOException e) {
-                if (e.getMessage().equals("Connection reset by peer")) {
-                    throw new SocketException("Server closed!");
-                }
-                System.out.println("Communication error: " + e.getMessage());
-                return;
+                continue;
+            }
+
+            if (response == null) continue;
+
+            switch (response.getStatus()) {
+                case EXIT:
+                    isRunning = false;
+                    return;
+                case EXCEPTION:
+                    System.err.println("Server exception:\n" + response);
+                    return;
+                default:
+                    System.out.println("Server response:\n" + response.getValue());
+                    return;
             }
         }
         System.out.println("Server unavailable after " + MAX_RETRIES + " attempts.");
+        throw new ServerException("Server Closed!");
     }
-
-//    private ServerResponse receiveResponse(Socket socket) throws IOException {
-//        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-//        StringBuilder responseBuilder = new StringBuilder();
-//        char[] buffer = new char[BUFFER_SIZE_BYTES];
-//        int status;
-//
-//        while ((status = in.read(buffer)) > 0) {
-//            responseBuilder.append(buffer);
-//            if (status < BUFFER_SIZE_BYTES){
-//                break;
-//            }
-//        }
-//        return objectMapper.readValue(responseBuilder.toString(), ServerResponse.class);
-//    }
 
     private void handleRetry(int attempt, Exception e) {
         System.out.println("Attempt " + (attempt + 1) + " failed: " + e.getMessage());

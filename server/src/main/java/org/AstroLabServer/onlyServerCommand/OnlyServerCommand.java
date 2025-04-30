@@ -1,0 +1,5 @@
+package org.AstroLabServer.onlyServerCommand;
+
+public abstract class OnlyServerCommand {
+    public abstract OnlyServerResult execute() throws Exception;
+}

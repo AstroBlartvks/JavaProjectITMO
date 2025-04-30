@@ -25,15 +25,4 @@ public class CreateRouteDTO {
                 ", coordinates=" + this.coordinates +
                 '}';
     }
-
-    public static CreateRouteDTO fromMap(HashMap<String, Object> map) {
-        if (map == null) return null;
-        CreateRouteDTO routeDTO = new CreateRouteDTO();
-        routeDTO.setName((String) map.get("name"));
-        routeDTO.setDistance((Double) map.get("distance"));
-        routeDTO.setCoordinates(Coordinates.fromMap((LinkedHashMap<String, Object>) map.get("coordinates")));
-        routeDTO.setFrom(Location.fromMap((LinkedHashMap<String, Object>) map.get("from")));
-        routeDTO.setTo(Location.fromMap((LinkedHashMap<String, Object>) map.get("to")));
-        return routeDTO;
-    }
 }

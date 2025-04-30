@@ -1,15 +1,15 @@
 package org.AstroLabClient.ClientProtocol;
 
-import org.AstroLab.utils.ClientServer.ServerResponse;
 import org.AstroLab.utils.tcpProtocol.ProtocolStates;
 import org.AstroLab.utils.tcpProtocol.TcpProtocol;
 import org.AstroLab.utils.tcpProtocol.packet.Packet;
+import org.AstroLab.utils.tcpProtocol.packet.PacketIsNullException;
 import org.AstroLab.utils.tcpProtocol.packet.PacketReader;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 
 public class ClientProtocol extends TcpProtocol {
     Socket socket;
@@ -19,7 +19,7 @@ public class ClientProtocol extends TcpProtocol {
     }
 
     @Override
-    public Packet receive() {
+    public <T> T receive(Class<T> type) throws PacketIsNullException, SocketTimeoutException {
         PacketReader reader = new PacketReader();
         ByteBuffer readBuffer = ByteBuffer.allocate(PacketReader.INITIAL_BUFFER_SIZE);
 
@@ -34,9 +34,13 @@ public class ClientProtocol extends TcpProtocol {
                 readBuffer.limit(status);
                 reader.feed(readBuffer);
             }
-            return reader.nextPacket();
+            Packet packet = reader.nextPacket();
+            return deserializeFromBytes(packet.getData(), type);
+
+        } catch (SocketTimeoutException e){
+            throw e;
         } catch (IOException e) {
-            System.err.println("Receiving failed: " + e.getMessage());
+            System.err.println("Receiving failed: " + e);
             return null;
         }
     }

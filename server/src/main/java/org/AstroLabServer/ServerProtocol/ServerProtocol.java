@@ -1,5 +1,6 @@
 package org.AstroLabServer.ServerProtocol;
 
+import org.AstroLab.utils.ClientServer.ClientRequest;
 import org.AstroLab.utils.tcpProtocol.ProtocolStates;
 import org.AstroLab.utils.tcpProtocol.TcpProtocol;
 import org.AstroLab.utils.tcpProtocol.packet.ClientClosedConnectionException;
@@ -10,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
@@ -22,7 +24,7 @@ public class ServerProtocol extends TcpProtocol {
     }
 
     @Override
-    public Packet receive() {
+    public <T> T receive(Class<T> type) throws PacketIsNullException, SocketTimeoutException {
         PacketReader reader = new PacketReader();
         ByteBuffer readBuffer = ByteBuffer.allocate(PacketReader.INITIAL_BUFFER_SIZE);
         try {
@@ -35,7 +37,10 @@ public class ServerProtocol extends TcpProtocol {
                 readBuffer.flip();
                 reader.feed(readBuffer);
             }
-            return reader.nextPacket();
+            Packet packet = reader.nextPacket();
+            return deserializeFromBytes(packet.getData(), type);
+        } catch (SocketTimeoutException e){
+            throw e;
         } catch (IOException e){
             logger.error("Packet from {} is null!", socketChannel);
         }

@@ -40,11 +40,4 @@ public class Coordinates {
                 '}';
     }
 
-    public static Coordinates fromMap(LinkedHashMap<String, Object> map) {
-        if (map == null) return null;
-        Coordinates coordinates = new Coordinates();
-        coordinates.setX((Double) map.get("x"));
-        coordinates.setY((Double) map.get("y"));
-        return coordinates;
-    }
 }

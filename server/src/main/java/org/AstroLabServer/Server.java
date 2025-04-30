@@ -3,17 +3,17 @@ package org.AstroLabServer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.Getter;
+
 import org.AstroLab.utils.tcpProtocol.packet.ClientClosedConnectionException;
-import org.AstroLab.utils.tcpProtocol.packet.Packet;
 import org.AstroLab.utils.tcpProtocol.packet.PacketIsNullException;
 import org.AstroLabServer.ServerProtocol.ServerProtocol;
 import org.AstroLabServer.collection.CustomCollection;
 import org.AstroLabServer.files.JsonReader;
 import org.AstroLabServer.files.Reader;
+import org.AstroLabServer.onlyServerCommand.OnlyServerResult;
+import org.AstroLabServer.onlyServerCommand.ServerCommandManager;
 import org.AstroLabServer.serverCommand.CommandManager;
 import org.AstroLab.utils.ClientServer.ClientRequest;
-import org.AstroLab.utils.ClientServer.ProtocolUtils;
 import org.AstroLab.utils.ClientServer.ResponseStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
 import org.AstroLab.utils.command.CommandArgumentList;
@@ -23,18 +23,20 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Server {
     public static final Logger logger = LogManager.getLogger(Server.class);
     private static final int TIMEOUT_MS = 1000;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private ServerCommandManager serverCommandManager;
     private CommandManager commandManager;
     private final String serverHost;
     private final int serverPort;
-    private final boolean isRunning;
+    private boolean isRunning;
+    private ReadableByteChannel consoleChannel;
 
     public Server(String host, int port){
         this.serverHost = host;
@@ -60,6 +62,7 @@ public class Server {
             logger.info("Server started on {}:{}", serverHost, serverPort);
 
             while (isRunning) {
+                handleConsoleCommand();
 
                 if (selector.select(TIMEOUT_MS) == 0) {
                     continue;
@@ -67,10 +70,6 @@ public class Server {
 
                 Set<SelectionKey> keys = selector.selectedKeys();
                 Iterator<SelectionKey> keyIterator = keys.iterator();
-                // Чтение из консоли в неблок
-                // Действия instanceof интерфейсы
-
-                // timeout + продумать пакет
 
                 while (keyIterator.hasNext()) {
                     SelectionKey key = keyIterator.next();
@@ -92,16 +91,41 @@ public class Server {
                     }
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Server error: {}", e.getMessage());
         }
+    }
 
-        try {
-            commandManager.getCommandList().get("save").execute(new CommandArgumentList());
-            logger.info("Collection saved successfully!");
-        } catch (Exception e){
-            logger.fatal("Server can't save the collection: {}", e.getMessage());
+    private void handleConsoleCommand() throws Exception {
+        OnlyServerResult result = readCommandFromConsole();
+
+        switch (result) {
+            case EXIT:
+                serverCommandManager.executeCommand("save");
+                isRunning = false;
+                break;
+            case EXCEPTION:
+                logger.warn("The exception while handling command!");
+                break;
         }
+    }
+
+    private OnlyServerResult readCommandFromConsole() throws IOException{
+        if (System.in.available() > 0){
+            byte[] buffer = new byte[System.in.available()];
+            int res = System.in.read(buffer);
+            if (res == '\n' || res == -1){
+                return OnlyServerResult.OK;
+            }
+            String str = new String(buffer, StandardCharsets.UTF_8);
+            try {
+                return serverCommandManager.executeCommand(str.trim());
+            } catch (Exception e){
+                logger.error(e.getMessage());
+                return OnlyServerResult.EXCEPTION;
+            }
+        }
+        return OnlyServerResult.OK;
     }
 
     private void handleAccept(SelectionKey key, Selector selector) throws IOException {
@@ -119,10 +143,9 @@ public class Server {
         ClientRequest clientRequest;
         ServerProtocol serverProtocol = new ServerProtocol(clientChannel);
         try {
-            Packet packet = serverProtocol.receive();
-            clientRequest = serverProtocol.deserializeFromBytes(packet.getData(), ClientRequest.class);
+            clientRequest = serverProtocol.receive(ClientRequest.class);
             logger.info("Request from client={}: {}", clientChannel, clientRequest);
-        } catch (IOException | PacketIsNullException | ClientClosedConnectionException e) {
+        } catch (PacketIsNullException | ClientClosedConnectionException e) {
             logger.error("Error while reading request: {}", e.getMessage());
             handleClientDisconnect(clientChannel, key);
             return null;
@@ -170,6 +193,7 @@ public class Server {
             Reader reader = new Reader(new JsonReader());
             CustomCollection customCollection = reader.readFromEnv();
             commandManager = new CommandManager(customCollection);
+            serverCommandManager = new ServerCommandManager(customCollection);
         } catch (JsonMappingException e) {
             logger.error("Program can't parse your Json file, check this error and try fix it!\n\t{}", e.getMessage());
             System.exit(-1);

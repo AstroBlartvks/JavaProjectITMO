@@ -1,24 +1,56 @@
 [ {
-  "id" : 1,
-  "name" : "Moscow",
+  "id" : 8,
+  "name" : "Astrakhan - Moscow",
   "coordinates" : {
-    "x" : 4.1,
-    "y" : 3.0
+    "x" : 56.0,
+    "y" : 32.0
   },
-  "creationDate" : 1739907902185,
+  "creationDate" : 1746014713697,
   "from" : {
-    "x" : 33,
-    "y" : 4.6,
-    "z" : 3.2,
-    "name" : "Metro"
+    "x" : 56,
+    "y" : 32.0,
+    "z" : -11.0,
+    "name" : "Astrakhan"
   },
   "to" : {
-    "x" : 100,
-    "y" : 4.0,
-    "z" : 30.0,
-    "name" : "Home"
+    "x" : 128,
+    "y" : 112.0,
+    "z" : 12.0,
+    "name" : "Moscow"
   },
-  "distance" : 2.0
+  "distance" : 3210.0
+}, {
+  "id" : 2,
+  "name" : "Moscow",
+  "coordinates" : {
+    "x" : 0.0,
+    "y" : 0.0
+  },
+  "creationDate" : 1739908687277,
+  "from" : null,
+  "to" : null,
+  "distance" : 733.3
+}, {
+  "id" : 7,
+  "name" : "Moscow - St.Petersburg",
+  "coordinates" : {
+    "x" : 114.23,
+    "y" : 164.12
+  },
+  "creationDate" : 1746014449257,
+  "from" : {
+    "x" : 112,
+    "y" : 153.0,
+    "z" : 12.0,
+    "name" : "Moscow"
+  },
+  "to" : {
+    "x" : 164,
+    "y" : 158.0,
+    "z" : 11.0,
+    "name" : "St. Petersburg"
+  },
+  "distance" : 1120.0
 }, {
   "id" : 4,
   "name" : "Success",
@@ -36,27 +68,6 @@
   },
   "distance" : 3.1415
 }, {
-  "id" : 3,
-  "name" : "Moscow",
-  "coordinates" : {
-    "x" : 0.0,
-    "y" : 0.0
-  },
-  "creationDate" : 1739908704733,
-  "from" : {
-    "x" : 1,
-    "y" : 72.5,
-    "z" : 22.1,
-    "name" : "Hello"
-  },
-  "to" : {
-    "x" : 0,
-    "y" : 53.2,
-    "z" : 22.7,
-    "name" : "Buy"
-  },
-  "distance" : 231.3
-}, {
   "id" : 6,
   "name" : "ZZZ2",
   "coordinates" : {
@@ -67,15 +78,4 @@
   "from" : null,
   "to" : null,
   "distance" : 444.0
-}, {
-  "id" : 2,
-  "name" : "Moscow",
-  "coordinates" : {
-    "x" : 0.0,
-    "y" : 0.0
-  },
-  "creationDate" : 1739908687277,
-  "from" : null,
-  "to" : null,
-  "distance" : 733.3
 } ]

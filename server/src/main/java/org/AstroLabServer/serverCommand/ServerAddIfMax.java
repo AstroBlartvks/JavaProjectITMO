@@ -1,5 +1,6 @@
 package org.AstroLabServer.serverCommand;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.AstroLabServer.collection.CustomCollection;
 import org.AstroLab.utils.ClientServer.ResponseStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 public class ServerAddIfMax extends ServerCommand{
     private final CustomCollection collection;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public ServerAddIfMax(CustomCollection collection){
         this.collection = collection;
@@ -20,7 +22,7 @@ public class ServerAddIfMax extends ServerCommand{
 
     @Override
     public ServerResponse execute(CommandArgumentList args) {
-        CreateRouteDTO routeDTO = CreateRouteDTO.fromMap((LinkedHashMap<String, Object>) args.getLastArgument().getValue());
+        CreateRouteDTO routeDTO = objectMapper.convertValue(args.getLastArgument().getValue(), CreateRouteDTO.class);
         Route newRoute = new Route();
 
         newRoute.setId(collection.getNewID());
