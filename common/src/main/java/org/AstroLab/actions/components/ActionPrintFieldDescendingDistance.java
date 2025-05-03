@@ -1,9 +1,9 @@
 package org.AstroLab.actions.components;
 
-import org.AstroLab.actions.utils.TypesOfActions;
+import org.AstroLab.actions.utils.ActionsName;
 
-public class ActionPrintFieldDescendingDistance extends Action{
+public class ActionPrintFieldDescendingDistance extends ClientServerAction{
     public ActionPrintFieldDescendingDistance(){
-        this.actionType = TypesOfActions.PRINT_FIELD_DESCENDING_DISTANCE;
+        this.actionName = ActionsName.PRINT_FIELD_DESCENDING_DISTANCE;
     }
 }

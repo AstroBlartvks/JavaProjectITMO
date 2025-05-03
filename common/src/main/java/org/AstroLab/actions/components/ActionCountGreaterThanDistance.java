@@ -2,14 +2,14 @@ package org.AstroLab.actions.components;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.AstroLab.actions.utils.TypesOfActions;
+import org.AstroLab.actions.utils.ActionsName;
 
 @Setter
 @Getter
-public class ActionCountGreaterThanDistance extends Action{
+public class ActionCountGreaterThanDistance extends ClientServerAction{
     private Double distance;
 
     public ActionCountGreaterThanDistance(){
-        this.actionType = TypesOfActions.COUNT_GREATER_THAN_DISTANCE;
+        this.actionName = ActionsName.COUNT_GREATER_THAN_DISTANCE;
     }
 }

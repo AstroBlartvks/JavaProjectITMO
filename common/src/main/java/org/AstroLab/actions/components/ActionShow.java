@@ -1,9 +1,9 @@
 package org.AstroLab.actions.components;
 
-import org.AstroLab.actions.utils.TypesOfActions;
+import org.AstroLab.actions.utils.ActionsName;
 
-public class ActionShow extends Action{
+public class ActionShow extends ClientServerAction{
     public ActionShow(){
-        this.actionType = TypesOfActions.SHOW;
+        this.actionName = ActionsName.SHOW;
     }
 }

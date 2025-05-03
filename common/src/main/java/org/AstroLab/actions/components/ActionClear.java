@@ -1,9 +1,9 @@
 package org.AstroLab.actions.components;
 
-import org.AstroLab.actions.utils.TypesOfActions;
+import org.AstroLab.actions.utils.ActionsName;
 
-public class ActionClear extends Action{
+public class ActionClear extends ClientServerAction{
     public ActionClear(){
-        this.actionType = TypesOfActions.CLEAR;
+        this.actionName = ActionsName.CLEAR;
     }
 }

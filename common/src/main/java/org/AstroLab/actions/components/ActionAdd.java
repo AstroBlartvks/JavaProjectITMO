@@ -2,15 +2,15 @@ package org.AstroLab.actions.components;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.AstroLab.actions.utils.TypesOfActions;
+import org.AstroLab.actions.utils.ActionsName;
 import org.AstroLab.utils.model.CreateRouteDTO;
 
 @Setter
 @Getter
-public class ActionAdd extends Action{
+public class ActionAdd extends ClientServerAction{
     private CreateRouteDTO createRouteDTO;
 
     public ActionAdd(){
-        this.actionType = TypesOfActions.ADD;
+        this.actionName = ActionsName.ADD;
     }
 }

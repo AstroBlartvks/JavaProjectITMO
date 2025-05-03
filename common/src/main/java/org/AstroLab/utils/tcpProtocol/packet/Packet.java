@@ -54,8 +54,9 @@ public class Packet {
      * @return ByteBuffer containing full packet (position set to 0, limit at end)
      */
     public static ByteBuffer encode(byte[] data) {
+        CRC32Checksum checksum = new CRC32Checksum();
         int len = data.length;
-        long hash = computeHash(data);
+        long hash = checksum.compute(data);
         long now = new Date().getTime();
 
         int totalSize = HEADER_SIZE + len + EOF_MARKER.length;
@@ -76,17 +77,5 @@ public class Packet {
      */
     public byte[] getData() {
         return data.clone();
-    }
-
-    /**
-     * Computes CRC32 hash stored in an 8-byte field (upper bytes zero).
-     *
-     * @param data payload bytes
-     * @return 64-bit hash value
-     */
-    private static long computeHash(byte[] data) {
-        CRC32 crc = new CRC32();
-        crc.update(data);
-        return crc.getValue();
     }
 }

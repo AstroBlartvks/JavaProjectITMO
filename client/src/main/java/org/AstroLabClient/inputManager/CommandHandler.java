@@ -3,6 +3,7 @@ package org.AstroLabClient.inputManager;
 import lombok.Getter;
 import lombok.Setter;
 import org.AstroLab.actions.components.Action;
+import org.AstroLab.actions.components.ClientServerAction;
 import org.AstroLab.utils.command.CommandArgumentList;
 import org.AstroLabClient.clientCommand.*;
 
@@ -32,6 +33,7 @@ public class CommandHandler {
         commandList.put("remove_greater", new ClientRemoveGreater(argumentRequester));
         commandList.put("count_greater_than_distance", new ClientCountGreaterThanDistance());
 
+        commandList.put("exit", new ClientExit());
     }
 
     public Action handle(String commandLine) throws IllegalArgumentException, SystemInClosedException {

@@ -2,6 +2,7 @@ package org.AstroLabClient.clientCommand;
 
 import org.AstroLab.actions.components.Action;
 import org.AstroLab.actions.components.ActionUpdate;
+import org.AstroLab.actions.components.ClientServerAction;
 import org.AstroLab.utils.command.CommandArgumentList;
 import org.AstroLabClient.inputManager.ArgumentRequester;
 import org.AstroLabClient.inputManager.SystemInClosedException;
@@ -14,7 +15,7 @@ public class ClientUpdate extends ClientCommand{
     }
 
     @Override
-    public Action input(CommandArgumentList argumentList) throws IllegalArgumentException, SystemInClosedException {
+    public ClientServerAction input(CommandArgumentList argumentList) throws IllegalArgumentException, SystemInClosedException {
 
         if (argumentList.getFirstArgument() == null){
             throw new IllegalArgumentException("The 'update' command has syntax and must contain the 'id' argument example: 'update id {element}'");

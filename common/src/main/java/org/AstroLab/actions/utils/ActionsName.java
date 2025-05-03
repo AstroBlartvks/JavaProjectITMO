@@ -1,6 +1,6 @@
 package org.AstroLab.actions.utils;
 
-public enum TypesOfActions {
+public enum ActionsName {
     ADD("ADD"),
     ADD_IF_MAX("ADD_IF_MAX"),
     ADD_IF_MIN("ADD_IF_MIN"),
@@ -13,9 +13,10 @@ public enum TypesOfActions {
     REMOVE_BY_ID("REMOVE_BY_ID"),
     REMOVE_GREATER("REMOVE_GREATER"),
     SHOW("SHOW"),
-    UPDATE("UPDATE");
+    UPDATE("UPDATE"),
+    EXIT("EXIT");
 
-    TypesOfActions(String jsonName) {
+    ActionsName(String jsonName) {
     }
 
 }

@@ -5,7 +5,6 @@ import org.AstroLab.actions.components.ActionCountByDistance;
 import org.AstroLabServer.collection.CustomCollection;
 import org.AstroLab.utils.ClientServer.ResponseStatus;
 import org.AstroLab.utils.ClientServer.ServerResponse;
-import org.AstroLab.utils.command.CommandArgumentList;
 
 public class ServerCountByDistance extends ServerCommand{
     private final CustomCollection collection;

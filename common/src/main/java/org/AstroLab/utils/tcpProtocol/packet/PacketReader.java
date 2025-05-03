@@ -23,6 +23,7 @@ import java.util.Date;
 public class PacketReader {
     public static final int INITIAL_BUFFER_SIZE = 4096;
     private ByteBuffer buffer = ByteBuffer.allocate(INITIAL_BUFFER_SIZE);
+    private final CRC32Checksum checksum = new CRC32Checksum();
 
     public void feed(ByteBuffer src) {
         ensureCapacity(src.remaining());
@@ -75,7 +76,7 @@ public class PacketReader {
         for (int i = 0; i < eof.length; i++) if (eof[i] != Packet.EOF_MARKER[i])
             throw new IllegalStateException("Invalid EOF marker");
 
-        long calc = CRC32Checksum.compute(data);
+        long calc = checksum.compute(data);
         if (calc != hash)
             throw new IllegalStateException("Hash mismatch: " + calc + " != " + hash);
 
