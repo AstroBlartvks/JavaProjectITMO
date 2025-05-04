@@ -50,7 +50,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.AstroLabClient.Main</mainClass>
+                            <mainClass>AstroLabClient.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -87,7 +87,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>org.AstroLabClient.Main</mainClass>
+                            <mainClass>AstroLabClient.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

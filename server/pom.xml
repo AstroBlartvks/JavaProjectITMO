@@ -60,7 +60,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.AstroLabServer.Main</mainClass>
+                            <mainClass>AstroLabServer.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -97,7 +97,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>org.AstroLabServer.Main</mainClass>
+                            <mainClass>AstroLabServer.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

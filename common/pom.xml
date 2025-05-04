@@ -59,7 +59,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>org.AstroLab.Main</mainClass>
+                            <mainClass>AstroLab.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
