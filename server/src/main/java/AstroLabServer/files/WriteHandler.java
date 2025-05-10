@@ -8,11 +8,12 @@ import AstroLabServer.collection.CustomCollection;
  * Such as Yaml, XML, etc.
  */
 public abstract class WriteHandler {
-    /**
+    /**.
      * Write the collection into a file
-     * @param Path path of file
+     *
+     * @param path path of file
      * @param collection CustomCollection object to write in file
      * @throws Exception while writing mb exceptions
      */
-    abstract public void writeFile(String Path, CustomCollection collection) throws Exception;
+    abstract void writeFile(String path, CustomCollection collection) throws Exception;
 }

@@ -23,7 +23,6 @@ import lombok.Getter;
 public class PacketReader {
     public static final int INITIAL_BUFFER_SIZE = 4096;
     private ByteBuffer buffer = ByteBuffer.allocate(INITIAL_BUFFER_SIZE);
-    private final Crc32Checksum checksum = new Crc32Checksum();
 
     public void feed(ByteBuffer src) {
         ensureCapacity(src.remaining());
@@ -58,6 +57,7 @@ public class PacketReader {
 
         int len = buffer.getInt();
         long hash = buffer.getLong();
+        long timeStamp = buffer.getLong();
 
         int need = Packet.HEADER_SIZE + len;
 
@@ -70,14 +70,13 @@ public class PacketReader {
         byte[] data = new byte[len];
         buffer.get(data);
 
-        long calc = checksum.compute(data);
+        long calc = new Crc32Checksum().compute(data);
         if (calc != hash) {
             throw new IllegalStateException("Hash mismatch: " + calc + " != " + hash);
         }
 
         buffer.compact();
 
-        long timeStamp = buffer.getLong();
         return new Packet(len, hash, new Date(timeStamp), data);
     }
 

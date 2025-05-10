@@ -14,13 +14,14 @@ public class ServerResponse {
     private ResponseStatus status;
 
     @JsonCreator
-    public ServerResponse(@JsonProperty("status") ResponseStatus status, @JsonProperty("value") Object value){
+    public ServerResponse(@JsonProperty("status") ResponseStatus status,
+                          @JsonProperty("value") Object value) {
         this.status = status;
         this.value = value;
     }
 
     @Override
-    public String toString(){
-        return "\nResponse{\nstatus="+this.status.toString()+",\nvalue='''\n"+this.value+"\n'''}";
+    public String toString() {
+        return "\nResponse{\nstatus=" + this.status.toString() + ",\nvalue='''\n" + this.value + "\n'''}";
     }
 }

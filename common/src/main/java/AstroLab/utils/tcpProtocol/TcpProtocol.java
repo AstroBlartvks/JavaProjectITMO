@@ -2,7 +2,6 @@ package AstroLab.utils.tcpProtocol;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -17,9 +16,8 @@ public abstract class TcpProtocol implements Sender, Receiver, JsonSerializer, J
     }
 
     @Override
-    public <T> byte[] serializeToBytes(T response) throws JsonProcessingException  {
+    public <T> byte[] serializeToBytes(T response) throws JsonProcessingException {
         String json = new ObjectMapper().writeValueAsString(response) + "\n";
         return json.getBytes(StandardCharsets.UTF_8);
     }
-
 }

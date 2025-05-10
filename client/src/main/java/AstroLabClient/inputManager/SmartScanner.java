@@ -1,8 +1,7 @@
 package AstroLabClient.inputManager;
 
-import lombok.Getter;
-
 import java.util.Scanner;
+import lombok.Getter;
 
 @Getter
 public class SmartScanner {
@@ -17,31 +16,31 @@ public class SmartScanner {
         this.name = name;
     }
 
-    public void close(){
+    public void close() {
         this.scanner.close();
         this.closed = true;
     }
 
-    public String nextLine(){
+    public String nextLine() {
         String line = this.scanner.nextLine();
 
-        if (line.isEmpty()){
+        if (line.isEmpty()) {
             return "";
         }
 
-        if (SmartScannerType.CONSOLE != this.type){
+        if (SmartScannerType.CONSOLE != this.type) {
             System.out.println(line.trim());
         }
 
         return line.trim();
     }
 
-    public boolean hasNextLine(){
+    public boolean hasNextLine() {
         return this.scanner.hasNextLine();
     }
 
     @Override
-    public String toString(){
-        return "SmartScanner{\ntype="+type+",\nname="+name+",\nclosed="+closed;
+    public String toString() {
+        return "SmartScanner{\ntype=" + type + ",\nname=" + name + ",\nclosed=" + closed;
     }
 }

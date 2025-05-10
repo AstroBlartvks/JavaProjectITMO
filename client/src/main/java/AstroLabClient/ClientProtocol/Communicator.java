@@ -38,14 +38,14 @@ public class Communicator implements CommandVisitor {
 
     public void communicate(Action action) throws Exception {
         if (action instanceof ClientAction) {
-            visit((ClientAction) action);
+            visitIt((ClientAction) action);
         } else if (action instanceof ClientServerAction) {
-            visit((ClientServerAction) action);
+            visitIt((ClientServerAction) action);
         }
     }
 
     @Override
-    public void visit(ClientServerAction clientServerAction) throws Exception {
+    public void visitIt(ClientServerAction clientServerAction) throws Exception {
         ClientRequest request = new ClientRequest(ClientStatus.REQUEST, clientServerAction);
         for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
             clientProtocol.send(request);
@@ -71,7 +71,7 @@ public class Communicator implements CommandVisitor {
     }
 
     @Override
-    public void visit(ClientAction clientAction) throws Exception {
+    public void visitIt(ClientAction clientAction) throws Exception {
         clientAction.executeLocally();
     }
 }

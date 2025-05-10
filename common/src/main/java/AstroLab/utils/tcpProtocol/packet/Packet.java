@@ -50,9 +50,8 @@ public class Packet {
      * @return ByteBuffer containing full packet (position set to 0, limit at end)
      */
     public static ByteBuffer encode(byte[] data) {
-        Crc32Checksum checksum = new Crc32Checksum();
         int len = data.length;
-        long hash = checksum.compute(data);
+        long hash = new Crc32Checksum().compute(data);
         long now = new Date().getTime();
 
         int totalSize = HEADER_SIZE + len;

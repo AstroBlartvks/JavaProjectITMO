@@ -49,7 +49,8 @@ public class Server {
                 serverChannel.configureBlocking(false);
                 serverChannel.register(selector, SelectionKey.OP_ACCEPT);
             } catch (IllegalArgumentException | SecurityException | AlreadyBoundException e) {
-                LOGGER.fatal("You can't bind server{ip={}, port={}}, because: {}", this.serverHost, this.serverPort, e.getMessage());
+                LOGGER.fatal("You can't bind server{ip={}, port={}}, because: {}",
+                        this.serverHost, this.serverPort, e.getMessage());
             } catch (ClosedChannelException | ClosedSelectorException e) {
                 LOGGER.fatal("Your server's channel or selector closed! {}", e.getMessage());
             }
@@ -132,10 +133,14 @@ public class Server {
         clientChannel.register(selector, SelectionKey.OP_READ);
 
         LOGGER.info("Accepted connection from: {}", clientChannel.getRemoteAddress());
-        handleSendResponse(clientChannel, new ServerResponse(ResponseStatus.OK, "You have connected to the server!"));
+        handleSendResponse(clientChannel,
+                new ServerResponse(ResponseStatus.OK,
+                "You have connected to the server!"));
     }
 
-    private ClientRequest handleReadRequest(SelectionKey key, SocketChannel clientChannel) throws IOException {
+    private ClientRequest handleReadRequest(SelectionKey key,
+                                            SocketChannel clientChannel)
+            throws IOException {
         ClientRequest clientRequest;
         ServerProtocol serverProtocol = new ServerProtocol(clientChannel);
         try {
@@ -191,7 +196,8 @@ public class Server {
             commandManager = new CommandManager(customCollection);
             serverCommandManager = new ServerCommandManager(customCollection);
         } catch (JsonMappingException e) {
-            LOGGER.error("Program can't parse your Json file, check this error and try fix it!\n\t{}", e.getMessage());
+            LOGGER.error("Program can't parse your Json file, check this error and try fix it!\n\t{}",
+                    e.getMessage());
             System.exit(-1);
         } catch (Exception e) {
             LOGGER.error("Ops... Exception while reading!\n{}", e.getMessage());

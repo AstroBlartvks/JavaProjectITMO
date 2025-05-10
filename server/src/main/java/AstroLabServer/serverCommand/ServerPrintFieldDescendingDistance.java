@@ -11,6 +11,7 @@ public class ServerPrintFieldDescendingDistance extends ServerCommand {
     public ServerPrintFieldDescendingDistance(CustomCollection collection) {
         this.collection = collection;
     }
+
     @Override
     public ServerResponse execute(Action args) {
         return new ServerResponse(ResponseStatus.OK, this.collection.printFieldDescendingDistance());

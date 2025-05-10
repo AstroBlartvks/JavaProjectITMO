@@ -6,13 +6,12 @@ import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
 import AstroLab.utils.model.Route;
 import AstroLabServer.collection.CustomCollection;
-
 import java.util.Date;
 
-public class ServerUpdate extends ServerCommand{
+public class ServerUpdate extends ServerCommand {
     private final CustomCollection collection;
 
-    public ServerUpdate(CustomCollection collection){
+    public ServerUpdate(CustomCollection collection) {
         this.collection = collection;
     }
 
@@ -20,7 +19,7 @@ public class ServerUpdate extends ServerCommand{
     public ServerResponse execute(Action args) throws IllegalArgumentException {
         ActionUpdate action = (ActionUpdate) args;
 
-        if (!this.collection.containsId(action.getId())){
+        if (!this.collection.containsId(action.getId())) {
             throw new IllegalArgumentException("There is no such 'Route' with 'id'=" + action.getId());
         }
 
@@ -32,6 +31,8 @@ public class ServerUpdate extends ServerCommand{
 
         this.collection.updateElement(newRoute);
 
-        return new ServerResponse(ResponseStatus.OK, "Route{id="+newRoute.getId()+",name="+newRoute.getName()+"} successfully updated");
+        return new ServerResponse(ResponseStatus.OK, "Route{id=" + newRoute.getId() +
+                                                     ",name=" + newRoute.getName() +
+                                                     "} successfully updated");
     }
 }

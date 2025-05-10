@@ -33,7 +33,8 @@ public class ScriptExecutes {
             throw new ScriptExecuteScannerException("Script-file '" + scriptName + "' doesn't exist!");
         }
         if (!Files.isReadable(Paths.get(scriptName))) {
-            throw new ScriptExecuteScannerException("Insufficient permissions to read the '" + scriptName + "' script-file");
+            throw new ScriptExecuteScannerException("Insufficient permissions to read the '" + scriptName +
+                    "' script-file");
         }
 
         if (isItRecursion(scriptName)) {
@@ -45,7 +46,6 @@ public class ScriptExecutes {
             SmartScanner smartScanner = new SmartScanner(scriptScanner, SmartScannerType.FILE, scriptName);
             scannerManager.pushScanner(smartScanner);
             scannerManager.setLastScannerAsActive();
-
         } catch (FileNotFoundException exception) {
             throw new ScriptExecuteScannerException("Script-file '" + scriptName + "' doesn't exist!");
         } catch (NoSuchElementException exception) {

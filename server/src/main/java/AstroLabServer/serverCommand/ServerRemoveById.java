@@ -19,8 +19,8 @@ public class ServerRemoveById extends ServerCommand {
 
         int id = action.getId();
 
-        if (!this.collection.containsId(id)){
-            throw new Exception("There is no 'id'="+id+" in the collection");
+        if (!this.collection.containsId(id)) {
+            throw new Exception("There is no 'id'=" + id + " in the collection");
         }
 
         this.collection.removeById(id);

@@ -1,7 +1,6 @@
 package AstroLabServer.onlyServerCommand;
 
 import AstroLabServer.collection.CustomCollection;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,8 +14,8 @@ public class ServerCommandManager {
 
     public OnlyServerResult executeCommand(String commandName) throws Exception {
         OnlyServerCommand onlyServerCommand = commandList.get(commandName);
-        if (onlyServerCommand == null){
-            throw new Exception("Unexpected command: '"+commandName+"'!");
+        if (onlyServerCommand == null) {
+            throw new Exception("Unexpected command: '" + commandName + "'!");
         }
         return onlyServerCommand.execute();
     }
