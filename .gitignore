@@ -1,11 +1,8 @@
 target/
-.idea/
-**/src/main/java/org/AstrosLab/command/old
-**/src/test
-**/JavaDoc
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+resources/checkstyle
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -40,3 +37,4 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/applogs/
