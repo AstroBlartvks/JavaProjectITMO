@@ -102,8 +102,11 @@ public class Server {
             case EXCEPTION:
                 LOGGER.warn("The exception while handling command!");
                 break;
-            default:
+            case OK:
                 LOGGER.info("Command result: {}", result);
+                break;
+            default:
+                break;
         }
     }
 
@@ -122,7 +125,7 @@ public class Server {
                 return OnlyServerResult.EXCEPTION;
             }
         }
-        return OnlyServerResult.OK;
+        return OnlyServerResult.NOTHING;
     }
 
     private void handleAccept(SelectionKey key, Selector selector) throws IOException {
