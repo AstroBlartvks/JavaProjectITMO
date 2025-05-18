@@ -1,12 +1,12 @@
 package AstroLabClient.ClientProtocol;
 
-import AstroLab.actions.components.Action;
+import AstroLabClient.clientAction.ClientAction;
 import AstroLab.actions.components.ClientServerAction;
+import AstroLab.actions.components.Action;
 import AstroLab.utils.ClientServer.ClientRequest;
 import AstroLab.utils.ClientServer.ClientStatus;
 import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
-import AstroLabClient.clientAction.ClientAction;
 import AstroLabClient.clientAction.CommandVisitor;
 import java.io.IOException;
 import java.net.InetSocketAddress;
