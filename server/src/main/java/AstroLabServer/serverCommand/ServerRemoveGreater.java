@@ -6,15 +6,19 @@ import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
 import AstroLab.utils.model.Route;
 import AstroLabServer.collection.CustomCollection;
+
+import java.sql.Connection;
 import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ServerRemoveGreater extends ServerCommand {
     private final CustomCollection collection;
+    private final Connection connection;
 
-    public ServerRemoveGreater(CustomCollection collection) {
+    public ServerRemoveGreater(CustomCollection collection, Connection connection) {
         this.collection = collection;
+        this.connection = connection;
     }
 
     @Override

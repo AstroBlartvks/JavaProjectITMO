@@ -2,6 +2,7 @@ package AstroLabClient.clientCommand;
 
 import AstroLab.actions.components.ActionAddIfMax;
 import AstroLab.actions.components.ClientServerAction;
+import AstroLab.auth.UserDTO;
 import AstroLab.utils.command.CommandArgumentList;
 import AstroLabClient.inputManager.ArgumentRequester;
 import AstroLabClient.inputManager.SystemInClosedException;
@@ -9,7 +10,8 @@ import AstroLabClient.inputManager.SystemInClosedException;
 public class ClientAddIfMax extends ClientCommand {
     private final ArgumentRequester argumentRequester;
 
-    public ClientAddIfMax(ArgumentRequester argumentRequester) {
+    public ClientAddIfMax(ArgumentRequester argumentRequester, UserDTO userDTO) {
+        super(userDTO);
         this.argumentRequester = argumentRequester;
     }
 
@@ -21,7 +23,7 @@ public class ClientAddIfMax extends ClientCommand {
     @Override
     public ClientServerAction input(CommandArgumentList argumentList)
             throws IllegalArgumentException, SystemInClosedException {
-        ActionAddIfMax action = new ActionAddIfMax();
+        ActionAddIfMax action = new ActionAddIfMax(this.userDTO.getLogin(), this.userDTO.getPassword());
         action.setCreateRouteDto(RouteDtoParser.parse(this.argumentRequester));
         return action;
     }

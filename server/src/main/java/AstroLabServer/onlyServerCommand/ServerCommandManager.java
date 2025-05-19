@@ -7,8 +7,7 @@ import java.util.Map;
 public class ServerCommandManager {
     private final Map<String, OnlyServerCommand> commandList = new HashMap<>();
 
-    public ServerCommandManager(CustomCollection collection) {
-        commandList.put("save", new OnlyServerSave(collection));
+    public ServerCommandManager() {
         commandList.put("exit", new OnlyServerExit());
     }
 

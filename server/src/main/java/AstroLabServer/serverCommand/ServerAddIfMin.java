@@ -6,14 +6,18 @@ import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
 import AstroLab.utils.model.Route;
 import AstroLabServer.collection.CustomCollection;
+
+import java.sql.Connection;
 import java.util.Date;
 import java.util.Optional;
 
 public class ServerAddIfMin extends ServerCommand {
     private final CustomCollection collection;
+    private final Connection connection;
 
-    public ServerAddIfMin(CustomCollection collection) {
+    public ServerAddIfMin(CustomCollection collection, Connection connection) {
         this.collection = collection;
+        this.connection = connection;
     }
 
     @Override

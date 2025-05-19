@@ -6,13 +6,17 @@ import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
 import AstroLab.utils.model.Route;
 import AstroLabServer.collection.CustomCollection;
+
+import java.sql.Connection;
 import java.util.Date;
 
 public class ServerUpdate extends ServerCommand {
     private final CustomCollection collection;
+    private final Connection connection;
 
-    public ServerUpdate(CustomCollection collection) {
+    public ServerUpdate(CustomCollection collection, Connection connection) {
         this.collection = collection;
+        this.connection = connection;
     }
 
     @Override

@@ -2,6 +2,7 @@ package AstroLab.actions.components;
 
 import AstroLab.actions.utils.ActionsName;
 import AstroLab.utils.model.CreateRouteDto;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +17,9 @@ public class ActionAddIfMax extends ClientServerAction {
     /**.
      * Create Action
      */
-    public ActionAddIfMax() {
+    public ActionAddIfMax(@JsonProperty("ownerLogin") String ownerLogin,
+                          @JsonProperty("ownerPassword") String ownerPassword){
+        super(ownerLogin, ownerPassword);
         this.setActionName(ActionsName.ADD_IF_MAX);
     }
 }
