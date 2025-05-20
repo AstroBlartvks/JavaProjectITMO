@@ -13,4 +13,5 @@ public class User {
         this.password = passwordHash;
         this.salt = salt;
     }
+
 }

@@ -38,6 +38,7 @@ public class ServerAddIfMax extends ServerCommand {
             }
             return new ServerResponse(ResponseStatus.OK, "Route was not added");
         } catch (Exception e) {
+            LOGGER.error("Exception while adding if max: {}", e.getMessage());
             return new ServerResponse(ResponseStatus.EXCEPTION, e.getMessage());
         }
     }

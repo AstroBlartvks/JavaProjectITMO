@@ -37,6 +37,3 @@ CREATE TABLE Route (
 ALTER SEQUENCE location_id_seq OWNED BY Location.location_id;
 ALTER SEQUENCE coordinates_id_seq OWNED BY Coordinates.coordinates_id;
 ALTER SEQUENCE route_id_seq OWNED BY Route.id;
-
-INSERT INTO Coordinates(coordinates_id, x, y) VALUES (0, 0, 0);
-INSERT INTO Location(location_id, x, y, z, name) VALUES (0, 0, 0, 0, '');

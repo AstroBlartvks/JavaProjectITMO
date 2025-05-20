@@ -1,6 +1,8 @@
 package AstroLabServer;
 
 import AstroLab.actions.components.Action;
+import AstroLab.auth.ConnectionType;
+import AstroLab.auth.UserDTO;
 import AstroLab.utils.ClientServer.ClientRequest;
 import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
@@ -19,14 +21,13 @@ import java.nio.channels.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
+import javax.security.sasl.AuthenticationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.security.sasl.AuthenticationException;
 
 /**
  * The main server class for processing client connections and commands
- * psql -h pg -U s467586 -d studs
  */
 public class Server {
     public static final Logger LOGGER = LogManager.getLogger(Server.class);
@@ -37,11 +38,8 @@ public class Server {
     private final int serverPort;
     private volatile boolean isRunning;
 
-    // Dependencies
-    private DatabaseHandler databaseHandler;
     private ServerUtils serverUtils;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private ServerCommandManager serverCommandManager;
     private CommandManager clientCommandManager;
     private Connection databaseConnection;
 
@@ -122,11 +120,17 @@ public class Server {
     /**
      * Processing a request from a client
      */
-    private void processClientRequest(SelectionKey key) throws IOException {
+    private void processClientRequest(SelectionKey key) throws IOException, SQLException {
         SocketChannel clientChannel = (SocketChannel) key.channel();
         ClientRequest request = serverUtils.readClientRequest(key, clientChannel, ClientRequest.class);
 
         if (request != null) {
+            UserDTO userDTO = new UserDTO(  request.getRequest().getOwnerLogin(),
+                                            request.getRequest().getOwnerPassword(),
+                                            "", ConnectionType.LOGIN);
+            if (!serverUtils.loginUser(clientChannel, userDTO)){
+                serverUtils.handleSendResponse(clientChannel, new ServerResponse(ResponseStatus.EXCEPTION, "You are not logged!"));
+            }
             ServerResponse response = executeCommandSafely(request.getRequest());
             serverUtils.handleSendResponse(clientChannel, response);
         }
@@ -175,8 +179,8 @@ public class Server {
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         try {
-            serverCommandManager = new ServerCommandManager();
-            databaseHandler = new DatabaseHandler();
+            ServerCommandManager serverCommandManager = new ServerCommandManager();
+            DatabaseHandler databaseHandler = new DatabaseHandler();
 
             try {
                 databaseConnection = databaseHandler.connect(dbHost);
@@ -202,6 +206,7 @@ public class Server {
      */
     private void shutdownServer() {
         try {
+            databaseConnection.close();
             LOGGER.info("Server shutdown initiated");
         } catch (Exception e) {
             throw new RuntimeException(e);

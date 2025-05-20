@@ -30,6 +30,7 @@ public class ServerAdd extends ServerCommand {
             return new ServerResponse(ResponseStatus.OK, "Route{id=" + newRoute.getId() +
                     ",name=" + newRoute.getName() + "} successfully added ");
         } catch (Exception e) {
+            LOGGER.error("Exception while adding: {}", e.getMessage());
             return new ServerResponse(ResponseStatus.EXCEPTION, e.getMessage());
         }
     }

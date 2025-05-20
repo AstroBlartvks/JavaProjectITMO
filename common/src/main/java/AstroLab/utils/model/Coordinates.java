@@ -29,6 +29,9 @@ public class Coordinates {
     @SuppressWarnings("checkstyle:MemberName")
     private Double y;
 
+
+    private int id;
+
     /**
      * Returns a string representation of the coordinates, including the {@code x} and {@code y} values.
      *

@@ -28,7 +28,7 @@ public class CommandManager {
                 new ServerPrintFieldDescendingDistance(collection));
 
         commandList.put(ActionsName.COUNT_BY_DISTANCE, new ServerCountByDistance(collection));
-        commandList.put(ActionsName.REMOVE_BY_ID, new ServerRemoveById(collection));
+        commandList.put(ActionsName.REMOVE_BY_ID, new ServerRemoveById(collection, connection));
 
         commandList.put(ActionsName.ADD, new ServerAdd(collection, connection));
         commandList.put(ActionsName.UPDATE, new ServerUpdate(collection, connection));

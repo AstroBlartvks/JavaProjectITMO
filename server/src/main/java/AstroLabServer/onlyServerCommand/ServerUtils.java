@@ -61,7 +61,10 @@ public class ServerUtils {
         ServerProtocol serverProtocol = new ServerProtocol(clientChannel);
         UserDTO userDTO = serverProtocol.receive(UserDTO.class);
         LOGGER.info("Accepted connection from {}, User tried to connect: {}", clientChannel.getRemoteAddress(), userDTO);
+        registerUser(clientChannel, userDTO);
+    }
 
+    public void registerUser(SocketChannel clientChannel, UserDTO userDTO) throws IOException, SQLException {
         AuthStates authStates = isAuthenticated(userDTO);
 
         if (authStates.isState()){
@@ -73,10 +76,14 @@ public class ServerUtils {
             clientChannel.close();
             throw new AuthenticationException(userDTO + " is undefined!");
         }
-
     }
 
-    public AuthStates isAuthenticated(UserDTO userDTO) throws SQLException {
+    public boolean loginUser(SocketChannel clientChannel, UserDTO userDTO) throws IOException, SQLException {
+        AuthStates authStates = isAuthenticated(userDTO);
+        return authStates.isState();
+    }
+
+    private AuthStates isAuthenticated(UserDTO userDTO) throws SQLException {
         return switch (userDTO.getConnectionType()) {
             case LOGIN -> authService.login(userDTO);
             case REGISTER -> authService.register(userDTO);

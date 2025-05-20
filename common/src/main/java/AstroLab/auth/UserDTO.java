@@ -2,6 +2,7 @@ package AstroLab.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class UserDTO extends User{
@@ -17,6 +18,7 @@ public class UserDTO extends User{
 
     @Override
     public String toString() {
-        return "User{login:"+this.login+";password:"+this.password +";salt:"+this.salt+";connectionType"+this.connectionType+";}";
+        return "User{login:" + this.login + ";password:" + this.password +
+                ";salt:" + this.salt + ";connectionType" + this.connectionType + ";}";
     }
 }

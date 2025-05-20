@@ -6,6 +6,7 @@ import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
 import AstroLab.utils.model.Route;
 import AstroLabServer.collection.CustomCollection;
+import AstroLabServer.database.RouteDAO;
 
 import java.sql.Connection;
 import java.util.Date;
@@ -27,16 +28,22 @@ public class ServerUpdate extends ServerCommand {
             throw new IllegalArgumentException("There is no such 'Route' with 'id'=" + action.getId());
         }
 
-        Route newRoute = new Route();
+        if (!this.collection.getRouteInsideById(action.getId()).getOwnerLogin().equals(action.getOwnerLogin())) {
+            throw new IllegalArgumentException("You can't update 'Route' with 'id'=" + action.getId() + ", because you are not owner!");
+        }
 
-        newRoute.setId(action.getId());
-        newRoute.setCreationDate(new Date());
-        newRoute.setFromRouteDataTransferObject(action.getCreateRouteDto());
+        RouteDAO newRouteDAO = new RouteDAO(this.connection);
 
-        this.collection.updateElement(newRoute);
+        try {
+            Route newRoute = newRouteDAO.create(action.getCreateRouteDto(), action.getOwnerLogin());
+            collection.updateElement(newRoute);
 
-        return new ServerResponse(ResponseStatus.OK, "Route{id=" + newRoute.getId() +
-                                                     ",name=" + newRoute.getName() +
-                                                     "} successfully updated");
+            return new ServerResponse(ResponseStatus.OK, "Route{id=" + newRoute.getId() +
+                    ",name=" + newRoute.getName() +
+                    "} successfully updated");
+        } catch (Exception e) {
+            LOGGER.error("Exception while updating: {}", e.getMessage());
+            return new ServerResponse(ResponseStatus.EXCEPTION, e.getMessage());
+        }
     }
 }
