@@ -21,37 +21,94 @@ import java.nio.channels.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.*;
 import javax.security.sasl.AuthenticationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
 /**
- * The main server class for processing client connections and commands
+ * The main server class for processing client connections and commands.
+ * Uses non-blocking I/O using Selector and multithreaded query processing
+ * using three thread pools:
+ * - ForkJoinPool for reading requests
+ * - FixedThreadPool for processing commands
+ * - FixedThreadPool for sending responses
  */
 public class Server {
-    public static final Logger LOGGER = LogManager.getLogger(Server.class);
+    /** Logger for recording server events */
+    public static final Logger LOGGER = LogManager.getLogger(Server.class );
+
+    /** Timeout for events in the selector (in milliseconds) */
     private static final int SELECTOR_TIMEOUT_MS = 1000;
 
-    // Server config
+    /** Server Host */
     private final String serverHost;
+
+    /** Server port */
     private final int serverPort;
+
+    /** Server operation flag */
     private volatile boolean isRunning;
 
+    /** Server utilities for command processing and authentication */
     private ServerUtils serverUtils;
+
+    /** JSON mapper for data serialization/deserialization */
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    /** Client Team Manager */
     private CommandManager clientCommandManager;
+
+    /** Database Connection */
     private Connection databaseConnection;
 
+    /** Thread pool for reading incoming requests */
+    private final ForkJoinPool readPool;
+
+    /** Thread pool for processing requests */
+    private final ExecutorService processPool;
+
+    /** Thread pool for sending responses */
+    private final ExecutorService sendPool;
+
+    /**
+     * Server Constructor
+     * @param host The IP address or hostname of the server
+     * @param port Listening port
+     * @param dbHost Database Address
+     */
     public Server(String host, int port, String dbHost) {
         this.serverHost = host;
         this.serverPort = port;
         this.isRunning = true;
+        this.readPool = new ForkJoinPool();
+        this.processPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        this.sendPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         initializeDependencies(dbHost);
     }
 
     /**
-     * Main of server
+     * Initializing the server channel and registering it in the selector
+     * @param serverChannel Server Channel
+     * @param selector is a selector for event handling
+     * @throws IOException On input/output errors
+     */
+    private void initializeServerChannel(ServerSocketChannel serverChannel,Selector selector) throws IOException{
+        try {
+            serverChannel.bind(new InetSocketAddress(serverHost, serverPort));
+            serverChannel.configureBlocking(false);
+            serverChannel.register(selector, SelectionKey.OP_ACCEPT);
+        } catch (IllegalArgumentException | SecurityException | AlreadyBoundException e) {
+            LOGGER.fatal("You can't bind server{ip={}, port={}}, because: {}",
+                    this.serverHost, this.serverPort, e.getMessage());
+        } catch (ClosedChannelException | ClosedSelectorException e) {
+            LOGGER.fatal("Your server's channel or selector closed! {}", e.getMessage());
+        }
+    }
+
+    /**
+     * Main server startup method
      */
     public void run() {
         try (ServerSocketChannel serverChannel = ServerSocketChannel.open();
@@ -68,29 +125,15 @@ public class Server {
         } catch (Exception e) {
             LOGGER.error("Critical server error: {}", e.getMessage());
         } finally {
+            shutdownServer();
             LOGGER.info("Server shutdown sequence completed");
         }
     }
 
     /**
-     * Initialization of the server channel and registration in the selector
-     */
-    private void initializeServerChannel(ServerSocketChannel channel, Selector selector) throws IOException {
-        try {
-            channel.bind(new InetSocketAddress(serverHost, serverPort));
-            channel.configureBlocking(false);
-            channel.register(selector, SelectionKey.OP_ACCEPT);
-        } catch (IllegalArgumentException e) {
-            logFatalError("Invalid address/port configuration", e);
-        } catch (SecurityException | AlreadyBoundException e) {
-            logFatalError("Binding permission issue", e);
-        } catch (ClosedChannelException e) {
-            logFatalError("Channel closed during initialization", e);
-        }
-    }
-
-    /**
-     * Processing network events via a selector
+     * Processing network events via the selector
+     * @param selector is a selector for event monitoring
+     * @throws IOException On input/output errors
      */
     private void processNetworkEvents(Selector selector) throws IOException {
         if (selector.select(SELECTOR_TIMEOUT_MS) == 0) return;
@@ -104,10 +147,11 @@ public class Server {
                 if (key.isAcceptable()) {
                     serverUtils.handleNewConnection(key, selector);
                 } else if (key.isReadable()) {
-                    processClientRequest(key);
+                    handleReadableKey(key);
                 }
             } catch (AuthenticationException e) {
                 LOGGER.info("AuthenticationException: {}. Close connection", e.getMessage());
+                serverUtils.closeChannel(key);
             } catch (IOException e) {
                 LOGGER.error("Network error: {}", e.getMessage());
                 serverUtils.closeChannel(key);
@@ -118,21 +162,79 @@ public class Server {
     }
 
     /**
-     * Processing a request from a client
+     * Processing the data read event from the channel
+     * @param key Selector key with a readable channel
      */
-    private void processClientRequest(SelectionKey key) throws IOException, SQLException {
+    private void handleReadableKey(SelectionKey key) {
+        readPool.submit(() -> {
+            SocketChannel clientChannel = (SocketChannel) key.channel();
+            try {
+                key.interestOps(0);
+
+                ServerResponse response = processClientRequest(key);
+
+                processPool.submit(() -> {
+                    sendPool.submit(() -> {
+                        try {
+                            serverUtils.handleSendResponse(clientChannel, response);
+                        } finally {
+                            if (key.isValid()) {
+                                key.interestOps(SelectionKey.OP_READ);
+                                key.selector().wakeup();
+                            }
+                        }
+                    });
+                });
+            } catch (Exception e) {
+                LOGGER.error("Processing error: {}", e.getMessage());
+                serverUtils.closeChannel(key);
+            }
+        });
+    }
+
+    /**
+     * Client request processing
+     * @param key Selector key with client channel
+     * @return Server response
+     * @throws IOException On read/write errors
+     * @throws SQLException For DATABASE errors
+     */
+    private ServerResponse processClientRequest(SelectionKey key) throws IOException, SQLException {
         SocketChannel clientChannel = (SocketChannel) key.channel();
         ClientRequest request = serverUtils.readClientRequest(key, clientChannel, ClientRequest.class);
 
-        if (request != null) {
-            UserDTO userDTO = new UserDTO(  request.getRequest().getOwnerLogin(),
-                                            request.getRequest().getOwnerPassword(),
-                                            "", ConnectionType.LOGIN);
-            if (!serverUtils.loginUser(clientChannel, userDTO)){
-                serverUtils.handleSendResponse(clientChannel, new ServerResponse(ResponseStatus.EXCEPTION, "You are not logged!"));
-            }
-            ServerResponse response = executeCommandSafely(request.getRequest());
-            serverUtils.handleSendResponse(clientChannel, response);
+        if (request == null) {
+            return new ServerResponse(ResponseStatus.EXCEPTION, "Your request is empty");
+        }
+
+        UserDTO userDTO = new UserDTO(
+                request.getRequest().getOwnerLogin(),
+                request.getRequest().getOwnerPassword(),
+                "", ConnectionType.LOGIN);
+        if (!serverUtils.loginUser(clientChannel, userDTO)) {
+            return new ServerResponse(ResponseStatus.EXCEPTION, "You are not logged!");
+        }
+
+        return executeCommandSafely(request.getRequest());
+    }
+
+    /**
+     * Correct shutdown of the server
+     */
+    private void shutdownServer() {
+        try {
+            databaseConnection.close();
+            readPool.shutdown();
+            processPool.shutdown();
+            sendPool.shutdown();
+            if (!readPool.awaitTermination(5, TimeUnit.SECONDS)) readPool.shutdownNow();
+            if (!processPool.awaitTermination(5, TimeUnit.SECONDS)) processPool.shutdownNow();
+            if (!sendPool.awaitTermination(5, TimeUnit.SECONDS)) sendPool.shutdownNow();
+            LOGGER.info("Server shutdown initiated");
+        } catch (Exception e) {
+            LOGGER.error("Error during shutdown: {}", e.getMessage());
+        } finally {
+            isRunning = false;
         }
     }
 
@@ -198,20 +300,6 @@ public class Server {
             logInitializationError("JSON parsing error", e);
         } catch (Exception e) {
             logInitializationError("General initialization error", e);
-        }
-    }
-
-    /**
-     * Correct shutdown of the server
-     */
-    private void shutdownServer() {
-        try {
-            databaseConnection.close();
-            LOGGER.info("Server shutdown initiated");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            isRunning = false;
         }
     }
 
