@@ -1,4 +1,4 @@
-package AstroLabServer.ServerProtocol;
+package AstroLabServer.serverProtocol;
 
 import AstroLab.utils.tcpProtocol.ProtocolStates;
 import AstroLab.utils.tcpProtocol.TcpProtocol;
@@ -40,7 +40,7 @@ public class ServerProtocol extends TcpProtocol {
         } catch (SocketTimeoutException e) {
             throw e;
         } catch (IOException e) {
-            LOGGER.error("Packet from {} is null!", socketChannel);
+            LOGGER.error("Packet from {} is broken: {}", socketChannel, e.getMessage());
         }
         throw new PacketIsNullException("Packet from " + socketChannel + " is null!");
     }

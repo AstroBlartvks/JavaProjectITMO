@@ -7,11 +7,15 @@ import AstroLab.utils.ClientServer.ServerResponse;
 import AstroLab.utils.command.CommandArgument;
 import AstroLabServer.collection.CustomCollection;
 
+import java.sql.Connection;
+
 public class ServerCountGreaterThanDistance extends ServerCommand {
     private final CustomCollection collection;
+    private final Connection connection;
 
-    public ServerCountGreaterThanDistance(CustomCollection collection) {
+    public ServerCountGreaterThanDistance(CustomCollection collection, Connection connection) {
         this.collection = collection;
+        this.connection = connection;
     }
 
     @Override

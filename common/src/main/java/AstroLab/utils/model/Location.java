@@ -42,6 +42,8 @@ public class Location {
      */
     private String name;
 
+    private int id;
+
     /**
      * Returns a string representation of this location, including the x, y, z coordinates and the name.
      *

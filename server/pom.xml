@@ -31,12 +31,6 @@
             <version>2.13.3</version>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>RELEASE</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.AstroLab</groupId>
             <artifactId>common-api</artifactId>
             <version>1.0.0</version>
@@ -50,6 +44,11 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.24.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.5</version>
         </dependency>
     </dependencies>
 

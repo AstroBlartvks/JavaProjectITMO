@@ -1,6 +1,7 @@
 package AstroLab.actions.components;
 
 import AstroLab.actions.utils.ActionsName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,7 +16,9 @@ public class ActionCountByDistance extends ClientServerAction {
     /**.
      * Create Action
      */
-    public ActionCountByDistance() {
+    public ActionCountByDistance(@JsonProperty("ownerLogin") String ownerLogin,
+                                 @JsonProperty("ownerPassword") String ownerPassword){
+        super(ownerLogin, ownerPassword);
         this.setActionName(ActionsName.COUNT_BY_DISTANCE);
     }
 }

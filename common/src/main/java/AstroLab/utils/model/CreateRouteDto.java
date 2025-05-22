@@ -3,6 +3,9 @@ package AstroLab.utils.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Date;
+
+
 @Setter
 @Getter
 public class CreateRouteDto {

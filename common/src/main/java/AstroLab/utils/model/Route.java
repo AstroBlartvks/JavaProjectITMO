@@ -57,6 +57,11 @@ public class Route implements Comparable<Route> {
     private double distance;
 
     /**
+     * The owner of this route.
+     */
+    private String ownerLogin;
+
+    /**
      * Compares this route with another route based on the
      * distance. If the distances are equal, it compares by ID.
      *
@@ -87,7 +92,7 @@ public class Route implements Comparable<Route> {
                 ", from=" + this.from +
                 ", to=" + this.to +
                 ", coordinates=" + this.coordinates +
-                '}';
+                ", owner=" + this.ownerLogin + '}';
     }
 
     /**
@@ -100,7 +105,7 @@ public class Route implements Comparable<Route> {
                 "id=" + this.id +
                 ", name='" + this.name + '\'' +
                 ", creationDate='" + this.creationDate + '\'' +
-                '}';
+                ", owner=" + this.ownerLogin + '}';
     }
 
     /**.

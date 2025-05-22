@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
 @Getter
 @Setter
 public class CustomCollection {
-    private static final Logger LOGGER = LogManager.getLogger(CustomCollection.class);
+    public static final Logger LOGGER = LogManager.getLogger(CustomCollection.class);
     private final Set<Route> collection = new TreeSet<>();
     private int nextId = 1;
 
