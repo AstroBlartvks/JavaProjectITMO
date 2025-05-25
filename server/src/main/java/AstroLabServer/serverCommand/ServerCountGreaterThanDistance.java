@@ -11,11 +11,9 @@ import java.sql.Connection;
 
 public class ServerCountGreaterThanDistance extends ServerCommand {
     private final CustomCollection collection;
-    private final Connection connection;
 
-    public ServerCountGreaterThanDistance(CustomCollection collection, Connection connection) {
+    public ServerCountGreaterThanDistance(CustomCollection collection) {
         this.collection = collection;
-        this.connection = connection;
     }
 
     @Override

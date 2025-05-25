@@ -3,8 +3,6 @@ package AstroLab.utils.model;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Date;
-
 
 @Setter
 @Getter
@@ -14,6 +12,7 @@ public class CreateRouteDto {
     private Location from;
     private Location to;
     private Double distance;
+    private String ownerLogin;
 
     @Override
     public String toString() {

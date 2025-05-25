@@ -119,5 +119,6 @@ public class Route implements Comparable<Route> {
         setFrom(routeDto.getFrom());
         setTo(routeDto.getTo());
         setDistance(routeDto.getDistance());
+        setOwnerLogin(routeDto.getOwnerLogin());
     }
 }

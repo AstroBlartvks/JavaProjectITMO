@@ -14,17 +14,16 @@ import java.util.Optional;
 
 public class ServerAddIfMax extends ServerCommand {
     private final CustomCollection collection;
-    private final Connection connection;
+    private final RouteDAO newRouteDAO;
 
-    public ServerAddIfMax(CustomCollection collection, Connection connection) {
+    public ServerAddIfMax(CustomCollection collection, RouteDAO newRouteDAO) {
         this.collection = collection;
-        this.connection = connection;
+        this.newRouteDAO = newRouteDAO;
     }
 
     @Override
     public ServerResponse execute(Action args) {
         ActionAddIfMax action = (ActionAddIfMax) args;
-        RouteDAO newRouteDAO = new RouteDAO(this.connection);
 
         Route newRoute = new Route();
         newRoute.setFromRouteDataTransferObject(action.getCreateRouteDto());
@@ -32,7 +31,7 @@ public class ServerAddIfMax extends ServerCommand {
         try {
             Optional<Route> maxRoute = this.collection.getCollection().stream().max(Route::compareTo);
             if (maxRoute.isEmpty() || newRoute.compareTo(maxRoute.get()) > 0) {
-                newRoute = newRouteDAO.create(action.getCreateRouteDto(), action.getOwnerLogin());
+                newRoute = newRouteDAO.create(action.getCreateRouteDto());
                 collection.addElement(newRoute);
                 return new ServerResponse(ResponseStatus.OK, "Route was added with id=" + newRoute.getId());
             }

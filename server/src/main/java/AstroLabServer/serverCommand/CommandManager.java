@@ -8,6 +8,8 @@ import AstroLabServer.collection.CustomCollection;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
+
+import AstroLabServer.database.RouteDAO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +21,7 @@ public class CommandManager {
 
     public CommandManager(CustomCollection collection, Connection connection) {
         this.connection = connection;
+        RouteDAO newRouteDAO = new RouteDAO(this.connection);
 
         commandList.put(ActionsName.INFO, new ServerInfo(collection));
         commandList.put(ActionsName.SHOW, new ServerShow(collection));
@@ -28,15 +31,15 @@ public class CommandManager {
                 new ServerPrintFieldDescendingDistance(collection));
 
         commandList.put(ActionsName.COUNT_BY_DISTANCE, new ServerCountByDistance(collection));
-        commandList.put(ActionsName.REMOVE_BY_ID, new ServerRemoveById(collection, connection));
+        commandList.put(ActionsName.REMOVE_BY_ID, new ServerRemoveById(collection, newRouteDAO));
 
-        commandList.put(ActionsName.ADD, new ServerAdd(collection, connection));
-        commandList.put(ActionsName.UPDATE, new ServerUpdate(collection, connection));
-        commandList.put(ActionsName.ADD_IF_MAX, new ServerAddIfMax(collection, connection));
-        commandList.put(ActionsName.ADD_IF_MIN, new ServerAddIfMin(collection, connection));
-        commandList.put(ActionsName.REMOVE_GREATER, new ServerRemoveGreater(collection, connection));
+        commandList.put(ActionsName.ADD, new ServerAdd(collection, newRouteDAO));
+        commandList.put(ActionsName.UPDATE, new ServerUpdate(collection, newRouteDAO));
+        commandList.put(ActionsName.ADD_IF_MAX, new ServerAddIfMax(collection, newRouteDAO));
+        commandList.put(ActionsName.ADD_IF_MIN, new ServerAddIfMin(collection, newRouteDAO));
+        commandList.put(ActionsName.REMOVE_GREATER, new ServerRemoveGreater(collection, newRouteDAO));
         commandList.put(ActionsName.COUNT_GREATER_THAN_DISTANCE,
-                new ServerCountGreaterThanDistance(collection, connection));
+                new ServerCountGreaterThanDistance(collection));
     }
 
     public ServerResponse executeCommand(Action action) throws Exception {

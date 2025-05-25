@@ -12,19 +12,18 @@ import java.sql.Connection;
 
 public class ServerAdd extends ServerCommand {
     private final CustomCollection collection;
-    private final Connection connection;
+    private final RouteDAO newRouteDAO;
 
-    public ServerAdd(CustomCollection collection, Connection connection) {
+    public ServerAdd(CustomCollection collection, RouteDAO newRouteDAO) {
         this.collection = collection;
-        this.connection = connection;
+        this.newRouteDAO = newRouteDAO;
     }
 
     @Override
     public ServerResponse execute(Action args) {
         ActionAdd action = (ActionAdd) args;
-        RouteDAO newRouteDAO = new RouteDAO(this.connection);
         try {
-            Route newRoute = newRouteDAO.create(action.getCreateRouteDto(), action.getOwnerLogin());
+            Route newRoute = newRouteDAO.create(action.getCreateRouteDto());
             collection.addElement(newRoute);
 
             return new ServerResponse(ResponseStatus.OK, "Route{id=" + newRoute.getId() +

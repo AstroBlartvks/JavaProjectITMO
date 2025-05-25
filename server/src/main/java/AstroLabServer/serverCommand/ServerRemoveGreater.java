@@ -16,17 +16,16 @@ import java.util.stream.Collectors;
 
 public class ServerRemoveGreater extends ServerCommand {
     private final CustomCollection collection;
-    private final Connection connection;
+    private final RouteDAO newRouteDAO;
 
-    public ServerRemoveGreater(CustomCollection collection, Connection connection) {
+    public ServerRemoveGreater(CustomCollection collection, RouteDAO newRouteDAO) {
         this.collection = collection;
-        this.connection = connection;
+        this.newRouteDAO = newRouteDAO;
     }
 
     @Override
     public ServerResponse execute(Action args) {
         Route newRoute = handleNewRoute(args);
-        RouteDAO routeDAO = new RouteDAO(this.connection);
 
         Set<Integer> greaterIds = this.collection.getCollection().stream()
                 .filter(route -> route.compareTo(newRoute) > 0)
@@ -40,7 +39,7 @@ public class ServerRemoveGreater extends ServerCommand {
                 if (!this.collection.getRouteInsideById(index).getOwnerLogin().equals(newRoute.getOwnerLogin())) {
                     throw new IllegalArgumentException("You can't update 'Route' with 'id'=" + index + ", because you are not owner!");
                 }
-                routeDAO.remove(this.collection.getRouteInsideById(index));
+                newRouteDAO.remove(this.collection.getRouteInsideById(index));
                 collection.removeById(index);
                 response.append("Route with id=")
                         .append(index)

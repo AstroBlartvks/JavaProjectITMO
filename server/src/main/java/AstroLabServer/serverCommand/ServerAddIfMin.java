@@ -14,17 +14,16 @@ import java.util.Optional;
 
 public class ServerAddIfMin extends ServerCommand {
     private final CustomCollection collection;
-    private final Connection connection;
+    private final RouteDAO newRouteDAO;
 
-    public ServerAddIfMin(CustomCollection collection, Connection connection) {
+    public ServerAddIfMin(CustomCollection collection, RouteDAO newRouteDAO) {
         this.collection = collection;
-        this.connection = connection;
+        this.newRouteDAO = newRouteDAO;
     }
 
     @Override
     public ServerResponse execute(Action args) {
         ActionAddIfMin action = (ActionAddIfMin) args;
-        RouteDAO newRouteDAO = new RouteDAO(this.connection);
 
         Route newRoute = new Route();
         newRoute.setFromRouteDataTransferObject(action.getCreateRouteDto());
@@ -32,7 +31,7 @@ public class ServerAddIfMin extends ServerCommand {
         try{
             Optional<Route> minRoute = this.collection.getCollection().stream().min(Route::compareTo);
             if (minRoute.isEmpty() || newRoute.compareTo(minRoute.get()) < 0) {
-                newRoute = newRouteDAO.create(action.getCreateRouteDto(), action.getOwnerLogin());
+                newRoute = newRouteDAO.create(action.getCreateRouteDto());
                 collection.addElement(newRoute);
                 this.collection.addElement(newRoute);
                 return new ServerResponse(ResponseStatus.OK, "Route was added with id=" + newRoute.getId());

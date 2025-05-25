@@ -13,11 +13,11 @@ import java.util.Date;
 
 public class ServerUpdate extends ServerCommand {
     private final CustomCollection collection;
-    private final Connection connection;
+    private final RouteDAO newRouteDAO;
 
-    public ServerUpdate(CustomCollection collection, Connection connection) {
+    public ServerUpdate(CustomCollection collection, RouteDAO newRouteDAO) {
         this.collection = collection;
-        this.connection = connection;
+        this.newRouteDAO = newRouteDAO;
     }
 
     @Override
@@ -32,10 +32,8 @@ public class ServerUpdate extends ServerCommand {
             throw new IllegalArgumentException("You can't update 'Route' with 'id'=" + action.getId() + ", because you are not owner!");
         }
 
-        RouteDAO newRouteDAO = new RouteDAO(this.connection);
-
         try {
-            Route newRoute = newRouteDAO.create(action.getCreateRouteDto(), action.getOwnerLogin());
+            Route newRoute = newRouteDAO.create(action.getCreateRouteDto());
             collection.updateElement(newRoute);
 
             return new ServerResponse(ResponseStatus.OK, "Route{id=" + newRoute.getId() +

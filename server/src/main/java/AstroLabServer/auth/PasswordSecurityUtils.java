@@ -1,15 +1,19 @@
 package AstroLabServer.auth;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
 import static AstroLabServer.auth.DataConfig.PEPPER;
 
 public class PasswordSecurityUtils {
     private static final int SALT_LENGTH = 32;
+    private static final int ITERATIONS = 120000;
+    private static final int KEY_LENGTH = 512;
+    private static final String ALGORITHM = "PBKDF2WithHmacSHA512";
 
     public static String generateSalt() {
         SecureRandom random = new SecureRandom();
@@ -20,12 +24,20 @@ public class PasswordSecurityUtils {
 
     public static String hashPassword(String password, String salt) {
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-384");
-            String peppered = password + PEPPER + salt;
-            byte[] hash = md.digest(peppered.getBytes(StandardCharsets.UTF_8));
+            String pepperedPassword = password + PEPPER;
+
+            PBEKeySpec spec = new PBEKeySpec(
+                    pepperedPassword.toCharArray(),
+                    Base64.getDecoder().decode(salt),
+                    ITERATIONS,
+                    KEY_LENGTH
+            );
+
+            SecretKeyFactory factory = SecretKeyFactory.getInstance(ALGORITHM);
+            byte[] hash = factory.generateSecret(spec).getEncoded();
             return Base64.getEncoder().encodeToString(hash);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException("Error hashing password", e);
         }
     }
 }

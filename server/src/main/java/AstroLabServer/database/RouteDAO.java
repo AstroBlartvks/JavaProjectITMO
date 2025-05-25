@@ -1,22 +1,25 @@
 package AstroLabServer.database;
 
-import AstroLab.utils.model.Coordinates;
 import AstroLab.utils.model.CreateRouteDto;
-import AstroLab.utils.model.Location;
 import AstroLab.utils.model.Route;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 
-public class RouteDAO {
-    public static final Logger LOGGER = LogManager.getLogger(RouteDAO.class);
+public class RouteDAO implements DatabaseAccessMethods<Route, CreateRouteDto, Route>{
+    private static final Logger LOGGER = LogManager.getLogger(RouteDAO.class);
     private final Connection connection;
+    private final LocationDAO locationDAO;
+    private final CoordinatesDAO coordinatesDAO;
 
     public RouteDAO(Connection connection) {
         this.connection = connection;
+        this.locationDAO = new LocationDAO(connection);
+        this.coordinatesDAO = new CoordinatesDAO(connection);
     }
 
+    @Override
     public void remove(Route route) throws SQLException {
         try (PreparedStatement ps = this.connection.prepareStatement(
                 "DELETE FROM route WHERE id = ?")) {
@@ -24,39 +27,17 @@ public class RouteDAO {
             int res = ps.executeUpdate();
             System.out.println(res);
         }
-        removeCoordinates(route.getCoordinates());
-        removeLocation(route.getFrom());
-        removeLocation(route.getTo());
+        coordinatesDAO.remove(route.getCoordinates());
+        locationDAO.remove(route.getFrom());
+        locationDAO.remove(route.getTo());
+        LOGGER.info("Route removed from DB and memory: {}", route.smallInfo());
     }
 
-    private void removeCoordinates(Coordinates coordinates) throws SQLException {
-        if (coordinates == null){
-            return;
-        }
-
-        try (PreparedStatement ps = this.connection.prepareStatement(
-                "DELETE FROM coordinates WHERE coordinates_id = ?")) {
-            ps.setDouble(1, coordinates.getId());
-            ps.executeUpdate();
-        }
-    }
-
-    private void removeLocation(Location location) throws SQLException {
-        if (location == null){
-            return;
-        }
-
-        try (PreparedStatement ps = this.connection.prepareStatement(
-                "DELETE FROM location WHERE location_id = ?")) {
-            ps.setLong(1, location.getId());
-            ps.executeUpdate();
-        }
-    }
-
-    public Route create(CreateRouteDto route, String ownerLogin) throws SQLException {
-        Integer coordinatesId = insertCoordinates(route.getCoordinates());
-        Integer fromLocationId = insertLocation(route.getFrom());
-        Integer toLocationId = insertLocation(route.getTo());
+    @Override
+    public Route create(CreateRouteDto route) throws SQLException {
+        Integer coordinatesId = coordinatesDAO.create(route.getCoordinates());
+        Integer fromLocationId = locationDAO.create(route.getFrom());
+        Integer toLocationId = locationDAO.create(route.getTo());
 
         try (PreparedStatement ps = this.connection.prepareStatement(
                 "INSERT INTO Route(name, coordinate, from_location_id, to_location_id, distance, creation_date, owner_login) " +
@@ -72,7 +53,7 @@ public class RouteDAO {
             else { ps.setNull(4, Types.NULL); }
             ps.setDouble(5, route.getDistance());
             ps.setDate(6, data);
-            ps.setString(7, ownerLogin);
+            ps.setString(7, route.getOwnerLogin());
 
             ResultSet rs = ps.executeQuery();
             rs.next();
@@ -81,48 +62,9 @@ public class RouteDAO {
             newRoute.setFromRouteDataTransferObject(route);
             newRoute.setId(rs.getInt("id"));
             newRoute.setCreationDate(data);
-            newRoute.setOwnerLogin(ownerLogin);
+            LOGGER.info("Route added to DB and memory: {}", newRoute.smallInfo());
             return newRoute;
         }
-    }
-
-    private Integer insertCoordinates(Coordinates coordinates) throws SQLException {
-        int idCoordinates = 0;
-        if (coordinates == null){
-            return null;
-        }
-
-        try (PreparedStatement ps = this.connection.prepareStatement(
-                "INSERT INTO Coordinates(x, y) VALUES (?, ?) RETURNING coordinates_id")) {
-            ps.setDouble(1, coordinates.getX());
-            ps.setDouble(2, coordinates.getY());
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            idCoordinates = rs.getInt("coordinates_id");
-            coordinates.setId(idCoordinates);
-        }
-        return idCoordinates;
-    }
-
-    private Integer insertLocation(Location location) throws SQLException {
-        int idLocation = 0;
-        if (location == null){
-            return null;
-        }
-
-        try (PreparedStatement ps = this.connection.prepareStatement(
-                "INSERT INTO Location(x, y, z, name) " +
-                        "VALUES (?, ?, ?, ?) RETURNING location_id")) {
-            ps.setLong(  1, location.getX());
-            ps.setDouble(2, location.getY());
-            ps.setDouble(3, location.getZ());
-            ps.setString(4, location.getName());
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            idLocation = rs.getInt("location_id");
-            location.setId(idLocation);
-        }
-        return idLocation;
     }
 
 }

@@ -12,17 +12,16 @@ import java.sql.SQLException;
 
 public class ServerRemoveById extends ServerCommand {
     private final CustomCollection collection;
-    private final Connection connection;
+    private final RouteDAO newRouteDAO;
 
-    public ServerRemoveById(CustomCollection collection, Connection connection) {
+    public ServerRemoveById(CustomCollection collection, RouteDAO newRouteDAO) {
         this.collection = collection;
-        this.connection = connection;
+        this.newRouteDAO = newRouteDAO;
     }
 
     @Override
     public ServerResponse execute(Action args) throws Exception {
         ActionRemoveById action = (ActionRemoveById) args;
-        RouteDAO routeDAO = new RouteDAO(this.connection);
 
         int id = action.getId();
 
@@ -35,8 +34,7 @@ public class ServerRemoveById extends ServerCommand {
         }
 
         try {
-
-            routeDAO.remove(this.collection.getRouteInsideById(id));
+            newRouteDAO.remove(this.collection.getRouteInsideById(id));
             this.collection.removeById(id);
             LOGGER.info("Route id = {} deleted successfully!", id);
             return new ServerResponse(ResponseStatus.OK, "Route deleted successfully");

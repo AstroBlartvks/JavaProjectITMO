@@ -22,7 +22,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
-import javax.security.sasl.AuthenticationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -76,16 +75,15 @@ public class Server {
      * Server Constructor
      * @param host The IP address or hostname of the server
      * @param port Listening port
-     * @param dbHost Database Address
      */
-    public Server(String host, int port, String dbHost) {
+    public Server(String host, int port) {
         this.serverHost = host;
         this.serverPort = port;
         this.isRunning = true;
         this.readPool = new ForkJoinPool();
         this.processPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         this.sendPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        initializeDependencies(dbHost);
+        initializeDependencies();
     }
 
     /**
@@ -143,20 +141,10 @@ public class Server {
             SelectionKey key = keyIterator.next();
             keyIterator.remove();
 
-            try {
-                if (key.isAcceptable()) {
-                    serverUtils.handleNewConnection(key, selector);
-                } else if (key.isReadable()) {
-                    handleReadableKey(key);
-                }
-            } catch (AuthenticationException e) {
-                LOGGER.info("AuthenticationException: {}. Close connection", e.getMessage());
-                serverUtils.closeChannel(key);
-            } catch (IOException e) {
-                LOGGER.error("Network error: {}", e.getMessage());
-                serverUtils.closeChannel(key);
-            } catch (SQLException e) {
-                LOGGER.error("SQL Exception: {}", e.getMessage());
+            if (key.isAcceptable()) {
+                serverUtils.handleNewConnection(key, selector);
+            } else if (key.isReadable()) {
+                handleReadableKey(key);
             }
         }
     }
@@ -211,7 +199,7 @@ public class Server {
                 request.getRequest().getOwnerLogin(),
                 request.getRequest().getOwnerPassword(),
                 "", ConnectionType.LOGIN);
-        if (!serverUtils.loginUser(clientChannel, userDTO)) {
+        if (!serverUtils.loginUser(userDTO)) {
             return new ServerResponse(ResponseStatus.EXCEPTION, "You are not logged!");
         }
 
@@ -277,7 +265,7 @@ public class Server {
     /**
      * Initialization of server dependencies
      */
-    private void initializeDependencies(String dbHost) {
+    private void initializeDependencies() {
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         try {
@@ -285,7 +273,7 @@ public class Server {
             DatabaseHandler databaseHandler = new DatabaseHandler();
 
             try {
-                databaseConnection = databaseHandler.connect(dbHost);
+                databaseConnection = databaseHandler.connect();
                 clientCommandManager = new CommandManager(databaseHandler.read(databaseConnection), databaseConnection);
             } catch (ClassNotFoundException e) {
                 logInitializationError("Driver of PostgreSQL isn't exist", e);
