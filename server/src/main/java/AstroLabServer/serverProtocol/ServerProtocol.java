@@ -41,9 +41,9 @@ public class ServerProtocol extends TcpProtocol {
     }
 
     /**
-     * Неблокирующее «прочитай всё, что доступно → попробуй собрать пакет».
-     * Если пакет ещё не полный — возвращает null (будем ждать следующего OP_READ).
-     * Как только полный пакет есть — десериализуем и возвращаем его.
+     * Non-blocking "read everything that is availableб try to build a package.
+     * If the package is not complete yet, it returns null (we will wait for the next OP_READ).
+     * As soon as the full package is available, we deserialize and return it.
      */
     @Override
     public <T> T receive(Class<T> type)
@@ -76,8 +76,8 @@ public class ServerProtocol extends TcpProtocol {
     }
 
     /**
-     * Сериализуем объект и кладём готовый ByteBuffer в очередь.
-     * Само же неблокирующее write будет происходить в селектор-л
+     * Serialize the object and put the finished ByteBuffer in the queue.
+     * The non-blocking write itself will occur in the selector
      */
     @Override
     public <T> ProtocolStates send(T data) {
@@ -92,14 +92,6 @@ public class ServerProtocol extends TcpProtocol {
         }
     }
 
-    /**
-     * Kогда
-     * SelectionKey.isWritable() == true:
-     *
-     *   if (key.isWritable()) {
-     *       ((ServerProtocol)key.attachment()).flushWrites(key);
-     *   }
-     */
     public void flushWrites(SelectionKey key) throws IOException {
         while (!writeQueue.isEmpty()) {
             ByteBuffer buf = writeQueue.peek();

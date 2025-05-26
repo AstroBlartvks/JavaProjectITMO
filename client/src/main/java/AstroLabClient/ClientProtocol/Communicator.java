@@ -63,13 +63,14 @@ public class Communicator implements CommandVisitor {
             try {
                 response = clientProtocol.receive(ServerResponse.class);
             } catch (SocketTimeoutException e) {
+                System.out.println("Attempt to get response №" + attempt);
                 continue;
             }
 
             if (response == null) continue;
 
             if (Objects.requireNonNull(response.getStatus()) == ResponseStatus.EXCEPTION) {
-                System.err.println("Server exception:\n" + response);
+                System.out.println("Server exception:\n" + response);
                 return;
             }
             System.out.println("Server response:\n" + response.getValue());

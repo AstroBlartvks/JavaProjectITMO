@@ -129,7 +129,7 @@ public class Server {
                 } else {
                     proto.send(new ServerResponse(ResponseStatus.FORBIDDEN, authStates.getMessage()));
                 }
-                key.interestOps(SelectionKey.OP_WRITE);
+                key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                 selector.wakeup();
                 return;
             }
@@ -142,7 +142,7 @@ public class Server {
             processPool.submit(() -> {
                 ServerResponse resp = serverUtils.executeCommandSafely(clientRequest);
                 proto.send(resp);
-                key.interestOps(key.interestOps() | SelectionKey.OP_WRITE);
+                key.interestOps(SelectionKey.OP_READ | key.interestOps() | SelectionKey.OP_WRITE);
                 selector.wakeup();
             });
 
