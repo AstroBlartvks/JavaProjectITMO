@@ -1,5 +1,6 @@
 package AstroLabServer;
 
+import AstroLab.auth.ConnectionType;
 import AstroLab.auth.UserDTO;
 import AstroLab.utils.ClientServer.ClientRequest;
 import AstroLab.utils.ClientServer.ResponseStatus;
@@ -120,14 +121,13 @@ public class Server {
                 LOGGER.info("Handshake from {}: {}", client.getRemoteAddress(), dto);
 
                 AuthService auth = serverUtils.getAuthService();
-                AuthStates authStates = auth.login(dto);
+                AuthStates authStates = dto.getConnectionType() == ConnectionType.LOGIN ? auth.login(dto) : auth.register(dto);
                 if (authStates.isState()) {
                     proto.setUser(dto);
                     proto.send(new ServerResponse(ResponseStatus.OK,
                             authStates.getMessage()));
                 } else {
                     proto.send(new ServerResponse(ResponseStatus.FORBIDDEN, authStates.getMessage()));
-                    client.close();
                 }
                 key.interestOps(SelectionKey.OP_WRITE);
                 selector.wakeup();
