@@ -6,7 +6,6 @@ import AstroLab.auth.UserDTO;
 import AstroLabClient.ClientProtocol.Communicator;
 import AstroLabClient.inputManager.*;
 
-import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.rmi.ServerException;
@@ -18,7 +17,7 @@ public final class Client {
     private final String serverHost;
     private final int serverPort;
     private static final int MAX_RETRIES = 3;
-    private static final int RETRY_DELAY_MS = 3000;
+    private static final int RETRY_DELAY_MS = 5000;
 
     public Client(String host, int port) {
         serverHost = host;

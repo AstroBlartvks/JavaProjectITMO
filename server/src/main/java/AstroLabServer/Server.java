@@ -1,234 +1,167 @@
 package AstroLabServer;
 
-import AstroLab.actions.components.Action;
-import AstroLab.auth.ConnectionType;
 import AstroLab.auth.UserDTO;
 import AstroLab.utils.ClientServer.ClientRequest;
 import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
+import AstroLab.utils.tcpProtocol.packet.ClientClosedConnectionException;
+import AstroLab.utils.tcpProtocol.packet.PacketIsNullException;
 import AstroLabServer.auth.AuthService;
+import AstroLabServer.auth.AuthStates;
 import AstroLabServer.database.DatabaseHandler;
 import AstroLabServer.onlyServerCommand.OnlyServerResult;
 import AstroLabServer.onlyServerCommand.ServerCommandManager;
 import AstroLabServer.onlyServerCommand.ServerUtils;
 import AstroLabServer.serverCommand.CommandManager;
+import AstroLabServer.serverProtocol.ServerProtocol;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.*;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Iterator;
 import java.util.concurrent.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
-/**
- * The main server class for processing client connections and commands.
- * Uses non-blocking I/O using Selector and multithreaded query processing
- * using three thread pools:
- * - ForkJoinPool for reading requests
- * - FixedThreadPool for processing commands
- * - FixedThreadPool for sending responses
- */
 public class Server {
-    /** Logger for recording server events */
-    public static final Logger LOGGER = LogManager.getLogger(Server.class );
-
-    /** Timeout for events in the selector (in milliseconds) */
+    public static final Logger LOGGER = LogManager.getLogger(Server.class);
     private static final int SELECTOR_TIMEOUT_MS = 1000;
 
-    /** Server Host */
     private final String serverHost;
-
-    /** Server port */
     private final int serverPort;
+    private boolean isRunning;
 
-    /** Server operation flag */
-    private volatile boolean isRunning;
-
-    /** Server utilities for command processing and authentication */
     private ServerUtils serverUtils;
-
-    /** JSON mapper for data serialization/deserialization */
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    /** Client Team Manager */
-    private CommandManager clientCommandManager;
-
-    /** Database Connection */
     private Connection databaseConnection;
-
-    /** Thread pool for reading incoming requests */
-    private final ForkJoinPool readPool;
-
-    /** Thread pool for processing requests */
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final ExecutorService processPool;
 
-    /** Thread pool for sending responses */
-    private final ExecutorService sendPool;
-
-    /**
-     * Server Constructor
-     * @param host The IP address or hostname of the server
-     * @param port Listening port
-     */
     public Server(String host, int port) {
         this.serverHost = host;
         this.serverPort = port;
         this.isRunning = true;
-        this.readPool = new ForkJoinPool();
-        this.processPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        this.sendPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        this.processPool = Executors.newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors()
+        );
         initializeDependencies();
     }
 
-    /**
-     * Initializing the server channel and registering it in the selector
-     * @param serverChannel Server Channel
-     * @param selector is a selector for event handling
-     * @throws IOException On input/output errors
-     */
-    private void initializeServerChannel(ServerSocketChannel serverChannel,Selector selector) throws IOException{
-        try {
-            serverChannel.bind(new InetSocketAddress(serverHost, serverPort));
-            serverChannel.configureBlocking(false);
-            serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-        } catch (IllegalArgumentException | SecurityException | AlreadyBoundException e) {
-            LOGGER.fatal("You can't bind server{ip={}, port={}}, because: {}",
-                    this.serverHost, this.serverPort, e.getMessage());
-        } catch (ClosedChannelException | ClosedSelectorException e) {
-            LOGGER.fatal("Your server's channel or selector closed! {}", e.getMessage());
-        }
+    private void initializeServerChannel(ServerSocketChannel serverChannel, Selector selector) throws IOException {
+        serverChannel.bind(new InetSocketAddress(serverHost, serverPort));
+        serverChannel.configureBlocking(false);
+        serverChannel.register(selector, SelectionKey.OP_ACCEPT);
     }
 
-    /**
-     * Main server startup method
-     */
     public void run() {
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         try (ServerSocketChannel serverChannel = ServerSocketChannel.open();
              Selector selector = Selector.open()) {
 
             initializeServerChannel(serverChannel, selector);
-            LOGGER.info("Server started successfully on {}:{}", serverHost, serverPort);
+            LOGGER.info("Server started on {}:{}", serverHost, serverPort);
 
             while (isRunning) {
                 processConsoleCommands();
-                processNetworkEvents(selector);
-            }
+                if (selector.select(SELECTOR_TIMEOUT_MS) == 0) continue;
 
+                Iterator<SelectionKey> it = selector.selectedKeys().iterator();
+                while (it.hasNext()) {
+                    SelectionKey key = it.next();
+                    it.remove();
+
+                    if (!key.isValid()) continue;
+                    try {
+                        if (key.isAcceptable()) {
+                            handleAccept(key, selector);
+                        } else if (key.isReadable()) {
+                            handleRead(key, selector);
+                        } else if (key.isWritable()) {
+                            handleWrite(key);
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error("Key processing error: {}", e.getMessage());
+                        key.cancel();
+                        key.channel().close();
+                    }
+                }
+            }
         } catch (Exception e) {
-            LOGGER.error("Critical server error: {}", e.getMessage());
+            LOGGER.error("Server failure: {}", e.getMessage());
         } finally {
             shutdownServer();
-            LOGGER.info("Server shutdown sequence completed");
         }
     }
 
-    /**
-     * Processing network events via the selector
-     * @param selector is a selector for event monitoring
-     * @throws IOException On input/output errors
-     */
-    private void processNetworkEvents(Selector selector) throws IOException {
-        if (selector.select(SELECTOR_TIMEOUT_MS) == 0) return;
+    private void handleAccept(SelectionKey key, Selector selector) throws IOException {
+        ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel();
+        SocketChannel client = serverChannel.accept();
+        client.configureBlocking(false);
 
-        Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
-        while (keyIterator.hasNext()) {
-            SelectionKey key = keyIterator.next();
-            keyIterator.remove();
+        ServerProtocol proto = new ServerProtocol(client);
+        SelectionKey clientKey = client.register(selector, SelectionKey.OP_READ);
+        clientKey.attach(proto);
 
-            if (key.isAcceptable()) {
-                serverUtils.handleNewConnection(key, selector);
-            } else if (key.isReadable()) {
-                handleReadableKey(key);
-            }
-        }
+        LOGGER.info("Accepted connection from {}", client.getRemoteAddress());
     }
 
-    /**
-     * Processing the data read event from the channel
-     * @param key Selector key with a readable channel
-     */
-    private void handleReadableKey(SelectionKey key) {
-        readPool.submit(() -> {
-            SocketChannel clientChannel = (SocketChannel) key.channel();
-            try {
-                key.interestOps(0);
+    private void handleRead(SelectionKey key, Selector selector) throws IOException {
+        ServerProtocol proto = (ServerProtocol) key.attachment();
+        SocketChannel client = (SocketChannel) key.channel();
 
-                ServerResponse response = processClientRequest(key);
-
-                processPool.submit(() -> {
-                    sendPool.submit(() -> {
-                        try {
-                            serverUtils.handleSendResponse(clientChannel, response);
-                        } finally {
-                            if (key.isValid()) {
-                                key.interestOps(SelectionKey.OP_READ);
-                                key.selector().wakeup();
-                            }
-                        }
-                    });
-                });
-            } catch (Exception e) {
-                LOGGER.error("Processing error: {}", e.getMessage());
-                serverUtils.closeChannel(key);
-            }
-        });
-    }
-
-    /**
-     * Client request processing
-     * @param key Selector key with client channel
-     * @return Server response
-     * @throws IOException On read/write errors
-     * @throws SQLException For DATABASE errors
-     */
-    private ServerResponse processClientRequest(SelectionKey key) throws IOException, SQLException {
-        SocketChannel clientChannel = (SocketChannel) key.channel();
-        ClientRequest request = serverUtils.readClientRequest(key, clientChannel, ClientRequest.class);
-
-        if (request == null) {
-            return new ServerResponse(ResponseStatus.EXCEPTION, "Your request is empty");
-        }
-
-        UserDTO userDTO = new UserDTO(
-                request.getRequest().getOwnerLogin(),
-                request.getRequest().getOwnerPassword(),
-                "", ConnectionType.LOGIN);
-        if (!serverUtils.loginUser(userDTO)) {
-            return new ServerResponse(ResponseStatus.EXCEPTION, "You are not logged!");
-        }
-
-        return executeCommandSafely(request.getRequest());
-    }
-
-    /**
-     * Correct shutdown of the server
-     */
-    private void shutdownServer() {
         try {
-            databaseConnection.close();
-            readPool.shutdown();
-            processPool.shutdown();
-            sendPool.shutdown();
-            if (!readPool.awaitTermination(5, TimeUnit.SECONDS)) readPool.shutdownNow();
-            if (!processPool.awaitTermination(5, TimeUnit.SECONDS)) processPool.shutdownNow();
-            if (!sendPool.awaitTermination(5, TimeUnit.SECONDS)) sendPool.shutdownNow();
-            LOGGER.info("Server shutdown initiated");
-        } catch (Exception e) {
-            LOGGER.error("Error during shutdown: {}", e.getMessage());
-        } finally {
-            isRunning = false;
+            if (!proto.isAuthenticated()) {
+                UserDTO dto = proto.receive(UserDTO.class);
+                if (dto == null)
+                    return;
+
+                LOGGER.info("Handshake from {}: {}", client.getRemoteAddress(), dto);
+
+                AuthService auth = serverUtils.getAuthService();
+                AuthStates authStates = auth.login(dto);
+                if (authStates.isState()) {
+                    proto.setUser(dto);
+                    proto.send(new ServerResponse(ResponseStatus.OK,
+                            authStates.getMessage()));
+                } else {
+                    proto.send(new ServerResponse(ResponseStatus.FORBIDDEN, authStates.getMessage()));
+                    client.close();
+                }
+                key.interestOps(SelectionKey.OP_WRITE);
+                selector.wakeup();
+                return;
+            }
+
+            ClientRequest clientRequest = proto.receive(ClientRequest.class);
+            if (clientRequest == null) {
+                return;
+            }
+
+            processPool.submit(() -> {
+                ServerResponse resp = serverUtils.executeCommandSafely(clientRequest);
+                proto.send(resp);
+                key.interestOps(key.interestOps() | SelectionKey.OP_WRITE);
+                selector.wakeup();
+            });
+
+        } catch (PacketIsNullException | ClientClosedConnectionException e) {
+            LOGGER.info("Client {} disconnected: {}", client.getRemoteAddress(), e.getMessage());
+            key.cancel();
+            client.close();
+        } catch (SQLException e) {
+            LOGGER.info("SQL Exception: {}", e.getMessage());
+            key.cancel();
+            client.close();
         }
     }
 
-    /**
-     * Processing of server console commands
-     */
+    private void handleWrite(SelectionKey key) throws IOException {
+        ServerProtocol proto = (ServerProtocol) key.attachment();
+        proto.flushWrites(key);
+    }
+
     private void processConsoleCommands() {
         try {
             OnlyServerResult result = serverUtils.readConsoleCommand();
@@ -250,56 +183,32 @@ public class Server {
         }
     }
 
-    /**
-     * Secure execution of a client command with exception handling
-     */
-    private ServerResponse executeCommandSafely(Action command) {
+    private void shutdownServer() {
         try {
-            return clientCommandManager.executeCommand(command);
-        } catch (Exception e) {
-            LOGGER.error("Command execution error: {}", e.getMessage());
-            return new ServerResponse(ResponseStatus.EXCEPTION, e.getMessage());
-        }
+            databaseConnection.close();
+        } catch (Exception ignored) {}
+        processPool.shutdown();
+        isRunning = false;
     }
 
-    /**
-     * Initialization of server dependencies
-     */
     private void initializeDependencies() {
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-
         try {
-            ServerCommandManager serverCommandManager = new ServerCommandManager();
-            DatabaseHandler databaseHandler = new DatabaseHandler();
-
-            try {
-                databaseConnection = databaseHandler.connect();
-                clientCommandManager = new CommandManager(databaseHandler.read(databaseConnection), databaseConnection);
-            } catch (ClassNotFoundException e) {
-                logInitializationError("Driver of PostgreSQL isn't exist", e);
-            } catch (SQLException e) {
-                logInitializationError("Error while trying to connect/read to DB", e);
-            }
-
-            AuthService authService = new AuthService(databaseConnection);
-            serverUtils = new ServerUtils(serverCommandManager, authService);
-
-        } catch (JsonMappingException e) {
-            logInitializationError("JSON parsing error", e);
+            DatabaseHandler dbh = new DatabaseHandler();
+            databaseConnection = dbh.connect();
+            CommandManager clientCommandManager = new CommandManager(
+                    dbh.read(databaseConnection), databaseConnection
+            );
+            AuthService auth = new AuthService(databaseConnection);
+            serverUtils = new ServerUtils(
+                    new ServerCommandManager(),
+                    auth,
+                    processPool,
+                    clientCommandManager
+            );
         } catch (Exception e) {
-            logInitializationError("General initialization error", e);
+            LOGGER.fatal("Init error: {}", e.getMessage());
+            System.exit(-1);
         }
     }
 
-    private void logFatalError(String context, Exception e) {
-        LOGGER.fatal("{} [Host: {}, Port: {}]: {}",
-                context, serverHost, serverPort, e.getMessage());
-        System.exit(-1);
-    }
-
-    private void logInitializationError(String context, Exception e) {
-        LOGGER.error("{}: {}", context, e.getMessage());
-        LOGGER.debug("Stack trace:", e);
-        System.exit(-1);
-    }
 }

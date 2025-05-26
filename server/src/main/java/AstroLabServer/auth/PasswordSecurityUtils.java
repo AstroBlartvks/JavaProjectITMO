@@ -11,7 +11,7 @@ import static AstroLabServer.auth.DataConfig.PEPPER;
 
 public class PasswordSecurityUtils {
     private static final int SALT_LENGTH = 32;
-    private static final int ITERATIONS = 120000;
+    private static final int ITERATIONS = 12;
     private static final int KEY_LENGTH = 512;
     private static final String ALGORITHM = "PBKDF2WithHmacSHA512";
 
