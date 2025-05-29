@@ -31,12 +31,6 @@
             <version>2.13.3</version>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>RELEASE</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.AstroLab</groupId>
             <artifactId>common-api</artifactId>
             <version>1.0.0</version>

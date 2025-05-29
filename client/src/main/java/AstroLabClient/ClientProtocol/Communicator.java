@@ -1,5 +1,6 @@
 package AstroLabClient.ClientProtocol;
 
+import AstroLab.auth.UserDTO;
 import AstroLabClient.clientAction.ClientAction;
 import AstroLab.actions.components.ClientServerAction;
 import AstroLab.actions.components.Action;
@@ -9,6 +10,7 @@ import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
 import AstroLabClient.clientAction.CommandVisitor;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -17,19 +19,26 @@ import java.util.Objects;
 
 public class Communicator implements CommandVisitor {
     private final ClientProtocol clientProtocol;
+    private final UserDTO userDTO;
     private static final int MAX_RETRIES = 3;
     private static final int RETRY_DELAY_MS = 5000;
 
-    public Communicator(Socket socket, String serverHost, int serverPort) throws IOException {
+    public Communicator(Socket socket, String serverHost, int serverPort, UserDTO userDTO) throws IOException {
         socket.setSoTimeout(2 * RETRY_DELAY_MS);
         socket.connect(new InetSocketAddress(serverHost, serverPort), RETRY_DELAY_MS);
         this.clientProtocol = new ClientProtocol(socket);
+        this.userDTO = userDTO;
         initConnection();
     }
 
-    private void initConnection() throws SocketTimeoutException {
+    private void initConnection() throws SocketTimeoutException, ConnectException {
+        clientProtocol.send(this.userDTO);
         ServerResponse response = getResponse();
         System.out.println(response.getValue());
+
+        if (response.getStatus() == ResponseStatus.FORBIDDEN){
+            throw new ConnectException("Connection closed by server!");
+        }
     }
 
     private ServerResponse getResponse() throws SocketTimeoutException {
@@ -54,13 +63,14 @@ public class Communicator implements CommandVisitor {
             try {
                 response = clientProtocol.receive(ServerResponse.class);
             } catch (SocketTimeoutException e) {
+                System.out.println("Attempt to get response №" + attempt);
                 continue;
             }
 
             if (response == null) continue;
 
             if (Objects.requireNonNull(response.getStatus()) == ResponseStatus.EXCEPTION) {
-                System.err.println("Server exception:\n" + response);
+                System.out.println("Server exception:\n" + response);
                 return;
             }
             System.out.println("Server response:\n" + response.getValue());

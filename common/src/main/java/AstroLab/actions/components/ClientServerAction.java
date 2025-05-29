@@ -2,7 +2,9 @@ package AstroLab.actions.components;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import lombok.Getter;
 
+@Getter
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
@@ -26,4 +28,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = ActionUpdate.class, name = "UPDATE")
 })
 public abstract class ClientServerAction extends Action {
+    private final String ownerLogin;
+    private final String ownerPassword;
+
+    public ClientServerAction(String ownerLogin, String ownerPassword){
+        this.ownerLogin = ownerLogin;
+        this.ownerPassword = ownerPassword;
+    }
 }

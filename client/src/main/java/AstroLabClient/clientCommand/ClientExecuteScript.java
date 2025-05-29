@@ -1,6 +1,7 @@
 package AstroLabClient.clientCommand;
 
 import AstroLab.actions.components.ClientServerAction;
+import AstroLab.auth.UserDTO;
 import AstroLab.utils.command.CommandArgumentList;
 import AstroLabClient.clientCommand.scriptHandler.ScriptExecuteScannerException;
 import AstroLabClient.clientCommand.scriptHandler.ScriptExecutes;
@@ -9,7 +10,8 @@ import AstroLabClient.inputManager.ScannerManager;
 public class ClientExecuteScript extends ClientCommand {
     private final ScriptExecutes scriptExecutes;
 
-    public ClientExecuteScript(ScannerManager scannerManager) {
+    public ClientExecuteScript(ScannerManager scannerManager, UserDTO userDTO) {
+        super(userDTO);
         scriptExecutes = new ScriptExecutes(scannerManager);
     }
 

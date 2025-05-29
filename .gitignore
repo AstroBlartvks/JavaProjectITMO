@@ -3,6 +3,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 resources/checkstyle
+server/src/main/java/AstroLabServer/database/db.cfg
+C:/Users/AstroBlartvks/IdeaProjects/ITMOLaboratory6/ITMOJavaLab6/db.cfg
 
 ### IntelliJ IDEA ###
 .idea/modules.xml

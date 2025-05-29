@@ -1,210 +1,214 @@
 package AstroLabServer;
 
-import AstroLab.actions.components.Action;
+import AstroLab.auth.ConnectionType;
+import AstroLab.auth.UserDTO;
 import AstroLab.utils.ClientServer.ClientRequest;
 import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
 import AstroLab.utils.tcpProtocol.packet.ClientClosedConnectionException;
 import AstroLab.utils.tcpProtocol.packet.PacketIsNullException;
-import AstroLabServer.ServerProtocol.ServerProtocol;
-import AstroLabServer.collection.CustomCollection;
-import AstroLabServer.files.JsonReader;
-import AstroLabServer.files.Reader;
+import AstroLabServer.auth.AuthService;
+import AstroLabServer.auth.AuthStates;
+import AstroLabServer.database.DatabaseHandler;
 import AstroLabServer.onlyServerCommand.OnlyServerResult;
 import AstroLabServer.onlyServerCommand.ServerCommandManager;
+import AstroLabServer.onlyServerCommand.ServerUtils;
 import AstroLabServer.serverCommand.CommandManager;
+import AstroLabServer.serverProtocol.ServerProtocol;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.concurrent.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Server {
     public static final Logger LOGGER = LogManager.getLogger(Server.class);
-    private static final int TIMEOUT_MS = 1000;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private ServerCommandManager serverCommandManager;
-    private CommandManager commandManager;
+    private static final int SELECTOR_TIMEOUT_MS = 1000;
+
     private final String serverHost;
     private final int serverPort;
     private boolean isRunning;
+
+    private ServerUtils serverUtils;
+    private Connection databaseConnection;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ExecutorService processPool;
 
     public Server(String host, int port) {
         this.serverHost = host;
         this.serverPort = port;
         this.isRunning = true;
-        initCollectionCmdManager();
+        this.processPool = Executors.newFixedThreadPool(
+                Runtime.getRuntime().availableProcessors()
+        );
+        initializeDependencies();
+    }
+
+    private void initializeServerChannel(ServerSocketChannel serverChannel, Selector selector) throws IOException {
+        serverChannel.bind(new InetSocketAddress(serverHost, serverPort));
+        serverChannel.configureBlocking(false);
+        serverChannel.register(selector, SelectionKey.OP_ACCEPT);
     }
 
     public void run() {
-        try (ServerSocketChannel serverChannel =
-                     ServerSocketChannel.open(); Selector selector = Selector.open()) {
-            try {
-                serverChannel.bind(new InetSocketAddress(serverHost, serverPort));
-                serverChannel.configureBlocking(false);
-                serverChannel.register(selector, SelectionKey.OP_ACCEPT);
-            } catch (IllegalArgumentException | SecurityException | AlreadyBoundException e) {
-                LOGGER.fatal("You can't bind server{ip={}, port={}}, because: {}",
-                        this.serverHost, this.serverPort, e.getMessage());
-            } catch (ClosedChannelException | ClosedSelectorException e) {
-                LOGGER.fatal("Your server's channel or selector closed! {}", e.getMessage());
-            }
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        try (ServerSocketChannel serverChannel = ServerSocketChannel.open();
+             Selector selector = Selector.open()) {
 
+            initializeServerChannel(serverChannel, selector);
             LOGGER.info("Server started on {}:{}", serverHost, serverPort);
 
             while (isRunning) {
-                handleConsoleCommand();
+                processConsoleCommands();
+                if (selector.select(SELECTOR_TIMEOUT_MS) == 0) continue;
 
-                if (selector.select(TIMEOUT_MS) == 0) {
-                    continue;
-                }
+                Iterator<SelectionKey> it = selector.selectedKeys().iterator();
+                while (it.hasNext()) {
+                    SelectionKey key = it.next();
+                    it.remove();
 
-                Set<SelectionKey> keys = selector.selectedKeys();
-                Iterator<SelectionKey> keyIterator = keys.iterator();
-
-                while (keyIterator.hasNext()) {
-                    SelectionKey key = keyIterator.next();
-                    keyIterator.remove();
-
+                    if (!key.isValid()) continue;
                     try {
                         if (key.isAcceptable()) {
                             handleAccept(key, selector);
                         } else if (key.isReadable()) {
-                            SocketChannel clientChannel = (SocketChannel) key.channel();
-                            ClientRequest clientRequest = handleReadRequest(key, clientChannel);
-                            if (clientRequest == null) continue;
-                            ServerResponse response = executeCommandSafely(clientRequest.getRequest());
-                            handleSendResponse(clientChannel, response);
+                            handleRead(key, selector);
+                        } else if (key.isWritable()) {
+                            handleWrite(key);
                         }
-                    } catch (IOException e) {
-                        LOGGER.error(e.getMessage());
-                        closeChannel(key);
+                    } catch (Exception e) {
+                        LOGGER.error("Key processing error: {}", e.getMessage());
+                        key.cancel();
+                        key.channel().close();
                     }
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("Server error: {}", e.getMessage());
+            LOGGER.error("Server failure: {}", e.getMessage());
+        } finally {
+            shutdownServer();
         }
-    }
-
-    private void handleConsoleCommand() throws Exception {
-        OnlyServerResult result = readCommandFromConsole();
-        switch (result) {
-            case EXIT:
-                serverCommandManager.executeCommand("save");
-                isRunning = false;
-                break;
-            case EXCEPTION:
-                LOGGER.warn("The exception while handling command!");
-                break;
-            case OK:
-                LOGGER.info("Command result: {}", result);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private OnlyServerResult readCommandFromConsole() throws IOException {
-        if (System.in.available() > 0) {
-            byte[] buffer = new byte[System.in.available()];
-            int res = System.in.read(buffer);
-            if (res == '\n' || res == -1) {
-                return OnlyServerResult.OK;
-            }
-            String str = new String(buffer, StandardCharsets.UTF_8);
-            try {
-                return serverCommandManager.executeCommand(str.trim());
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage());
-                return OnlyServerResult.EXCEPTION;
-            }
-        }
-        return OnlyServerResult.NOTHING;
     }
 
     private void handleAccept(SelectionKey key, Selector selector) throws IOException {
         ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel();
-        SocketChannel clientChannel = serverChannel.accept();
+        SocketChannel client = serverChannel.accept();
+        client.configureBlocking(false);
 
-        clientChannel.configureBlocking(false);
-        clientChannel.register(selector, SelectionKey.OP_READ);
+        ServerProtocol proto = new ServerProtocol(client);
+        SelectionKey clientKey = client.register(selector, SelectionKey.OP_READ);
+        clientKey.attach(proto);
 
-        LOGGER.info("Accepted connection from: {}", clientChannel.getRemoteAddress());
-        handleSendResponse(clientChannel,
-                new ServerResponse(ResponseStatus.OK,
-                "You have connected to the server!"));
+        LOGGER.info("Accepted connection from {}", client.getRemoteAddress());
     }
 
-    private ClientRequest handleReadRequest(SelectionKey key,
-                                            SocketChannel clientChannel)
-            throws IOException {
-        ClientRequest clientRequest;
-        ServerProtocol serverProtocol = new ServerProtocol(clientChannel);
+    private void handleRead(SelectionKey key, Selector selector) throws IOException {
+        ServerProtocol proto = (ServerProtocol) key.attachment();
+        SocketChannel client = (SocketChannel) key.channel();
+
         try {
-            clientRequest = serverProtocol.receive(ClientRequest.class);
-            LOGGER.info("Request from client={}: {}", clientChannel, clientRequest);
+            if (!proto.isAuthenticated()) {
+                UserDTO dto = proto.receive(UserDTO.class);
+                if (dto == null)
+                    return;
+
+                LOGGER.info("Handshake from {}: {}", client.getRemoteAddress(), dto);
+
+                AuthService auth = serverUtils.getAuthService();
+                AuthStates authStates = dto.getConnectionType() == ConnectionType.LOGIN ? auth.login(dto) : auth.register(dto);
+                if (authStates.isState()) {
+                    proto.setUser(dto);
+                    proto.send(new ServerResponse(ResponseStatus.OK,
+                            authStates.getMessage()));
+                } else {
+                    proto.send(new ServerResponse(ResponseStatus.FORBIDDEN, authStates.getMessage()));
+                }
+                key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                selector.wakeup();
+                return;
+            }
+
+            ClientRequest clientRequest = proto.receive(ClientRequest.class);
+            if (clientRequest == null) {
+                return;
+            }
+
+            processPool.submit(() -> {
+                ServerResponse resp = serverUtils.executeCommandSafely(clientRequest);
+                proto.send(resp);
+                key.interestOps(SelectionKey.OP_READ | key.interestOps() | SelectionKey.OP_WRITE);
+                selector.wakeup();
+            });
+
         } catch (PacketIsNullException | ClientClosedConnectionException e) {
-            LOGGER.error("Error while reading request: {}", e.getMessage());
-            handleClientDisconnect(clientChannel, key);
-            return null;
+            LOGGER.info("Client {} disconnected: {}", client.getRemoteAddress(), e.getMessage());
+            key.cancel();
+            client.close();
+        } catch (SQLException e) {
+            LOGGER.info("SQL Exception: {}", e.getMessage());
+            key.cancel();
+            client.close();
         }
-        key.interestOps(SelectionKey.OP_READ);
-
-        return clientRequest;
     }
 
-    private ServerResponse executeCommandSafely(Action command) {
+    private void handleWrite(SelectionKey key) throws IOException {
+        ServerProtocol proto = (ServerProtocol) key.attachment();
+        proto.flushWrites(key);
+    }
+
+    private void processConsoleCommands() {
         try {
-            return commandManager.executeCommand(command);
+            OnlyServerResult result = serverUtils.readConsoleCommand();
+            switch (result) {
+                case EXIT:
+                    shutdownServer();
+                    break;
+                case EXCEPTION:
+                    LOGGER.warn("Console command processing error");
+                    break;
+                case OK:
+                    LOGGER.debug("Console command executed successfully");
+                    break;
+                default:
+                    break;
+            }
         } catch (Exception e) {
-            return new ServerResponse(ResponseStatus.EXCEPTION, e.getMessage());
+            LOGGER.error("Console command handler error: {}", e.getMessage());
         }
     }
 
-    private void handleSendResponse(SocketChannel channel, ServerResponse response) {
-        LOGGER.info("Server response to client={}: {}", channel, response.getStatus());
-        ServerProtocol serverProtocol = new ServerProtocol(channel);
+    private void shutdownServer() {
         try {
-            serverProtocol.send(response);
+            databaseConnection.close();
+        } catch (Exception ignored) {}
+        processPool.shutdown();
+        isRunning = false;
+    }
+
+    private void initializeDependencies() {
+        try {
+            DatabaseHandler dbh = new DatabaseHandler();
+            databaseConnection = dbh.connect();
+            CommandManager clientCommandManager = new CommandManager(
+                    dbh.read(databaseConnection), databaseConnection
+            );
+            AuthService auth = new AuthService(databaseConnection);
+            serverUtils = new ServerUtils(
+                    new ServerCommandManager(),
+                    auth,
+                    processPool,
+                    clientCommandManager
+            );
         } catch (Exception e) {
-            LOGGER.error("Error while sending request: {}", e.getMessage());
-        }
-    }
-
-    private void handleClientDisconnect(SocketChannel channel, SelectionKey key) throws IOException {
-        channel.close();
-        key.cancel();
-    }
-
-    private void closeChannel(SelectionKey key) {
-        try {
-            LOGGER.info("Closing connection: {}", ((SocketChannel) key.channel()).getRemoteAddress());
-            key.channel().close();
-        } catch (IOException ex) {
-            LOGGER.error("Error closing channel: {}", ex.getMessage());
-        }
-    }
-
-    private void initCollectionCmdManager() {
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        try {
-            Reader reader = new Reader(new JsonReader());
-            CustomCollection customCollection = reader.readFromEnv();
-            commandManager = new CommandManager(customCollection);
-            serverCommandManager = new ServerCommandManager(customCollection);
-        } catch (JsonMappingException e) {
-            LOGGER.error("Program can't parse your Json file, check this error and try fix it!\n\t{}",
-                    e.getMessage());
+            LOGGER.fatal("Init error: {}", e.getMessage());
             System.exit(-1);
-        } catch (Exception e) {
-            LOGGER.error("Ops... Exception while reading!\n{}", e.getMessage());
-            System.exit(-1);
         }
     }
+
 }
