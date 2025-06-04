@@ -1,5 +1,6 @@
 package AstroLabServer;
 
+import AstroLab.auth.AuthResponse;
 import AstroLab.auth.ConnectionType;
 import AstroLab.auth.UserDTO;
 import AstroLab.utils.ClientServer.ClientRequest;
@@ -9,6 +10,7 @@ import AstroLab.utils.tcpProtocol.packet.ClientClosedConnectionException;
 import AstroLab.utils.tcpProtocol.packet.PacketIsNullException;
 import AstroLabServer.auth.AuthService;
 import AstroLabServer.auth.AuthStates;
+import AstroLabServer.auth.JwtUtils;
 import AstroLabServer.database.DatabaseHandler;
 import AstroLabServer.onlyServerCommand.OnlyServerResult;
 import AstroLabServer.onlyServerCommand.ServerCommandManager;
@@ -123,9 +125,16 @@ public class Server {
                 AuthService auth = serverUtils.getAuthService();
                 AuthStates authStates = dto.getConnectionType() == ConnectionType.LOGIN ? auth.login(dto) : auth.register(dto);
                 if (authStates.isState()) {
-                    proto.setUser(dto);
-                    proto.send(new ServerResponse(ResponseStatus.OK,
-                            authStates.getMessage()));
+                    String token = JwtUtils.generateToken(dto.getLogin());
+                    proto.setJwtToken(token);
+
+                    AuthResponse authResponse = new AuthResponse(
+                            ResponseStatus.OK,
+                            authStates.getMessage(),
+                            token
+                    );
+
+                    proto.send(authResponse);
                 } else {
                     proto.send(new ServerResponse(ResponseStatus.FORBIDDEN, authStates.getMessage()));
                 }
@@ -138,6 +147,16 @@ public class Server {
             if (clientRequest == null) {
                 return;
             }
+
+            if (!JwtUtils.validateToken(clientRequest.getToken())) {
+                proto.send(new ServerResponse(ResponseStatus.UNAUTHORIZED, "Invalid token"));
+                key.interestOps(SelectionKey.OP_READ | key.interestOps() | SelectionKey.OP_WRITE);
+                selector.wakeup();
+                return;
+            }
+
+            String username = JwtUtils.getUsernameFromToken(clientRequest.getToken());
+            LOGGER.info("Request from user {}: {}", username, clientRequest.toString());
 
             processPool.submit(() -> {
                 ServerResponse resp = serverUtils.executeCommandSafely(clientRequest);

@@ -1,5 +1,6 @@
 package AstroLabClient.ClientProtocol;
 
+import AstroLab.auth.AuthResponse;
 import AstroLab.auth.UserDTO;
 import AstroLabClient.clientAction.ClientAction;
 import AstroLab.actions.components.ClientServerAction;
@@ -22,6 +23,7 @@ public class Communicator implements CommandVisitor {
     private final UserDTO userDTO;
     private static final int MAX_RETRIES = 3;
     private static final int RETRY_DELAY_MS = 5000;
+    private String jwtToken;
 
     public Communicator(Socket socket, String serverHost, int serverPort, UserDTO userDTO) throws IOException {
         socket.setSoTimeout(2 * RETRY_DELAY_MS);
@@ -33,19 +35,18 @@ public class Communicator implements CommandVisitor {
 
     private void initConnection() throws SocketTimeoutException, ConnectException {
         clientProtocol.send(this.userDTO);
-        ServerResponse response = getResponse();
-        System.out.println(response.getValue());
-
-        if (response.getStatus() == ResponseStatus.FORBIDDEN){
-            throw new ConnectException("Connection closed by server!");
+        AuthResponse response = clientProtocol.receive(AuthResponse.class);
+        if (response == null) {
+            throw new ConnectException("Server didn't send any packets!");
+        } else if (response.getStatus() == ResponseStatus.FORBIDDEN){
+            throw new ConnectException("Connection closed by server: " + response.getValue());
         }
+
+        this.jwtToken = response.getToken();
+        System.out.println(response.getValue());
     }
 
-    private ServerResponse getResponse() throws SocketTimeoutException {
-        return clientProtocol.receive(ServerResponse.class);
-    }
-
-    public void communicate(Action action) throws Exception {
+    public <T> void communicate(T action) throws Exception {
         if (action instanceof ClientAction) {
             visitIt((ClientAction) action);
         } else if (action instanceof ClientServerAction) {
@@ -56,6 +57,8 @@ public class Communicator implements CommandVisitor {
     @Override
     public void visitIt(ClientServerAction clientServerAction) throws Exception {
         ClientRequest request = new ClientRequest(ClientStatus.REQUEST, clientServerAction);
+        request.setToken(jwtToken);
+
         for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
             clientProtocol.send(request);
             ServerResponse response;

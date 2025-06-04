@@ -13,6 +13,8 @@ public class ClientRequest {
     ClientStatus state;
     @JsonProperty("request")
     ClientServerAction request;
+    @JsonProperty("token")
+    private String token;
 
     @JsonCreator
     public ClientRequest(

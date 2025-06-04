@@ -28,10 +28,10 @@ public class ServerProtocol extends TcpProtocol {
     private final ByteBuffer             readBuffer = ByteBuffer.allocate(BUF_SIZE);
     private final ObjectMapper           objectMapper;
     private final Queue<ByteBuffer>      writeQueue = new ArrayDeque<>();
-    private UserDTO                user = null;
+    private String jwtToken = null;
 
     public boolean isAuthenticated() {
-        return user != null;
+        return jwtToken != null;
     }
 
     public ServerProtocol(SocketChannel socketChannel) {
