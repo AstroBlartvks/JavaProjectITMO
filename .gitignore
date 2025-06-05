@@ -37,10 +37,7 @@ build/
 
 
 /applogs/
-/server/src/main/resources
-/server/target
-/client/target
-/applogs
-/common/target
+server/target
+client/target
+common/target
 !/common/target/generated-sources
-!/common/src/main/resources
