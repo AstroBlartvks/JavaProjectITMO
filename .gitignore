@@ -1,6 +1,6 @@
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+**/src/main/**/target/
+**/src/test/**/target/
 !common/target/generated-sources/protobuf
 !common/src/main/resources/
 resources/checkstyle
