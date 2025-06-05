@@ -3,7 +3,7 @@ package AstroLabClient;
 import AstroLab.actions.components.Action;
 import AstroLab.auth.ConnectionType;
 import AstroLab.auth.UserDTO;
-import AstroLabClient.communicator.Communicator;
+import AstroLabClient.clientAction.Communicator;
 import AstroLabClient.inputManager.*;
 
 import java.rmi.ServerException;
@@ -64,9 +64,7 @@ public final class Client implements Runnable{
                     return true;
                 }
                 Action action = commandHandler.handle(inputString);
-                if (action != null) {
-                    communicator.communicate(action);
-                }
+                communicator.communicate(action);
             }
             return true;
         } catch (SecurityException e) {

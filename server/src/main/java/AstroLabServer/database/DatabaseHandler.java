@@ -4,6 +4,8 @@ import AstroLab.utils.model.Coordinates;
 import AstroLab.utils.model.Location;
 import AstroLab.utils.model.Route;
 import AstroLabServer.collection.CustomCollection;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,22 +14,33 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.Properties;
 
+@Setter
 public class DatabaseHandler implements DatabaseReadable<CustomCollection>{
     public static final Logger LOGGER = LogManager.getLogger(DatabaseHandler.class);
+    private final String databaseHost;
+    private final int    databasePort;
+    private final String databaseName;
+    private final String databaseUserName;
+    private final String databasePassword;
 
-    public Connection connect() throws IOException,
-                                                     ClassNotFoundException,
-                                                     SQLException {
+    public DatabaseHandler(String databaseHost,
+                           int databasePort,
+                           String databaseName,
+                           String databaseUserName,
+                           String databasePassword) {
+        this.databaseHost = databaseHost;
+        this.databasePort = databasePort;
+        this.databaseName = databaseName;
+        this.databaseUserName = databaseUserName;
+        this.databasePassword = databasePassword;
+    }
+
+
+    public Connection connect() throws  ClassNotFoundException,
+                                        SQLException {
         Class.forName("org.postgresql.Driver");
-        Properties info = new Properties();
-        info.load(new FileInputStream("db.cfg"));
-
-        String dbHost = info.getProperty("dbHost", "db");
-        String dbPort = info.getProperty("dbPort", "5432");
-        String dbName = info.getProperty("dbName", "studs");
-
-        String URL = String.format("jdbc:postgresql://%s:%s/%s", dbHost, dbPort, dbName);
-        Connection connection = DriverManager.getConnection(URL, info);
+        String URL = String.format("jdbc:postgresql://%s:%s/%s", databaseHost, databasePort, databaseName);
+        Connection connection = DriverManager.getConnection(URL, databaseUserName, databasePassword);
 
         LOGGER.info("Connected to PostgreSQL successfully! {}", connection);
         return connection;

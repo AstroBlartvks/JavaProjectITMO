@@ -6,7 +6,7 @@ import AstroLabServer.onlyServerCommand.OnlyServerResult;
 import AstroLabServer.onlyServerCommand.ServerCommandManager;
 import AstroLabServer.onlyServerCommand.ServerUtils;
 import AstroLabServer.serverCommand.CommandManager;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.concurrent.*;
@@ -29,18 +29,17 @@ public class Server {
     private Connection databaseConnection;
     private final ExecutorService processPool;
 
-    public Server(int port) {
+    public Server(int port, DatabaseHandler databaseHandler) {
         this.grpcPort = port;
         this.isRunning = true;
         this.processPool = Executors.newFixedThreadPool(
                 Runtime.getRuntime().availableProcessors()
         );
-        initializeDependencies();
+        initializeDependencies(databaseHandler);
     }
 
     public void run() {
-
-        AuthService authService = serverUtils.getAuthService();
+        AuthService authService = serverUtils.authService();
 
         grpcServer = ServerBuilder.forPort(grpcPort)
                 .addService(new AstroAuthServiceImpl(authService))
@@ -143,12 +142,11 @@ public class Server {
         LOGGER.info("Server shutdown complete.");
     }
 
-    private void initializeDependencies() {
+    private void initializeDependencies(DatabaseHandler databaseHandler) {
         try {
-            DatabaseHandler dbh = new DatabaseHandler();
-            databaseConnection = dbh.connect();
+            databaseConnection = databaseHandler.connect();
             CommandManager clientCommandManager = new CommandManager(
-                    dbh.read(databaseConnection), databaseConnection
+                    databaseHandler.read(databaseConnection), databaseConnection
             );
             AuthService auth = new AuthService(databaseConnection);
             serverUtils = new ServerUtils(

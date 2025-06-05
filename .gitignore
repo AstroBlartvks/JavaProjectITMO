@@ -1,7 +1,8 @@
-target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+!common/target/generated-sources/protobuf
+!common/src/main/resources/
 resources/checkstyle
 server/src/main/java/AstroLabServer/database/db.cfg
 C:/Users/AstroBlartvks/IdeaProjects/ITMOLaboratory6/ITMOJavaLab6/db.cfg

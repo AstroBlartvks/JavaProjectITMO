@@ -1,5 +1,6 @@
 package AstroLab.actions.components;
 
+import AstroLab.actions.utils.ActionVisitable;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
@@ -34,5 +35,10 @@ public abstract class ClientServerAction extends Action {
     public ClientServerAction(String ownerLogin, String ownerPassword){
         this.ownerLogin = ownerLogin;
         this.ownerPassword = ownerPassword;
+    }
+
+    @Override
+    public void accept(ActionVisitable visitor) throws Exception{
+        visitor.visit(this);
     }
 }

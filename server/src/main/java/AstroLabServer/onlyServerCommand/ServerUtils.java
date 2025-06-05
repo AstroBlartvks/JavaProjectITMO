@@ -11,27 +11,14 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 
-import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Getter
-public class ServerUtils {
+public record ServerUtils(ServerCommandManager serverCommandManager,
+                          AuthService authService,
+                          ExecutorService processPool,
+                          CommandManager commandManager) {
     public static final Logger LOGGER = LogManager.getLogger(ServerUtils.class);
-    private final ServerCommandManager serverCommandManager;
-    private final AuthService authService;
-    private final ExecutorService processPool;
-    private final CommandManager commandManager;
-
-    public ServerUtils(ServerCommandManager serverCommandManager,
-                       AuthService authService,
-                       ExecutorService processPool,
-                       CommandManager commandManager){
-        this.serverCommandManager = serverCommandManager;
-        this.authService = authService;
-        this.processPool = processPool;
-        this.commandManager = commandManager;
-    }
 
     public OnlyServerResult readConsoleCommand() throws IOException {
         if (System.in.available() > 0) {

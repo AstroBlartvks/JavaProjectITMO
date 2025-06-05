@@ -1,5 +1,6 @@
 package AstroLabClient.clientAction;
 
+import AstroLab.actions.components.ClientAction;
 import AstroLab.actions.utils.ActionsName;
 import java.rmi.ServerException;
 
