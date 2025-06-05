@@ -1,5 +1,6 @@
 package AstroLab.actions.components;
 
+import AstroLab.actions.utils.ActionVisitable;
 import AstroLab.actions.utils.ActionsName;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,8 @@ public abstract class Action {
      * ActionsName actionName - name of action
      */
     private ActionsName actionName;
+
+    public abstract void accept(ActionVisitable visitor) throws Exception;
 
     /**.
      * Return description of class

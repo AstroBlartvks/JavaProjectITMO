@@ -5,5 +5,6 @@ public enum ResponseStatus {
     EXCEPTION,
     TEXT,
     DATA,
-    FORBIDDEN
+    FORBIDDEN,
+    UNAUTHORIZED
 }
