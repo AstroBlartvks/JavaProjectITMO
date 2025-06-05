@@ -1,11 +1,4 @@
 !.mvn/wrapper/maven-wrapper.jar
-server/src/main/resources
-server/target
-client/target
-applogs
-common/target
-!common/target/generated-sources
-!common/src/main/resources
 
 
 ### IntelliJ IDEA ###
@@ -42,6 +35,10 @@ build/
 ### Mac OS ###
 .DS_Store
 /applogs/
-/server/target/
-/server/target/
-/server/target/
+/server/src/main/resources
+/server/target
+/client/target
+/applogs
+/common/target
+!/common/target/generated-sources
+!/common/src/main/resources
