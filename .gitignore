@@ -1,11 +1,12 @@
 !.mvn/wrapper/maven-wrapper.jar
-**/src/main/**/target/
-**/src/test/**/target/
-!common/target/generated-sources/protobuf
-!common/src/main/resources/
-resources/checkstyle
-server/src/main/java/AstroLabServer/database/db.cfg
-C:/Users/AstroBlartvks/IdeaProjects/ITMOLaboratory6/ITMOJavaLab6/db.cfg
+server/src/main/resources
+server/target
+client/target
+applogs
+common/target
+!common/target/generated-sources
+!common/src/main/resources
+
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -41,3 +42,6 @@ build/
 ### Mac OS ###
 .DS_Store
 /applogs/
+/server/target/
+/server/target/
+/server/target/
