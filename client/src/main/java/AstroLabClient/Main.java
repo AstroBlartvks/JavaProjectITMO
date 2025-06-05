@@ -7,18 +7,18 @@ public class Main {
             return;
         }
 
-        String serverHost;
-        int serverPort;
+        String grpcServerHost;
+        int grpcServerPort;
 
         try {
-            serverHost = args[0];
-            serverPort = Integer.parseInt(args[1]);
+            grpcServerHost = args[0];
+            grpcServerPort = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
             System.err.println("Your port is broken: " + e.getMessage());
             return;
         }
 
-        Client client = new Client(serverHost, serverPort);
+        Client client = new Client(grpcServerHost, grpcServerPort);
         client.run();
     }
 }

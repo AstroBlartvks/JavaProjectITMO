@@ -3,60 +3,107 @@ package AstroLabClient;
 import AstroLab.actions.components.Action;
 import AstroLab.auth.ConnectionType;
 import AstroLab.auth.UserDTO;
-import AstroLabClient.ClientProtocol.Communicator;
+import AstroLabClient.communicator.Communicator;
 import AstroLabClient.inputManager.*;
 
-import java.net.Socket;
-import java.net.SocketException;
 import java.rmi.ServerException;
 import java.util.Scanner;
 
-public final class Client {
+public final class Client implements Runnable{
     private final ScannerManager scannerManager;
     private CommandHandler commandHandler;
-    private final String serverHost;
-    private final int serverPort;
+    private final String grpcServerHost;
+    private final int grpcServerPort;
     private static final int MAX_RETRIES = 3;
     private static final int RETRY_DELAY_MS = 5000;
+    private Communicator communicator;
 
     public Client(String host, int port) {
-        serverHost = host;
-        serverPort = port;
+        grpcServerHost = host;
+        grpcServerPort = port;
         this.scannerManager = new ScannerManager();
     }
 
+    @Override
     public void run() {
+        UserDTO userDTO = inputUserData();
+        if (userDTO == null) {
+            System.out.println("No user data provided. Exiting.");
+            shutdown();
+            return;
+        }
+        this.commandHandler = new CommandHandler(scannerManager, new ArgumentRequester(scannerManager), userDTO);
+
         for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
-            UserDTO userDTO = inputUserData();
-            this.commandHandler = new CommandHandler(scannerManager, new ArgumentRequester(scannerManager), userDTO);
-            if (userDTO == null) continue;
-            boolean isOk = createSocketAndRun(attempt, userDTO);
+            boolean isOk = createCommunicatorAndRun(attempt, userDTO);
             if (isOk) break;
+            if (attempt < MAX_RETRIES - 1) {
+                System.out.println("Retrying connection in " + RETRY_DELAY_MS / 1000 + " seconds...");
+                try {
+                    Thread.sleep(RETRY_DELAY_MS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    System.out.println("Retry delay interrupted.");
+                    break;
+                }
+            } else {
+                System.out.println("Max retries reached. Could not connect to server.");
+            }
         }
         shutdown();
     }
 
-    private boolean createSocketAndRun(int attempt, UserDTO userDTO) {
-        try (Socket socket = new Socket()) {
-            Communicator communicator = new Communicator(socket, serverHost, serverPort, userDTO);
+    private boolean createCommunicatorAndRun(int attempt, UserDTO userDTO) {
+        try {
+            this.communicator = new Communicator(grpcServerHost, grpcServerPort, userDTO);
 
             while (scannerManager.hasNextLine()) {
                 String inputString = input();
-                if (inputString == null) continue;
+                if (inputString == null || inputString.equalsIgnoreCase("exit")) {
+                    System.out.println("Exiting client.");
+                    return true;
+                }
                 Action action = commandHandler.handle(inputString);
-
-                communicator.communicate(action);
+                if (action != null) {
+                    communicator.communicate(action);
+                }
             }
-        } catch (SocketException e) {
-            handleRetry(attempt, e);
-        } catch (ServerException e) {
             return true;
+        } catch (SecurityException e) {
+            System.err.println("Authentication failed: " + e.getMessage());
+            return true;
+        } catch (ServerException e) {
+            System.err.println("Server error: " + e.getMessage() + (attempt < MAX_RETRIES - 1 ? " Retrying..." : " Max retries reached."));
+            return false;
         } catch (SystemInClosedException | ScannerException e) {
-            shutdown();
+            System.err.println("Input error: " + e.getMessage() + ". Shutting down client.");
+            return true;
         } catch (Exception e) {
-            System.out.println("Unexpected Exception: " + e.getMessage());
+            System.err.println("Unexpected Exception in client run loop (attempt " + (attempt+1) + "): " + e.getMessage());
+            return false;
+        } finally {
+            if (this.communicator != null && attempt == MAX_RETRIES -1) {
+                try {
+                    this.communicator.shutdown();
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                    System.err.println("Client communicator shutdown interrupted.");
+                }
+            }
         }
-        return false;
+    }
+
+    public void shutdown() {
+        if (communicator != null) {
+            try {
+                communicator.shutdown();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.err.println("Client communicator shutdown interrupted.");
+            }
+        }
+        scannerManager.close();
+        System.out.println("Client has closed!");
     }
 
     private UserDTO inputUserData(){
@@ -91,22 +138,6 @@ public final class Client {
         System.out.print("Enter the password: ");
         String password = loginInputScanner.next();
         return new UserDTO(login, password, "", connectionType);
-    }
-
-    private void handleRetry(int attempt, Exception e) {
-        System.out.println("Attempt " + (attempt + 1) + " failed: " + e.getMessage());
-        if (attempt < MAX_RETRIES - 1) {
-            try {
-                Thread.sleep(RETRY_DELAY_MS);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-            }
-        }
-    }
-
-    public void shutdown() {
-        scannerManager.close();
-        System.out.println("Client has closed!");
     }
 
     private String input() {
