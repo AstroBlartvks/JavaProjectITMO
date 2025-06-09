@@ -1,6 +1,5 @@
 !.mvn/wrapper/maven-wrapper.jar
 
-
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
@@ -40,4 +39,4 @@ build/
 server/target
 client/target
 common/target
-!/common/target/generated-sources
+astrolab-client.tar
