@@ -9,6 +9,8 @@ public class JwtServerInterceptor implements ServerInterceptor {
     private static final Metadata.Key<String> TOKEN_HEADER_KEY =
             Metadata.Key.of("token", Metadata.ASCII_STRING_MARSHALLER);
 
+    public static final Context.Key<Integer> USER_ID_CTX_KEY = Context.key("userId");
+
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
             ServerCall<ReqT, RespT> call,
@@ -26,7 +28,11 @@ public class JwtServerInterceptor implements ServerInterceptor {
                 call.close(Status.UNAUTHENTICATED.withDescription("Invalid token"), headers);
                 return new ServerCall.Listener<>() {};
             }
-            return next.startCall(call, headers);
+
+            int userId = JwtUtils.getUserIdFromToken(token);
+            Context context = Context.current().withValue(USER_ID_CTX_KEY, userId);
+
+            return Contexts.interceptCall(context, call, headers, next);
         } catch (Exception e) {
             LOGGER.error("Token validation error", e);
             call.close(Status.UNAUTHENTICATED.withDescription("Token validation failed"), headers);

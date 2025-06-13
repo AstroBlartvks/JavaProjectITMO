@@ -28,33 +28,40 @@ public class Communicator {
         actionVisitor.setJwtToken(jwtToken);
     }
 
-    private String initConnection(UserDTO userDTO) throws Exception {
-        UserDTOMessage.Builder requestBuilder = UserDTOMessage.newBuilder()
-                .setLogin(userDTO.getLogin())
-                .setPassword(userDTO.getPassword());
-
+    private String initConnection(UserDTO userDTO) {
         if (userDTO.getConnectionType() == AstroLab.auth.ConnectionType.LOGIN) {
-            requestBuilder.setConnectionType(ConnectionTypeMessage.LOGIN);
-        } else {
-            requestBuilder.setConnectionType(ConnectionTypeMessage.REGISTER);
-        }
+            LoginRequest request = LoginRequest.newBuilder()
+                    .setLogin(userDTO.getLogin())
+                    .setPassword(userDTO.getPassword())
+                    .build();
 
-        System.out.println("Attempting gRPC authentication for: " + userDTO.getLogin());
-        try {
+            System.out.println("Attempting gRPC login for: " + userDTO.getLogin());
             AuthResponseMessage response = authStub.withDeadlineAfter(5, TimeUnit.SECONDS)
-                    .authenticate(requestBuilder.build());
+                    .login(request);
 
-            if (response.getStatus() == ResponseStatusMessage.OK) {
-                String jwtToken = response.getToken();
-                System.out.println("gRPC Auth successful: " + response.getMessage());
-                return jwtToken;
-            } else {
-                System.out.println("gRPC Auth failed: " + response.getMessage());
-                throw new SecurityException("Authentication failed: " + response.getMessage());
-            }
-        } catch (StatusRuntimeException e) {
-            System.err.println("gRPC Auth request failed: " + e.getStatus());
-            throw new Exception("Server communication error during auth: " + e.getMessage());
+            return processAuthResponse(response);
+        } else {
+            RegisterRequest request = RegisterRequest.newBuilder()
+                    .setLogin(userDTO.getLogin())
+                    .setPassword(userDTO.getPassword())
+                    .build();
+
+            System.out.println("Attempting gRPC registration for: " + userDTO.getLogin());
+            AuthResponseMessage response = authStub.withDeadlineAfter(5, TimeUnit.SECONDS)
+                    .register(request);
+
+            return processAuthResponse(response);
+        }
+    }
+
+    private String processAuthResponse(AuthResponseMessage response) {
+        if (response.getStatus() == ResponseStatusMessage.OK) {
+            String jwtToken = response.getToken();
+            System.out.println("gRPC Auth successful: " + response.getMessage());
+            return jwtToken;
+        } else {
+            System.out.println("gRPC Auth failed: " + response.getMessage());
+            throw new SecurityException("Authentication failed: " + response.getMessage());
         }
     }
 

@@ -1,6 +1,7 @@
 package AstroLabServer.auth;
 
 import AstroLab.auth.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -9,7 +10,7 @@ import java.util.Date;
 
 public class JwtUtils {
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private static final long EXPIRATION_TIME = 3_600_000;
+    private static final long EXPIRATION_TIME = 3_600_000; // 1 hour
 
     public static String generateToken(User user) {
         return Jwts.builder()
@@ -30,5 +31,25 @@ public class JwtUtils {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static int getUserIdFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return Integer.parseInt(claims.getSubject());
+    }
+
+    public static String getUsernameFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("login", String.class);
     }
 }

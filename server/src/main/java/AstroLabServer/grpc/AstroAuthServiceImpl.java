@@ -1,8 +1,6 @@
-
 package AstroLabServer.grpc;
 
-import AstroLab.auth.ConnectionType;
-import AstroLab.auth.UserDTO;
+import AstroLab.auth.User;
 import AstroLab.grpc.*;
 import AstroLabServer.auth.AuthService;
 import AstroLabServer.auth.AuthStates;
@@ -20,22 +18,31 @@ public class AstroAuthServiceImpl extends AstroAuthServiceGrpc.AstroAuthServiceI
     }
 
     @Override
-    public void authenticate(UserDTOMessage request, StreamObserver<AuthResponseMessage> responseObserver) {
-        UserDTO dto = new UserDTO(
-                request.getLogin(),
-                request.getPassword(),
-                "",
-                request.getConnectionType() == ConnectionTypeMessage.LOGIN ? ConnectionType.LOGIN : ConnectionType.REGISTER
-        );
+    public void login(LoginRequest request, StreamObserver<AuthResponseMessage> responseObserver) {
+        User user = new User(request.getLogin(), request.getPassword(), "");
+        LOGGER.info("gRPC Login request for: {}", user.getLogin());
 
-        LOGGER.info("gRPC Auth request for: {}", dto.getLogin());
+        processAuth(user, responseObserver, true);
+    }
 
+    @Override
+    public void register(RegisterRequest request, StreamObserver<AuthResponseMessage> responseObserver) {
+        User user = new User(request.getLogin(), request.getPassword(), "");
+        LOGGER.info("gRPC Register request for: {}", user.getLogin());
+
+        processAuth(user, responseObserver, false);
+    }
+
+    private void processAuth(User user, StreamObserver<AuthResponseMessage> responseObserver, boolean isLogin) {
         try {
-            AuthStates authStates = dto.getConnectionType() == ConnectionType.LOGIN ? authService.login(dto) : authService.register(dto);
+            AuthStates authStates = isLogin ?
+                    authService.login(user) :
+                    authService.register(user);
+
             AuthResponseMessage.Builder responseBuilder = AuthResponseMessage.newBuilder();
 
             if (authStates.isState()) {
-                String token = JwtUtils.generateToken(dto);
+                String token = JwtUtils.generateToken(user);
                 responseBuilder.setStatus(ResponseStatusMessage.OK)
                         .setMessage(authStates.getMessage())
                         .setToken(token);
@@ -43,6 +50,7 @@ public class AstroAuthServiceImpl extends AstroAuthServiceGrpc.AstroAuthServiceI
                 responseBuilder.setStatus(ResponseStatusMessage.FORBIDDEN)
                         .setMessage(authStates.getMessage());
             }
+
             responseObserver.onNext(responseBuilder.build());
             responseObserver.onCompleted();
         } catch (Exception e) {

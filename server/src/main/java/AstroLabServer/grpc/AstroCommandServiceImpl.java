@@ -4,6 +4,7 @@ import AstroLab.grpc.*;
 import AstroLab.utils.ClientServer.ClientRequest;
 import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
+import AstroLabServer.auth.JwtServerInterceptor;
 import io.grpc.stub.*;
 import AstroLabServer.onlyServerCommand.ServerUtils;
 import org.apache.logging.log4j.LogManager;
@@ -20,12 +21,13 @@ public class AstroCommandServiceImpl extends AstroCommandServiceGrpc.AstroComman
     @Override
     public void executeCommand(ClientRequestMessage request, StreamObserver<ServerResponseMessage> responseObserver) {
         ServerResponseMessage.Builder responseBuilder = ServerResponseMessage.newBuilder();
-        LOGGER.info("Action from user: {}", request.getAction().getActionName());
 
         try {
             ClientServerActionMessage action = request.getAction();
+
+            LOGGER.info("Execution command: {}", action.getActionName());
+
             ClientRequest clientRequestPojo = new ClientRequest(action);
-            clientRequestPojo.setToken(request.getToken());
 
             ServerResponse serverPojoResponse = serverUtils.executeCommandSafely(clientRequestPojo);
 
@@ -33,11 +35,8 @@ public class AstroCommandServiceImpl extends AstroCommandServiceGrpc.AstroComman
                     .setServerMessage(serverPojoResponse.getValue().toString());
         } catch (Exception e) {
             LOGGER.error("Command processing error", e);
-            try {
-                responseBuilder.setStatus(ResponseStatusMessage.EXCEPTION).setServerMessage("Server error: " + e.getMessage());
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+            responseBuilder.setStatus(ResponseStatusMessage.EXCEPTION)
+                    .setServerMessage("Server error: " + e.getMessage());
         }
 
         responseObserver.onNext(responseBuilder.build());
