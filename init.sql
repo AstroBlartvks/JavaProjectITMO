@@ -1,18 +1,17 @@
+CREATE SEQUENCE IF NOT EXISTS user_id_seq START 1;
 
-CREATE SEQUENCE user_id_seq START 1;
-
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY DEFAULT nextval('user_id_seq'),
     login VARCHAR(255),
     password_hash VARCHAR(255) NOT NULL,
     salt VARCHAR(255) NOT NULL
 );
 
-CREATE SEQUENCE route_id_seq START 1;
-CREATE SEQUENCE location_id_seq START 1;
-CREATE SEQUENCE coordinates_id_seq START 1;
+CREATE SEQUENCE IF NOT EXISTS route_id_seq START 1;
+CREATE SEQUENCE IF NOT EXISTS location_id_seq START 1;
+CREATE SEQUENCE IF NOT EXISTS coordinates_id_seq START 1;
 
-CREATE TABLE Location (
+CREATE TABLE IF NOT EXISTS Location (
     location_id INTEGER PRIMARY KEY DEFAULT nextval('location_id_seq'),
     x BIGINT NOT NULL,
     y REAL NOT NULL,
@@ -20,13 +19,13 @@ CREATE TABLE Location (
     name TEXT NOT NULL
 );
 
-CREATE TABLE Coordinates (
+CREATE TABLE IF NOT EXISTS Coordinates (
     coordinates_id INTEGER PRIMARY KEY DEFAULT nextval('coordinates_id_seq'),
     x REAL NOT NULL,
     y REAL NOT NULL
 );
 
-CREATE TABLE Route (
+CREATE TABLE IF NOT EXISTS Route (
     id INTEGER PRIMARY KEY DEFAULT nextval('route_id_seq'),
     name TEXT NOT NULL CHECK (name <> ''),
     coordinate INTEGER REFERENCES Coordinates(coordinates_id),

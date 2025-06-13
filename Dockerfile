@@ -2,27 +2,26 @@
 FROM maven:3.8.5-openjdk-17 AS builder
 
 WORKDIR /app
-
-COPY pom.xml .
-COPY common/pom.xml ./common/
-COPY server/pom.xml ./server/
-
 COPY . .
 
 RUN mvn clean install assembly:single -pl server -am -B
-
 FROM eclipse-temurin:17-jre-alpine
 
-RUN addgroup -S appgroup && \
-    adduser -S appuser -G appgroup
+RUN addgroup --system --gid 1001 appgroup && \
+    adduser --system --uid 1001 --ingroup appgroup appuser
+
+RUN wget -O /bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/v0.4.14/grpc_health_probe-linux-amd64 \
+    && chmod +x /bin/grpc_health_probe
 
 WORKDIR /app
-COPY applogs app/applogs
+RUN mkdir -p applogs && chown appuser:appgroup applogs
+
 USER appuser
 
 COPY --from=builder /app/server/target/server-api-1.0.0-jar-with-dependencies.jar ./app.jar
-EXPOSE 5432
-EXPOSE 3000
-EXPOSE 1488
+COPY --chown=appuser:appgroup server/src/main/resources/log4j2.xml .
+
+EXPOSE 3000 1488 5432
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD []
