@@ -1,6 +1,7 @@
 package AstroLab.actions.components;
 
 import AstroLab.actions.utils.ActionVisitable;
+import AstroLab.grpc.ClientServerActionMessage;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
@@ -38,7 +39,9 @@ public abstract class ClientServerAction extends Action {
     }
 
     @Override
-    public void accept(ActionVisitable visitor) throws Exception{
+    public void accept(ActionVisitable visitor) throws Exception {
         visitor.visit(this);
     }
+
+    public abstract ClientServerActionMessage toProtobuf();
 }

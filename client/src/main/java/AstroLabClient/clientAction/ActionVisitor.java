@@ -3,12 +3,7 @@ package AstroLabClient.clientAction;
 import AstroLab.actions.components.ClientAction;
 import AstroLab.actions.components.ClientServerAction;
 import AstroLab.actions.utils.ActionVisitable;
-import AstroLab.grpc.AstroCommandServiceGrpc;
-import AstroLab.grpc.ClientRequestProto;
-import AstroLab.grpc.ResponseStatusProto;
-import AstroLab.grpc.ServerResponseProto;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import AstroLab.grpc.*;
 import io.grpc.StatusRuntimeException;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 public class ActionVisitor implements ActionVisitable {
     private String jwtToken;
     private AstroCommandServiceGrpc.AstroCommandServiceBlockingStub commandStub;
-    private ObjectMapper objectMapper;
 
     @Override
     public void visit(ClientAction clientAction) throws Exception{
@@ -29,45 +23,29 @@ public class ActionVisitor implements ActionVisitable {
     }
 
     @Override
-    public void visit(ClientServerAction clientServerAction) throws JsonProcessingException, ServerException {
+    public void visit(ClientServerAction clientServerAction) throws ServerException {
         if (jwtToken == null) {
             throw new IllegalStateException("Not authenticated. Cannot send command.");
         }
 
-        String actionJson = objectMapper.writeValueAsString(clientServerAction);
-        ClientRequestProto request = ClientRequestProto.newBuilder()
-                .setActionJson(actionJson)
-                .setToken(jwtToken)
+        ClientServerActionMessage clientServerActionMessage = clientServerAction.toProtobuf();
+
+        ClientRequestMessage request = ClientRequestMessage.newBuilder()
+                .setAction(clientServerActionMessage)
                 .build();
 
         System.out.println("Sending gRPC command...");
         try {
             int durationBeforeDeath = 5;
-            ServerResponseProto response = commandStub.withDeadlineAfter(durationBeforeDeath, TimeUnit.SECONDS)
+            ServerResponseMessage response = commandStub.withDeadlineAfter(durationBeforeDeath, TimeUnit.SECONDS)
                     .executeCommand(request);
 
-            Object responseObject = null;
-            response.getValueJson();
+            String message = response.getServerMessage();
 
-            if(!response.getValueJson().isEmpty()){
-                try {
-                    if (response.getValueJson().trim().startsWith("{")) {
-                        responseObject = objectMapper.readValue(response.getValueJson(), java.util.Map.class);
-                    } else if (response.getValueJson().trim().startsWith("[")) {
-                        responseObject = objectMapper.readValue(response.getValueJson(), java.util.List.class);
-                    } else {
-                        responseObject = objectMapper.readValue(response.getValueJson(), String.class);
-                    }
-                } catch (Exception e) {
-                    System.err.println("Could not deserialize response value JSON: " + response.getValueJson() + " Error: " + e.getMessage());
-                    responseObject = response.getValueJson();
-                }
-            }
+            System.out.println("gRPC Server Response(" + response.getStatus() + ")\n" + message);
 
-            System.out.println("gRPC Server Response(" + response.getStatus() + ")\n" + (responseObject != null ? responseObject.toString() : "null"));
-
-            if (response.getStatus() == ResponseStatusProto.EXCEPTION || response.getStatus() == ResponseStatusProto.UNAUTHORIZED) {
-                System.err.println("Server error: " + (responseObject != null ? responseObject.toString() : "No details"));
+            if (response.getStatus() == ResponseStatusMessage.EXCEPTION || response.getStatus() == ResponseStatusMessage.UNAUTHORIZED) {
+                System.err.println("Server error: " + message);
             }
 
         } catch (StatusRuntimeException e) {

@@ -1,5 +1,6 @@
 package AstroLab.utils.model;
 
+import AstroLab.grpc.LocationDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -57,5 +58,24 @@ public class Location {
                 ", z=" + this.z +
                 ", name='" + this.name +
                 "'}";
+    }
+
+    public static Location getFromDto(LocationDto locationDto) {
+        Location location = new Location();
+        location.setId(locationDto.getId());
+        location.setName(locationDto.getName());
+        location.setX(locationDto.getX());
+        location.setY(locationDto.getY());
+        location.setZ(locationDto.getZ());
+        return location;
+    }
+
+    public LocationDto.Builder convertToProtobuf() {
+        return LocationDto.newBuilder()
+                .setX(getX())
+                .setY(getY())
+                .setZ(getZ())
+                .setName(getName())
+                .setId(getId());
     }
 }

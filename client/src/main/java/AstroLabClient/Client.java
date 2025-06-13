@@ -77,6 +77,7 @@ public final class Client implements Runnable{
             System.err.println("Input error: " + e.getMessage() + ". Shutting down client.");
             return true;
         } catch (Exception e) {
+
             System.err.println("Unexpected Exception in client run loop (attempt " + (attempt+1) + "): " + e.getMessage());
             return false;
         } finally {

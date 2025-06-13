@@ -30,6 +30,7 @@ public class AuthService {
 
         String salt = PasswordSecurityUtils.generateSalt();
         String passwordHash = PasswordSecurityUtils.hashPassword(password, salt);
+        int userId;
 
         try (PreparedStatement ps = this.connection.prepareStatement(
                 "INSERT INTO users(login, password_hash, salt) VALUES (?, ?, ?)")) {
@@ -38,6 +39,19 @@ public class AuthService {
             ps.setString(3, salt);
             ps.executeUpdate();
         }
+
+        try (PreparedStatement ps = this.connection.prepareStatement(
+                "SELECT id FROM users WHERE login = ?")) {
+            ps.setString(1, login);
+            try {
+                ResultSet res = ps.executeQuery();
+                res.next();
+                userId = res.getInt("id");
+            } catch (SQLException ignored){
+                return AuthStates.CANT_LOGIN_ACCOUNT_NOT_REGISTERED;
+            }
+        }
+        user.setUserId(userId);
         return AuthStates.REGISTERED;
     }
 
@@ -45,9 +59,10 @@ public class AuthService {
         String login = user.getLogin();
         String salt;
         String checkPassword;
+        int userId;
 
         try (PreparedStatement ps = this.connection.prepareStatement(
-                "SELECT login, salt, password_hash FROM users WHERE login = ?")) {
+                "SELECT login, salt, password_hash, id FROM users WHERE login = ?")) {
             ps.setString(1, login);
             try {
                 ResultSet res = ps.executeQuery();
@@ -55,10 +70,12 @@ public class AuthService {
                 res.getString("login");
                 salt = res.getString("salt");
                 checkPassword = res.getString("password_hash");
+                userId = res.getInt("id");
             } catch (SQLException ignored){
                 return AuthStates.CANT_LOGIN_ACCOUNT_NOT_REGISTERED;
             }
         }
+        user.setUserId(userId);
 
         String password = user.getPassword();
         String passwordHash = PasswordSecurityUtils.hashPassword(password, salt);

@@ -2,6 +2,7 @@ package AstroLabServer.serverCommand;
 
 import AstroLab.actions.components.Action;
 import AstroLab.actions.components.ActionRemoveById;
+import AstroLab.grpc.ClientServerActionMessage;
 import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
 import AstroLabServer.collection.CustomCollection;
@@ -20,17 +21,15 @@ public class ServerRemoveById extends ServerCommand {
     }
 
     @Override
-    public ServerResponse execute(Action args) throws Exception {
-        ActionRemoveById action = (ActionRemoveById) args;
-
-        int id = action.getId();
+    public ServerResponse execute(ClientServerActionMessage args) throws Exception {
+        int id = args.getId();
 
         if (!this.collection.containsId(id)) {
             throw new Exception("There is no 'id'=" + id + " in the collection");
         }
 
-        if (!this.collection.getRouteInsideById(action.getId()).getOwnerLogin().equals(action.getOwnerLogin())) {
-            throw new IllegalArgumentException("You can't update 'Route' with 'id'=" + action.getId() + ", because you are not owner!");
+        if (!this.collection.getRouteInsideById(args.getId()).getOwnerLogin().equals(args.getOwnerLogin())) {
+            throw new IllegalArgumentException("You can't update 'Route' with 'id'=" + args.getId() + ", because you are not owner!");
         }
 
         try {

@@ -1,6 +1,9 @@
 
+CREATE SEQUENCE user_id_seq START 1;
+
 CREATE TABLE users (
-    login VARCHAR(255) PRIMARY KEY,
+    id INTEGER PRIMARY KEY DEFAULT nextval('user_id_seq'),
+    login VARCHAR(255),
     password_hash VARCHAR(255) NOT NULL,
     salt VARCHAR(255) NOT NULL
 );
@@ -31,7 +34,7 @@ CREATE TABLE Route (
     from_location_id INTEGER REFERENCES Location(location_id),
     to_location_id INTEGER REFERENCES Location(location_id),
     distance DOUBLE PRECISION NOT NULL CHECK (distance > 1),
-    owner_login VARCHAR(255) NOT NULL REFERENCES users(login) ON DELETE CASCADE
+    owner_login VARCHAR(255)
 );
 
 ALTER SEQUENCE location_id_seq OWNED BY Location.location_id;

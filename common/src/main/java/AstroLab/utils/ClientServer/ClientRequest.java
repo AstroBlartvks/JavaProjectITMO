@@ -1,6 +1,7 @@
 package AstroLab.utils.ClientServer;
 
 import AstroLab.actions.components.ClientServerAction;
+import AstroLab.grpc.ClientServerActionMessage;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -10,13 +11,13 @@ import lombok.Setter;
 @Setter
 public class ClientRequest {
     @JsonProperty("request")
-    ClientServerAction request;
+    ClientServerActionMessage request;
     @JsonProperty("token")
     private String token;
 
     @JsonCreator
     public ClientRequest(
-            @JsonProperty("request") ClientServerAction request
+            @JsonProperty("request") ClientServerActionMessage request
     ) {
         this.request = request;
     }

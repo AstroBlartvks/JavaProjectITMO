@@ -2,6 +2,7 @@ package AstroLabServer;
 
 import AstroLabServer.auth.AuthService;
 import AstroLabServer.database.DatabaseHandler;
+import AstroLabServer.auth.JwtServerInterceptor;
 import AstroLabServer.onlyServerCommand.OnlyServerResult;
 import AstroLabServer.onlyServerCommand.ServerCommandManager;
 import AstroLabServer.onlyServerCommand.ServerUtils;
@@ -10,6 +11,8 @@ import AstroLabServer.serverCommand.CommandManager;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.concurrent.*;
+
+import io.grpc.ServerInterceptors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import AstroLabServer.grpc.AstroAuthServiceImpl;
@@ -43,9 +46,13 @@ public class Server {
 
         grpcServer = ServerBuilder.forPort(grpcPort)
                 .addService(new AstroAuthServiceImpl(authService))
-                .addService(new AstroCommandServiceImpl(serverUtils))
+                .addService(ServerInterceptors.intercept(
+                        new AstroCommandServiceImpl(serverUtils),
+                        new JwtServerInterceptor()
+                ))
                 .executor(processPool)
                 .build();
+
         try {
             grpcServer.start();
             LOGGER.info("gRPC Server started on port {}", grpcPort);

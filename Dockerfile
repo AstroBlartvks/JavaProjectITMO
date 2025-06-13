@@ -22,7 +22,7 @@ USER appuser
 
 COPY --from=builder /app/server/target/server-api-1.0.0-jar-with-dependencies.jar ./app.jar
 EXPOSE 5432
-EXPOSe 3000
+EXPOSE 3000
 EXPOSE 1488
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

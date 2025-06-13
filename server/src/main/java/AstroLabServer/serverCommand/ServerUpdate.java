@@ -1,15 +1,12 @@
 package AstroLabServer.serverCommand;
 
-import AstroLab.actions.components.Action;
-import AstroLab.actions.components.ActionUpdate;
+import AstroLab.grpc.ClientServerActionMessage;
 import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
+import AstroLab.utils.model.CreateRouteDto;
 import AstroLab.utils.model.Route;
 import AstroLabServer.collection.CustomCollection;
 import AstroLabServer.database.RouteDAO;
-
-import java.sql.Connection;
-import java.util.Date;
 
 public class ServerUpdate extends ServerCommand {
     private final CustomCollection collection;
@@ -21,19 +18,18 @@ public class ServerUpdate extends ServerCommand {
     }
 
     @Override
-    public ServerResponse execute(Action args) throws IllegalArgumentException {
-        ActionUpdate action = (ActionUpdate) args;
+    public ServerResponse execute(ClientServerActionMessage args) throws IllegalArgumentException {
 
-        if (!this.collection.containsId(action.getId())) {
-            throw new IllegalArgumentException("There is no such 'Route' with 'id'=" + action.getId());
+        if (!this.collection.containsId(args.getId())) {
+            throw new IllegalArgumentException("There is no such 'Route' with 'id'=" + args.getId());
         }
 
-        if (!this.collection.getRouteInsideById(action.getId()).getOwnerLogin().equals(action.getOwnerLogin())) {
-            throw new IllegalArgumentException("You can't update 'Route' with 'id'=" + action.getId() + ", because you are not owner!");
+        if (!this.collection.getRouteInsideById(args.getId()).getOwnerLogin().equals(args.getOwnerLogin())) {
+            throw new IllegalArgumentException("You can't update 'Route' with 'id'=" + args.getId() + ", because you are not owner!");
         }
 
         try {
-            Route newRoute = newRouteDAO.create(action.getCreateRouteDto());
+            Route newRoute = newRouteDAO.create(CreateRouteDto.getFromProtobuf(args.getRouteDto()));
             collection.updateElement(newRoute);
 
             return new ServerResponse(ResponseStatus.OK, "Route{id=" + newRoute.getId() +

@@ -1,6 +1,7 @@
 package AstroLabServer.onlyServerCommand;
 
 import AstroLab.actions.components.Action;
+import AstroLab.grpc.ClientServerActionMessage;
 import AstroLab.utils.ClientServer.ClientRequest;
 import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
@@ -40,8 +41,8 @@ public record ServerUtils(ServerCommandManager serverCommandManager,
 
     public ServerResponse executeCommandSafely(ClientRequest clientRequest) {
         try {
-            Action action = clientRequest.getRequest();
-            return commandManager.executeCommand(action);
+            ClientServerActionMessage clientServerActionMessage = clientRequest.getRequest();
+            return commandManager.executeCommand(clientServerActionMessage);
         } catch (Exception e) {
             return new ServerResponse(ResponseStatus.EXCEPTION, e.getMessage());
         }
