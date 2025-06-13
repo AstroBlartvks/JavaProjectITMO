@@ -1,15 +1,13 @@
 package AstroLabServer.serverCommand;
 
-import AstroLab.actions.components.Action;
-import AstroLab.actions.components.ActionAddIfMin;
+import AstroLab.grpc.ClientServerActionMessage;
 import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
+import AstroLab.utils.model.CreateRouteDto;
 import AstroLab.utils.model.Route;
 import AstroLabServer.collection.CustomCollection;
 import AstroLabServer.database.RouteDAO;
 
-import java.sql.Connection;
-import java.util.Date;
 import java.util.Optional;
 
 public class ServerAddIfMin extends ServerCommand {
@@ -22,16 +20,16 @@ public class ServerAddIfMin extends ServerCommand {
     }
 
     @Override
-    public ServerResponse execute(Action args) {
-        ActionAddIfMin action = (ActionAddIfMin) args;
+    public ServerResponse execute(ClientServerActionMessage args) {
+        CreateRouteDto createRouteDto = CreateRouteDto.getFromProtobuf(args.getRouteDto());
 
         Route newRoute = new Route();
-        newRoute.setFromRouteDataTransferObject(action.getCreateRouteDto());
+        newRoute.setFromRouteDataTransferObject(createRouteDto);
 
         try{
             Optional<Route> minRoute = this.collection.getCollection().stream().min(Route::compareTo);
             if (minRoute.isEmpty() || newRoute.compareTo(minRoute.get()) < 0) {
-                newRoute = newRouteDAO.create(action.getCreateRouteDto());
+                newRoute = newRouteDAO.create(createRouteDto);
                 collection.addElement(newRoute);
                 this.collection.addElement(newRoute);
                 return new ServerResponse(ResponseStatus.OK, "Route was added with id=" + newRoute.getId());

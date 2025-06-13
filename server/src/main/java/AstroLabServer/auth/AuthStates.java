@@ -2,7 +2,6 @@ package AstroLabServer.auth;
 
 import lombok.Getter;
 
-
 @Getter
 public enum AuthStates {
     LOGGED("You are logged in!", true),

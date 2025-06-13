@@ -1,12 +1,13 @@
 package AstroLabServer.serverCommand;
 
 import AstroLab.actions.components.Action;
+import AstroLab.grpc.ClientServerActionMessage;
 import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
 
 public class ServerHelp extends ServerCommand {
     @Override
-    public ServerResponse execute(Action args) {
+    public ServerResponse execute(ClientServerActionMessage args) {
         String text = "help: \n" +
                       "\toutput help for available commands\n" +
                       "info: \n" +

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
+@Setter
 public class UserDTO extends User{
     private final ConnectionType connectionType;
 

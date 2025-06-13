@@ -1,6 +1,7 @@
 package AstroLabServer.serverCommand;
 
 import AstroLab.actions.components.Action;
+import AstroLab.grpc.ClientServerActionMessage;
 import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
 import AstroLabServer.collection.CustomCollection;
@@ -13,7 +14,7 @@ public class ServerPrintFieldDescendingDistance extends ServerCommand {
     }
 
     @Override
-    public ServerResponse execute(Action args) {
+    public ServerResponse execute(ClientServerActionMessage args) {
         return new ServerResponse(ResponseStatus.OK, this.collection.printFieldDescendingDistance());
     }
 }

@@ -1,15 +1,13 @@
 package AstroLabServer.serverCommand;
 
-import AstroLab.actions.components.Action;
-import AstroLab.actions.components.ActionAddIfMax;
+import AstroLab.grpc.ClientServerActionMessage;
 import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
+import AstroLab.utils.model.CreateRouteDto;
 import AstroLab.utils.model.Route;
 import AstroLabServer.collection.CustomCollection;
 import AstroLabServer.database.RouteDAO;
 
-import java.sql.Connection;
-import java.util.Date;
 import java.util.Optional;
 
 public class ServerAddIfMax extends ServerCommand {
@@ -22,16 +20,16 @@ public class ServerAddIfMax extends ServerCommand {
     }
 
     @Override
-    public ServerResponse execute(Action args) {
-        ActionAddIfMax action = (ActionAddIfMax) args;
+    public ServerResponse execute(ClientServerActionMessage args) {
 
         Route newRoute = new Route();
-        newRoute.setFromRouteDataTransferObject(action.getCreateRouteDto());
+        CreateRouteDto createRouteDto = CreateRouteDto.getFromProtobuf(args.getRouteDto());
+        newRoute.setFromRouteDataTransferObject(createRouteDto);
 
         try {
             Optional<Route> maxRoute = this.collection.getCollection().stream().max(Route::compareTo);
             if (maxRoute.isEmpty() || newRoute.compareTo(maxRoute.get()) > 0) {
-                newRoute = newRouteDAO.create(action.getCreateRouteDto());
+                newRoute = newRouteDAO.create(createRouteDto);
                 collection.addElement(newRoute);
                 return new ServerResponse(ResponseStatus.OK, "Route was added with id=" + newRoute.getId());
             }

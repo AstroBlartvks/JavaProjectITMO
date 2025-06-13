@@ -1,14 +1,13 @@
 package AstroLabServer.serverCommand;
 
-import AstroLab.actions.components.Action;
-import AstroLab.actions.components.ActionAdd;
+import AstroLab.grpc.ClientServerActionMessage;
+import AstroLab.grpc.RouteDto;
 import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
+import AstroLab.utils.model.CreateRouteDto;
 import AstroLab.utils.model.Route;
 import AstroLabServer.collection.CustomCollection;
 import AstroLabServer.database.RouteDAO;
-
-import java.sql.Connection;
 
 public class ServerAdd extends ServerCommand {
     private final CustomCollection collection;
@@ -20,10 +19,10 @@ public class ServerAdd extends ServerCommand {
     }
 
     @Override
-    public ServerResponse execute(Action args) {
-        ActionAdd action = (ActionAdd) args;
+    public ServerResponse execute(ClientServerActionMessage action) {
         try {
-            Route newRoute = newRouteDAO.create(action.getCreateRouteDto());
+            RouteDto routeDto = action.getRouteDto();
+            Route newRoute = newRouteDAO.create(CreateRouteDto.getFromProtobuf(routeDto));
             collection.addElement(newRoute);
 
             return new ServerResponse(ResponseStatus.OK, "Route{id=" + newRoute.getId() +
