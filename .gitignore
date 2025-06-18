@@ -40,4 +40,3 @@ server/target
 client/target
 common/target
 astrolab-client.tar
-.env

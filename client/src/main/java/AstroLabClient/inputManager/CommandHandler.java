@@ -7,6 +7,8 @@ import AstroLab.utils.command.CommandArgumentList;
 import AstroLabClient.clientCommand.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,7 +45,7 @@ public class CommandHandler {
 
     public Action handle(String commandLine) throws IllegalArgumentException, SystemInClosedException, InvalidAttributesException {
         CommandArgumentList arguments = CommandAndArgumentsParser.parseCommandAndArguments(commandLine);
-        Action toServerCommandArgumentList;
+        Action toServerCommandArgumentList = null;
         String command = (String) arguments.getCommand().getValue();
 
         if (!commandList.containsKey(command) || command == null) {
@@ -59,9 +61,8 @@ public class CommandHandler {
             throw e;
         } catch (Exception e) {
             System.out.println("Exception: " + e);
-            return new ActionOfNone();
         }
 
-        return toServerCommandArgumentList;
+        return Objects.requireNonNullElseGet(toServerCommandArgumentList, ActionOfNone::new);
     }
 }
