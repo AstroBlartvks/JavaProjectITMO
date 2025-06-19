@@ -1,6 +1,8 @@
 package AstroLab.actions.components;
 
 import AstroLab.actions.utils.ActionsName;
+import AstroLab.grpc.ActionsNameEnum;
+import AstroLab.grpc.ClientServerActionMessage;
 import AstroLab.utils.model.CreateRouteDto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -20,6 +22,16 @@ public class ActionRemoveGreater extends ClientServerAction {
     public ActionRemoveGreater(@JsonProperty("ownerLogin") String ownerLogin,
                                @JsonProperty("ownerPassword") String ownerPassword){
         super(ownerLogin, ownerPassword);
-        this.setActionName(ActionsName.REMOVE_GREATER);
+        this.setActionName(ActionsNameEnum.REMOVE_GREATER);
+    }
+
+    @Override
+    public ClientServerActionMessage toProtobuf() {
+        return ClientServerActionMessage.newBuilder()
+                .setActionName(getActionName())
+                .setOwnerLogin(getOwnerLogin())
+                .setOwnerPassword(getOwnerPassword())
+                .setRouteDto(getCreateRouteDto().convertToProtobuf())
+                .build();
     }
 }

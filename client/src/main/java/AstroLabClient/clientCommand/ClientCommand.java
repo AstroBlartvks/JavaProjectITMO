@@ -2,6 +2,7 @@ package AstroLabClient.clientCommand;
 
 import AstroLab.actions.components.Action;
 import AstroLab.auth.UserDTO;
+import AstroLab.grpc.ClientServerActionMessage;
 import AstroLab.utils.command.CommandArgumentList;
 import lombok.Getter;
 import lombok.Setter;

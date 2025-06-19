@@ -1,6 +1,8 @@
 package AstroLab.actions.components;
 
 import AstroLab.actions.utils.ActionsName;
+import AstroLab.grpc.ActionsNameEnum;
+import AstroLab.grpc.ClientServerActionMessage;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ActionHelp extends ClientServerAction {
@@ -10,6 +12,15 @@ public class ActionHelp extends ClientServerAction {
     public ActionHelp(@JsonProperty("ownerLogin") String ownerLogin,
                       @JsonProperty("ownerPassword") String ownerPassword){
         super(ownerLogin, ownerPassword);
-        this.setActionName(ActionsName.HELP);
+        this.setActionName(ActionsNameEnum.HELP);
+    }
+
+    @Override
+    public ClientServerActionMessage toProtobuf() {
+        return ClientServerActionMessage.newBuilder()
+                .setActionName(getActionName())
+                .setOwnerLogin(getOwnerLogin())
+                .setOwnerPassword(getOwnerPassword())
+                .build();
     }
 }

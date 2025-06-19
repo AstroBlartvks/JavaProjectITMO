@@ -1,13 +1,18 @@
 package AstroLabClient.inputManager;
 
 import AstroLab.actions.components.Action;
+import AstroLab.actions.components.ActionOfNone;
 import AstroLab.auth.UserDTO;
 import AstroLab.utils.command.CommandArgumentList;
 import AstroLabClient.clientCommand.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.naming.directory.InvalidAttributesException;
 
 @Setter
 @Getter
@@ -38,14 +43,14 @@ public class CommandHandler {
         commandList.put("exit", new ClientExit(userDTO));
     }
 
-    public Action handle(String commandLine) throws IllegalArgumentException, SystemInClosedException {
+    public Action handle(String commandLine) throws IllegalArgumentException, SystemInClosedException, InvalidAttributesException {
         CommandArgumentList arguments = CommandAndArgumentsParser.parseCommandAndArguments(commandLine);
-        Action toServerCommandArgumentList;
+        Action toServerCommandArgumentList = null;
         String command = (String) arguments.getCommand().getValue();
 
         if (!commandList.containsKey(command) || command == null) {
             System.out.println("Unexpected command: '" + command + "'. Try write 'help'");
-            return null;
+            return new ActionOfNone();
         }
         ClientCommand clientCommand = commandList.get(command);
 
@@ -56,8 +61,8 @@ public class CommandHandler {
             throw e;
         } catch (Exception e) {
             System.out.println("Exception: " + e);
-            return null;
         }
-        return toServerCommandArgumentList;
+
+        return Objects.requireNonNullElseGet(toServerCommandArgumentList, ActionOfNone::new);
     }
 }

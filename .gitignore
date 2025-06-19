@@ -1,10 +1,4 @@
-target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-resources/checkstyle
-server/src/main/java/AstroLabServer/database/db.cfg
-C:/Users/AstroBlartvks/IdeaProjects/ITMOLaboratory6/ITMOJavaLab6/db.cfg
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -39,4 +33,10 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+
 /applogs/
+server/target
+client/target
+common/target
+astrolab-client.tar

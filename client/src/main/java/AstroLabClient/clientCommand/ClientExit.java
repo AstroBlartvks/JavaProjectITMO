@@ -3,7 +3,7 @@ package AstroLabClient.clientCommand;
 import AstroLab.auth.UserDTO;
 import AstroLab.utils.command.CommandArgumentList;
 import AstroLabClient.clientAction.ActionExit;
-import AstroLabClient.clientAction.ClientAction;
+import AstroLab.actions.components.ClientAction;
 
 public class ClientExit extends ClientCommand {
     public ClientExit(UserDTO userDTO) {
