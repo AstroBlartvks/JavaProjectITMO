@@ -28,7 +28,6 @@ public class CommandManager {
 
         commandList.put(ActionsNameEnum.INFO, new ServerInfo(collection));
         commandList.put(ActionsNameEnum.SHOW, new ServerShow(collection));
-        commandList.put(ActionsNameEnum.CLEAR, new ServerClear(collection));
         commandList.put(ActionsNameEnum.HELP, new ServerHelp());
         commandList.put(ActionsNameEnum.PRINT_FIELD_DESCENDING_DISTANCE,
                 new ServerPrintFieldDescendingDistance(collection));
@@ -36,6 +35,7 @@ public class CommandManager {
         commandList.put(ActionsNameEnum.COUNT_BY_DISTANCE, new ServerCountByDistance(collection));
         commandList.put(ActionsNameEnum.REMOVE_BY_ID, new ServerRemoveById(collection, newRouteDAO));
 
+        commandList.put(ActionsNameEnum.CLEAR, new ServerClear(collection, newRouteDAO));
         commandList.put(ActionsNameEnum.ADD, new ServerAdd(collection, newRouteDAO));
         commandList.put(ActionsNameEnum.UPDATE, new ServerUpdate(collection, newRouteDAO));
         commandList.put(ActionsNameEnum.ADD_IF_MAX, new ServerAddIfMax(collection, newRouteDAO));

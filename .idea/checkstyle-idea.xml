@@ -5,7 +5,7 @@
     <scanScope>JavaOnly</scanScope>
     <option name="thirdPartyClasspath" />
     <option name="activeLocationIds">
-      <option value="0a2034e4-8e9b-4f36-8c8d-ddc9e7471b1b" />
+      <option value="a2bc2611-2755-4b7c-951a-76be24fc8269" />
     </option>
     <option name="locations">
       <list>
@@ -13,6 +13,16 @@
         <ConfigurationLocation id="bundled-google-checks" type="BUNDLED" scope="All" description="Google Checks">(bundled)</ConfigurationLocation>
         <ConfigurationLocation id="0a2034e4-8e9b-4f36-8c8d-ddc9e7471b1b" type="LOCAL_FILE" scope="All" description="CheckStyle">
           $PROJECT_DIR$/resources/checkstyle/startjava_checks.xml
+          <option name="properties">
+            <map>
+              <entry key="org.checkstyle.google.suppressionfilter.config" value="checkstyle-suppressions.xml" />
+              <entry key="org.checkstyle.google.suppressionxpathfilter.config" value="checkstyle-xpath-suppressions.xml" />
+            </map>
+          </option>
+        </ConfigurationLocation>
+        <ConfigurationLocation id="a2bc2611-2755-4b7c-951a-76be24fc8269" type="LOCAL_FILE" scope="All" description="check">$PROJECT_DIR$/resources/startjava_checks.xml</ConfigurationLocation>
+        <ConfigurationLocation id="fe9b70e4-0b25-4f00-8c0d-14a5dce53cb4" type="LOCAL_FILE" scope="All" description="checkstyleAll">
+          $PROJECT_DIR$/resources/startjava_checks.xml
           <option name="properties">
             <map>
               <entry key="org.checkstyle.google.suppressionfilter.config" value="checkstyle-suppressions.xml" />

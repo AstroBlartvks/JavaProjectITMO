@@ -2,6 +2,8 @@ package AstroLab.utils.model;
 
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Objects;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -72,7 +74,7 @@ public class Route implements Comparable<Route> {
      */
     @Override
     public int compareTo(Route other) {
-        return Comparator.comparing(Route::getName)
+        return Comparator.comparing(Route::getId)
                 .compare(this, other);
     }
 
@@ -93,6 +95,19 @@ public class Route implements Comparable<Route> {
                 ", to=" + this.to +
                 ", coordinates=" + this.coordinates +
                 ", owner=" + this.ownerLogin + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Route route = (Route) o;
+        return id == route.id && id != 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     /**

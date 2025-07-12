@@ -37,7 +37,7 @@ public class ServerRemoveGreater extends ServerCommand {
         for (int index : greaterIds) {
             try {
                 if (!this.collection.getRouteInsideById(index).getOwnerLogin().equals(newRoute.getOwnerLogin())) {
-                    throw new IllegalArgumentException("You can't update 'Route' with 'id'=" + index + ", because you are not owner!");
+                    throw new IllegalArgumentException("You can't update 'Route' with 'id'=" + index + ", because you are not owner!\n");
                 }
                 newRouteDAO.remove(this.collection.getRouteInsideById(index));
                 collection.removeById(index);
