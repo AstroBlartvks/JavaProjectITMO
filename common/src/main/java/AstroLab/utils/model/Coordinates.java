@@ -1,5 +1,6 @@
 package AstroLab.utils.model;
 
+import AstroLab.grpc.CoordinatesDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,5 +44,20 @@ public class Coordinates {
                 "x=" + this.x +
                 ", y=" + this.y +
                 '}';
+    }
+
+    public static Coordinates getFromDto(CoordinatesDto coordinatesDto) {
+        Coordinates coordinates = new Coordinates();
+        coordinates.setId(coordinatesDto.getId());
+        coordinates.setX(coordinatesDto.getX());
+        coordinates.setY(coordinatesDto.getY());
+        return coordinates;
+    }
+
+    public CoordinatesDto.Builder convertToProtobuf() {
+        return CoordinatesDto.newBuilder()
+                .setX(getX())
+                .setY(getY())
+                .setId(getId());
     }
 }

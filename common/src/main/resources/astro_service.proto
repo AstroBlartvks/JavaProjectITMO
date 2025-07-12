@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package AstroLab;
+
+option java_multiple_files = true;
+option java_package = "AstroLab.grpc";
+option java_outer_classname = "AstroServiceProto";
+
+message LoginRequest {
+  string login = 1;
+  string password = 2;
+}
+
+message RegisterRequest {
+  string login = 1;
+  string password = 2;
+}
+
+message AuthResponseMessage {
+  ResponseStatusMessage status = 1;
+  string message = 2;
+  string token = 3;
+}
+
+message ClientRequestMessage {
+  ClientServerActionMessage action = 1;
+  optional string token = 2;
+}
+
+message ServerResponseMessage {
+  ResponseStatusMessage status = 1;
+  string server_message = 2;
+}
+
+message RouteDto {
+  string name = 1;
+  CoordinatesDto coordinates = 2;
+  optional LocationDto location_from = 3;
+  optional LocationDto Location_to = 4;
+  double distance = 5;
+  string ownerLogin = 6;
+}
+
+message CoordinatesDto {
+  double x = 1;
+  double y = 2;
+  int32 id = 3;
+}
+
+message LocationDto {
+  int64 x = 1;
+  float y = 2;
+  float z = 3;
+  string name = 4;
+  int32 id = 5;
+}
+
+message ClientServerActionMessage {
+  ActionsNameEnum actionName = 1;
+  string ownerLogin = 2;
+  string ownerPassword = 3;
+  optional RouteDto routeDto = 4;
+  optional double distance = 5;
+  optional int32 id = 6;
+}
+
+enum ResponseStatusMessage {
+  OK = 0;
+  FORBIDDEN = 1;
+  UNAUTHORIZED = 2;
+  EXCEPTION = 3;
+  TEXT = 4;
+  DATA = 5;
+}
+
+enum ActionsNameEnum {
+  ADD = 0;
+  ADD_IF_MAX = 1;
+  ADD_IF_MIN = 2;
+  CLEAR = 3;
+  COUNT_BY_DISTANCE = 4;
+  COUNT_GREATER_THAN_DISTANCE = 5;
+  HELP = 6;
+  INFO = 7;
+  PRINT_FIELD_DESCENDING_DISTANCE = 8;
+  REMOVE_BY_ID = 9;
+  REMOVE_GREATER = 10;
+  SHOW = 11;
+  UPDATE = 12;
+  EXIT = 13;
+}
+
+
+service AstroAuthService {
+  rpc Login(LoginRequest) returns (AuthResponseMessage);
+  rpc Register(RegisterRequest) returns (AuthResponseMessage);
+}
+
+service AstroCommandService {
+  rpc ExecuteCommand(ClientRequestMessage) returns (ServerResponseMessage);
+}

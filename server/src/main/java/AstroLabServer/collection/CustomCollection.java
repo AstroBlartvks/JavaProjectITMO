@@ -32,8 +32,8 @@ public class CustomCollection {
             throw new IdMustBeUniqueException("'id' must be unique, it can't be: " + route.getId() +
                     ".\nNew Route: " + route + "\nOld Route: " + this.getRouteInsideById(route.getId()));
         }
-        LOGGER.info("Route id={} added", route.getId());
         this.collection.add(route);
+        LOGGER.info("Route id={} added", route.getId());
     }
 
     /**

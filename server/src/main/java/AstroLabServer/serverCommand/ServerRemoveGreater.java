@@ -1,14 +1,13 @@
 package AstroLabServer.serverCommand;
 
-import AstroLab.actions.components.Action;
-import AstroLab.actions.components.ActionRemoveGreater;
+import AstroLab.grpc.ClientServerActionMessage;
 import AstroLab.utils.ClientServer.ResponseStatus;
 import AstroLab.utils.ClientServer.ServerResponse;
+import AstroLab.utils.model.CreateRouteDto;
 import AstroLab.utils.model.Route;
 import AstroLabServer.collection.CustomCollection;
 import AstroLabServer.database.RouteDAO;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.Set;
@@ -24,8 +23,9 @@ public class ServerRemoveGreater extends ServerCommand {
     }
 
     @Override
-    public ServerResponse execute(Action args) {
-        Route newRoute = handleNewRoute(args);
+    public ServerResponse execute(ClientServerActionMessage args) {
+        CreateRouteDto createRouteDto = CreateRouteDto.getFromProtobuf(args.getRouteDto());
+        Route newRoute = handleNewRoute(createRouteDto);
 
         Set<Integer> greaterIds = this.collection.getCollection().stream()
                 .filter(route -> route.compareTo(newRoute) > 0)
@@ -37,7 +37,7 @@ public class ServerRemoveGreater extends ServerCommand {
         for (int index : greaterIds) {
             try {
                 if (!this.collection.getRouteInsideById(index).getOwnerLogin().equals(newRoute.getOwnerLogin())) {
-                    throw new IllegalArgumentException("You can't update 'Route' with 'id'=" + index + ", because you are not owner!");
+                    throw new IllegalArgumentException("You can't update 'Route' with 'id'=" + index + ", because you are not owner!\n");
                 }
                 newRouteDAO.remove(this.collection.getRouteInsideById(index));
                 collection.removeById(index);
@@ -57,14 +57,13 @@ public class ServerRemoveGreater extends ServerCommand {
         return new ServerResponse(ResponseStatus.OK, response.isEmpty() ? "Nothing removed" : response);
     }
 
-    private Route handleNewRoute(Action args) {
-        ActionRemoveGreater action = (ActionRemoveGreater) args;
+    private Route handleNewRoute(CreateRouteDto args) {
         Route newRoute = new Route();
 
         newRoute.setId(collection.getNewId());
         newRoute.setCreationDate(new Date());
-        newRoute.setFromRouteDataTransferObject(action.getCreateRouteDto());
-        newRoute.setOwnerLogin(action.getOwnerLogin());
+        newRoute.setFromRouteDataTransferObject(args);
+        newRoute.setOwnerLogin(args.getOwnerLogin());
 
         return newRoute;
     }

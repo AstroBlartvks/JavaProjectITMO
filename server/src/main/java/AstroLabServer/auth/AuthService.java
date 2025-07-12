@@ -32,11 +32,14 @@ public class AuthService {
         String passwordHash = PasswordSecurityUtils.hashPassword(password, salt);
 
         try (PreparedStatement ps = this.connection.prepareStatement(
-                "INSERT INTO users(login, password_hash, salt) VALUES (?, ?, ?)")) {
+                "INSERT INTO users(login, password_hash, salt) VALUES (?, ?, ?) RETURNING id")) {
             ps.setString(1, login);
             ps.setString(2, passwordHash);
             ps.setString(3, salt);
-            ps.executeUpdate();
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            int userId = rs.getInt("id");
+            user.setUserId(userId);
         }
         return AuthStates.REGISTERED;
     }
@@ -45,25 +48,28 @@ public class AuthService {
         String login = user.getLogin();
         String salt;
         String checkPassword;
+        int userId;
 
         try (PreparedStatement ps = this.connection.prepareStatement(
-                "SELECT login, salt, password_hash FROM users WHERE login = ?")) {
+                "SELECT id, salt, password_hash FROM users WHERE login = ?")) {
             ps.setString(1, login);
-            try {
-                ResultSet res = ps.executeQuery();
-                res.next();
-                res.getString("login");
-                salt = res.getString("salt");
-                checkPassword = res.getString("password_hash");
-            } catch (SQLException ignored){
-                return AuthStates.CANT_LOGIN_ACCOUNT_NOT_REGISTERED;
+            try (ResultSet res = ps.executeQuery()) {
+                if (res.next()) {
+                    userId = res.getInt("id");
+                    salt = res.getString("salt");
+                    checkPassword = res.getString("password_hash");
+
+                    user.setUserId(userId);
+                    String passwordHash = PasswordSecurityUtils.hashPassword(user.getPassword(), salt);
+
+                    return checkPassword.equals(passwordHash) ?
+                            AuthStates.LOGGED :
+                            AuthStates.NOT_LOGGED;
+                } else {
+                    return AuthStates.CANT_LOGIN_ACCOUNT_NOT_REGISTERED;
+                }
             }
         }
-
-        String password = user.getPassword();
-        String passwordHash = PasswordSecurityUtils.hashPassword(password, salt);
-
-        return checkPassword.equals(passwordHash) ? AuthStates.LOGGED : AuthStates.NOT_LOGGED;
     }
 }
 

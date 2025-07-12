@@ -1,6 +1,8 @@
 package AstroLab.actions.components;
 
 import AstroLab.actions.utils.ActionsName;
+import AstroLab.grpc.ActionsNameEnum;
+import AstroLab.grpc.ClientServerActionMessage;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +21,16 @@ public class ActionRemoveById extends ClientServerAction {
     public ActionRemoveById(@JsonProperty("ownerLogin") String ownerLogin,
                             @JsonProperty("ownerPassword") String ownerPassword){
         super(ownerLogin, ownerPassword);
-        this.setActionName(ActionsName.REMOVE_BY_ID);
+        this.setActionName(ActionsNameEnum.REMOVE_BY_ID);
+    }
+
+    @Override
+    public ClientServerActionMessage toProtobuf() {
+        return ClientServerActionMessage.newBuilder()
+                .setActionName(getActionName())
+                .setOwnerLogin(getOwnerLogin())
+                .setOwnerPassword(getOwnerPassword())
+                .setId(getId())
+                .build();
     }
 }
